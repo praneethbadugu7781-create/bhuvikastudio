@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getProductBySlug, getProducts } from "@/lib/db";
 import ProductPageClient from "./product-client";
 

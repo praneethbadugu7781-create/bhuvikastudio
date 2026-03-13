@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getProducts, getFeaturedProducts } from "@/lib/db";
 import HomeClient from "./home-client";
 

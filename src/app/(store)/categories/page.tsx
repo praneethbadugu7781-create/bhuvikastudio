@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getCategories } from "@/lib/db";
 import CategoriesClient from "./categories-client";
 

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getProducts } from "@/lib/db";
 import ShopPage from "./shop-client";
 
