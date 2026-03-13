@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+  <defs>
+    <linearGradient id="rose-w" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f89ca5"/>
+      <stop offset="100%" stop-color="#e35f74"/>
+    </linearGradient>
+    <linearGradient id="gold-w" x1="0" y1="0" x2="50" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#d4a574"/>
+      <stop offset="100%" stop-color="#c4956a"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(8, 4)">
+    <path d="M36 2 L66 36 L36 70 L6 36 Z" stroke="url(#rose-w)" stroke-width="2.2" fill="none" opacity="0.9"/>
+    <path d="M36 10 L58 36 L36 62 L14 36 Z" stroke="url(#gold-w)" stroke-width="1.2" fill="none" opacity="0.5"/>
+    <path d="M36 6 Q46 20 36 36 Q26 20 36 6Z" fill="url(#rose-w)" opacity="0.15"/>
+    <path d="M36 66 Q46 52 36 36 Q26 52 36 66Z" fill="url(#rose-w)" opacity="0.15"/>
+    <path d="M8 36 Q22 26 36 36 Q22 46 8 36Z" fill="url(#rose-w)" opacity="0.12"/>
+    <path d="M64 36 Q50 26 36 36 Q50 46 64 36Z" fill="url(#rose-w)" opacity="0.12"/>
+    <text x="36" y="44" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="32" font-weight="700" fill="url(#rose-w)" letter-spacing="-1">B</text>
+    <circle cx="36" cy="2" r="1.8" fill="url(#gold-w)"/>
+    <circle cx="66" cy="36" r="1.8" fill="url(#gold-w)"/>
+    <circle cx="36" cy="70" r="1.8" fill="url(#gold-w)"/>
+    <circle cx="6" cy="36" r="1.8" fill="url(#gold-w)"/>
+  </g>
+
+  <g transform="translate(88, 0)">
+    <text x="0" y="38" font-family="Georgia, 'Playfair Display', serif" font-size="30" font-weight="700" fill="#ffffff" letter-spacing="4">BHUVIKA</text>
+    <line x1="0" y1="48" x2="210" y2="48" stroke="url(#gold-w)" stroke-width="0.8" opacity="0.4"/>
+    <text x="0" y="66" font-family="'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#f89ca5" letter-spacing="12">STUDIO</text>
+  </g>
+</svg>
