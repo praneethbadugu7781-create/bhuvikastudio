@@ -1,48 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase-server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
-  const { email, phone, otp, method, name } = await req.json();
+  const { email, otp, name } = await req.json();
 
+  if (!email) return NextResponse.json({ error: "Email is required" }, { status: 400 });
   if (!otp) return NextResponse.json({ error: "OTP is required" }, { status: 400 });
 
-  const supabase = createAdminClient();
+  // Find matching OTP in DB
+  const otpRecord = await prisma.otp.findFirst({
+    where: { email, code: otp },
+  });
 
-  // Verify OTP with Supabase
-  let verifyResult;
-  if (method === "email") {
-    if (!email) return NextResponse.json({ error: "Email is required" }, { status: 400 });
-    verifyResult = await supabase.auth.verifyOtp({ email, token: otp, type: "email" });
-  } else if (method === "phone") {
-    const formattedPhone = phone.startsWith("+") ? phone : `+91${phone}`;
-    verifyResult = await supabase.auth.verifyOtp({ phone: formattedPhone, token: otp, type: "sms" });
-  } else {
-    return NextResponse.json({ error: "Invalid method" }, { status: 400 });
+  if (!otpRecord) {
+    return NextResponse.json({ error: "Invalid OTP. Please try again." }, { status: 401 });
   }
 
-  if (verifyResult.error) {
-    return NextResponse.json({ error: "Invalid or expired OTP. Please try again." }, { status: 401 });
+  if (otpRecord.expiresAt < new Date()) {
+    await prisma.otp.delete({ where: { id: otpRecord.id } });
+    return NextResponse.json({ error: "OTP expired. Please request a new one." }, { status: 401 });
   }
 
-  // OTP verified — now create or find user in our Prisma DB
-  let user;
-  if (method === "email") {
-    user = await prisma.user.findFirst({ where: { email } });
-    if (!user) {
-      user = await prisma.user.create({
-        data: { name: name || null, email, role: "CUSTOMER" },
-      });
-    }
-  } else {
-    const formattedPhone = phone.startsWith("+") ? phone : `+91${phone}`;
-    user = await prisma.user.findFirst({ where: { mobile: formattedPhone } });
-    if (!user) {
-      user = await prisma.user.create({
-        data: { name: name || null, mobile: formattedPhone, role: "CUSTOMER" },
-      });
-    }
+  // OTP valid — delete it
+  await prisma.otp.delete({ where: { id: otpRecord.id } });
+
+  // Create or find user
+  let user = await prisma.user.findFirst({ where: { email } });
+  if (!user) {
+    user = await prisma.user.create({
+      data: { name: name || null, email, role: "CUSTOMER" },
+    });
+  } else if (name && !user.name) {
+    user = await prisma.user.update({ where: { id: user.id }, data: { name } });
   }
 
   // Set session cookie
