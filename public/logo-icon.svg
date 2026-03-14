@@ -1,15 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" fill="none">
   <defs>
-    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#BF953F"/>
-      <stop offset="25%" stop-color="#FCF6BA"/>
-      <stop offset="50%" stop-color="#B38728"/>
-      <stop offset="75%" stop-color="#FBF5B7"/>
-      <stop offset="100%" stop-color="#AA771C"/>
+    <linearGradient id="p" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e8728a"/>
+      <stop offset="50%" stop-color="#c94b6a"/>
+      <stop offset="100%" stop-color="#a83256"/>
     </linearGradient>
   </defs>
-  <circle cx="36" cy="36" r="34" fill="#0a0a0a"/>
-  <circle cx="36" cy="36" r="31" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
-  <circle cx="36" cy="36" r="26" fill="none" stroke="url(#g1)" stroke-width="0.4" opacity="0.5"/>
-  <text x="36" y="47" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="url(#g1)">B</text>
+
+  <circle cx="36" cy="36" r="34" fill="url(#p)"/>
+  <circle cx="36" cy="36" r="30.5" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.35"/>
+
+  <!-- B letter -->
+  <text x="29" y="44" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="28" font-weight="700" fill="#fff" opacity="0.95">B</text>
+  <!-- S letter overlapping -->
+  <text x="46" y="48" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="24" font-weight="400" fill="#ffd6e0" font-style="italic" opacity="0.9">S</text>
 </svg>

@@ -1,18 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" fill="none">
   <defs>
-    <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#BF953F"/>
-      <stop offset="25%" stop-color="#FCF6BA"/>
-      <stop offset="50%" stop-color="#B38728"/>
-      <stop offset="75%" stop-color="#FBF5B7"/>
-      <stop offset="100%" stop-color="#AA771C"/>
+    <linearGradient id="pw" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e8728a"/>
+      <stop offset="50%" stop-color="#c94b6a"/>
+      <stop offset="100%" stop-color="#a83256"/>
+    </linearGradient>
+    <linearGradient id="plw" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4a5b8"/>
+      <stop offset="100%" stop-color="#e8728a"/>
     </linearGradient>
   </defs>
-  <circle cx="40" cy="40" r="38" fill="#0a0a0a"/>
-  <circle cx="40" cy="40" r="35" fill="none" stroke="url(#gw)" stroke-width="1.5"/>
-  <circle cx="40" cy="40" r="30" fill="none" stroke="url(#gw)" stroke-width="0.4" opacity="0.5"/>
-  <text x="40" y="51" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" fill="url(#gw)">B</text>
-  <text x="95" y="38" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#ffffff" letter-spacing="5">BHUVIKA</text>
-  <rect x="95" y="46" width="200" height="1.2" fill="url(#gw)" opacity="0.5" rx="1"/>
-  <text x="95" y="65" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="300" fill="#d4af37" letter-spacing="12">STUDIO</text>
+
+  <!-- BS Monogram Circle -->
+  <circle cx="40" cy="40" r="37" fill="url(#pw)"/>
+  <circle cx="40" cy="40" r="33.5" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.35"/>
+
+  <!-- B letter -->
+  <text x="33" y="48" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="30" font-weight="700" fill="#fff" opacity="0.95">B</text>
+  <!-- S letter overlapping -->
+  <text x="50" y="52" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="26" font-weight="400" fill="#ffd6e0" font-style="italic" opacity="0.9">S</text>
+
+  <!-- White text -->
+  <text x="95" y="34" font-family="Georgia, 'Playfair Display', serif" font-size="26" font-weight="700" fill="#ffffff" letter-spacing="5">BHUVIKA</text>
+  <!-- Pink line -->
+  <rect x="95" y="42" width="185" height="1.5" fill="url(#plw)" opacity="0.5" rx="1"/>
+  <!-- STUDIO -->
+  <text x="95" y="62" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#f4a5b8" letter-spacing="13">STUDIO</text>
 </svg>
