@@ -1,12 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, BarChart3,
-  Menu, X, ChevronLeft,
+  Menu, X, ChevronLeft, LogIn, Lock, LogOut, Loader2,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -17,10 +17,142 @@ const sidebarLinks = [
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
+type AdminUser = { id: string; name: string; email: string; role: string };
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [admin, setAdmin] = useState<AdminUser | null>(null);
+  const [checking, setChecking] = useState(true);
 
+  // Login form state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
+
+  useEffect(() => {
+    checkAdmin();
+  }, []);
+
+  const checkAdmin = async () => {
+    try {
+      const res = await fetch("/api/auth/me");
+      const user = await res.json();
+      if (user && user.role === "ADMIN") {
+        setAdmin(user);
+      } else {
+        setAdmin(null);
+      }
+    } catch {
+      setAdmin(null);
+    }
+    setChecking(false);
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError("");
+    setLoggingIn(true);
+    try {
+      const res = await fetch("/api/auth/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setLoginError(data.error || "Login failed");
+        setLoggingIn(false);
+        return;
+      }
+      setAdmin(data);
+    } catch {
+      setLoginError("Network error. Please try again.");
+    }
+    setLoggingIn(false);
+  };
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setAdmin(null);
+    setEmail("");
+    setPassword("");
+  };
+
+  // Loading state
+  if (checking) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-brand-50">
+        <Loader2 size={32} className="animate-spin text-brand-500" />
+      </div>
+    );
+  }
+
+  // Admin Login Screen
+  if (!admin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 to-brand-100 px-4">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+          <div className="rounded-2xl border border-brand-200 bg-white p-8 shadow-xl">
+            <div className="flex flex-col items-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-900">
+                <Lock size={28} className="text-white" />
+              </div>
+              <h1 className="mt-4 font-display text-2xl text-brand-950">Admin Login</h1>
+              <p className="mt-1 text-sm text-brand-600">Bhuvika Studio Admin Panel</p>
+            </div>
+
+            <form onSubmit={handleLogin} className="mt-8 space-y-4">
+              <div>
+                <label className="text-sm font-semibold text-brand-800">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  className="mt-1 w-full rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  placeholder="admin@bhuvikastudio.com"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-semibold text-brand-800">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  className="mt-1 w-full rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  placeholder="Enter password"
+                />
+              </div>
+
+              {loginError && (
+                <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{loginError}</p>
+              )}
+
+              <button
+                type="submit"
+                disabled={loggingIn}
+                className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-900 py-3.5 font-semibold text-white transition hover:bg-brand-950 disabled:opacity-50"
+              >
+                {loggingIn ? <Loader2 size={18} className="animate-spin" /> : <LogIn size={18} />}
+                {loggingIn ? "Signing in..." : "Sign In"}
+              </button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <Link href="/" className="text-sm text-brand-500 hover:text-brand-700">
+                &larr; Back to Store
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Admin Panel (authenticated)
   return (
     <div className="flex h-screen bg-brand-50">
       {/* Desktop Sidebar */}
@@ -42,10 +174,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
-        <div className="border-t border-brand-800 p-3">
+        <div className="border-t border-brand-800 p-3 space-y-1">
           <Link href="/" className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-brand-300 transition hover:bg-brand-800/50 hover:text-white">
             <ChevronLeft size={18} /> Back to Store
           </Link>
+          <button onClick={handleLogout} className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-red-400 transition hover:bg-red-900/20 hover:text-red-300">
+            <LogOut size={18} /> Logout
+          </button>
         </div>
       </aside>
 
@@ -73,10 +208,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   );
                 })}
               </nav>
-              <div className="border-t border-brand-800 p-3">
+              <div className="border-t border-brand-800 p-3 space-y-1">
                 <Link href="/" className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-brand-300 hover:text-white">
                   <ChevronLeft size={18} /> Back to Store
                 </Link>
+                <button onClick={handleLogout} className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-red-400 hover:text-red-300">
+                  <LogOut size={18} /> Logout
+                </button>
               </div>
             </motion.aside>
           </>
@@ -89,7 +227,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <button onClick={() => setSidebarOpen(true)} className="md:hidden"><Menu size={22} className="text-brand-900" /></button>
           <h1 className="text-sm font-bold uppercase tracking-wider text-brand-500">Admin Panel</h1>
           <div className="ml-auto flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-900 text-xs font-bold text-white">BS</div>
+            <span className="text-xs text-brand-600">{admin.email}</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-900 text-xs font-bold text-white">
+              {admin.name?.charAt(0) || "A"}
+            </div>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-5 md:p-8">{children}</main>

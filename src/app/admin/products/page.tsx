@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2 } from "lucide-react";
 
 type Variant = { sku: string; size: string; color: string; price: string; salePrice?: string; stockQuantity: number };
 type Product = {
@@ -27,9 +27,11 @@ export default function AdminProductsPage() {
   const [newArr, setNewArr] = useState(false);
   const [best, setBest] = useState(false);
   const [stock, setStock] = useState("IN_STOCK");
-  const [img, setImg] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [vars, setVars] = useState<Variant[]>([{ ...emptyVariant }]);
   const [saving, setSaving] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -42,16 +44,47 @@ export default function AdminProductsPage() {
 
   const reset = () => {
     setName(""); setDesc(""); setCat(cats[0]); setFeat(false); setNewArr(false);
-    setBest(false); setStock("IN_STOCK"); setImg(""); setVars([{ ...emptyVariant }]); setEditing(null);
+    setBest(false); setStock("IN_STOCK"); setImageUrls([]); setVars([{ ...emptyVariant }]); setEditing(null);
   };
 
   const openAdd = () => { reset(); setShowModal(true); };
   const openEdit = (p: Product) => {
     setEditing(p); setName(p.name); setDesc(p.description); setCat(p.category);
     setFeat(p.featured); setNewArr(p.isNewArrival); setBest(p.isBestSeller);
-    setStock(p.stockStatus); setImg(p.images[0]?.imageUrl || "");
+    setStock(p.stockStatus); setImageUrls(p.images.map(i => i.imageUrl));
     setVars(p.variants.length ? p.variants.map(v => ({ sku: v.sku, size: v.size, color: v.color, price: String(v.price), salePrice: v.salePrice ? String(v.salePrice) : "", stockQuantity: v.stockQuantity })) : [{ ...emptyVariant }]);
     setShowModal(true);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append("images", files[i]);
+      }
+
+      const res = await fetch("/api/upload/multiple", { method: "POST", body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Upload failed");
+        setUploading(false);
+        return;
+      }
+      const data = await res.json();
+      setImageUrls(prev => [...prev, ...data.urls]);
+    } catch {
+      alert("Image upload failed. Please try again.");
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (idx: number) => {
+    setImageUrls(prev => prev.filter((_, i) => i !== idx));
   };
 
   const save = async () => {
@@ -61,7 +94,7 @@ export default function AdminProductsPage() {
     const good = vars.filter(v => v.size && v.price);
     const body = { name, slug, description: desc, category: cat, featured: feat, isNewArrival: newArr, isBestSeller: best, stockStatus: stock,
       variants: good.map(v => ({ ...v, sku: v.sku || `${slug}-${v.size}-${Date.now()}`, stockQuantity: Number(v.stockQuantity) })),
-      images: img ? [img] : [] };
+      images: imageUrls };
     if (editing) {
       await fetch(`/api/products/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     } else {
@@ -122,9 +155,39 @@ export default function AdminProductsPage() {
                 <div><label className="text-sm font-semibold text-brand-800">Category</label><select value={cat} onChange={e => setCat(e.target.value)} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none">{cats.map(c => <option key={c}>{c}</option>)}</select></div>
               </div>
               <div><label className="text-sm font-semibold text-brand-800">Description</label><textarea value={desc} onChange={e => setDesc(e.target.value)} rows={2} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none focus:border-brand-500" /></div>
-              <div><label className="text-sm font-semibold text-brand-800">Image URL</label><input value={img} onChange={e => setImg(e.target.value)} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none focus:border-brand-500" placeholder="https://..." />
-                {img && <img src={img} alt="preview" className="mt-2 h-20 w-20 rounded-xl object-cover" />}
+
+              {/* Image Upload Section */}
+              <div>
+                <label className="text-sm font-semibold text-brand-800">Product Images</label>
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {imageUrls.map((url, idx) => (
+                    <div key={idx} className="group relative">
+                      <img src={url} alt={`Product ${idx + 1}`} className="h-20 w-20 rounded-xl object-cover border border-brand-200" />
+                      <button onClick={() => removeImage(idx)} className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition group-hover:opacity-100">
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex h-20 w-20 flex-col items-center justify-center rounded-xl border-2 border-dashed border-brand-300 text-brand-400 transition hover:border-brand-500 hover:text-brand-600 disabled:opacity-50"
+                  >
+                    {uploading ? <Loader2 size={20} className="animate-spin" /> : <Upload size={20} />}
+                    <span className="mt-1 text-[10px] font-semibold">{uploading ? "Uploading" : "Add"}</span>
+                  </button>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
               </div>
+
               <div className="flex flex-wrap gap-4">
                 <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={feat} onChange={e => setFeat(e.target.checked)} /> Featured</label>
                 <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={newArr} onChange={e => setNewArr(e.target.checked)} /> New Arrival</label>
