@@ -27,7 +27,7 @@ export default function Header() {
             </button>
           )}
           <Link href="/" className="transition hover:opacity-80">
-            <Image src="/logo.svg" alt="Bhuvika Studio" width={200} height={50} className="h-[38px] w-auto md:h-[52px]" priority />
+            <Image src="/logo-header.svg" alt="Bhuvika Studio" width={200} height={50} className="h-[38px] w-auto md:h-[52px]" priority />
           </Link>
         </div>
 

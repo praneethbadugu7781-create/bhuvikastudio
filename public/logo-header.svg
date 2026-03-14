@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 60" fill="none">
+  <!-- Header-optimized logo for navigation bar -->
+
+  <!-- BS Monogram -->
+  <g transform="translate(30, 30)">
+    <circle cx="0" cy="0" r="26" fill="none" stroke="#c9a0a0" stroke-width="0.5" opacity="0.5"/>
+    <text x="-6" y="8" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="32" font-weight="700" fill="#1a1a1a" opacity="0.9">B</text>
+    <text x="10" y="12" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="22" font-weight="400" fill="#1a1a1a" font-style="italic" opacity="0.6">S</text>
+  </g>
+
+  <!-- Brand Name -->
+  <text x="68" y="28" font-family="Georgia, 'Playfair Display', serif" font-size="20" font-weight="400" fill="#1a1a1a" letter-spacing="6">BHUVIKA</text>
+  <line x1="68" y1="34" x2="228" y2="34" stroke="#c9a0a0" stroke-width="0.4" opacity="0.5"/>
+  <text x="68" y="48" font-family="Georgia, 'Playfair Display', serif" font-size="10" font-weight="400" fill="#8b6070" letter-spacing="8">STUDIO</text>
+</svg>

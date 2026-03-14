@@ -1,33 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" fill="none">
   <defs>
-    <linearGradient id="pink" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#e8728a"/>
-      <stop offset="50%" stop-color="#c94b6a"/>
-      <stop offset="100%" stop-color="#a83256"/>
-    </linearGradient>
-    <linearGradient id="pink-light" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f4a5b8"/>
-      <stop offset="100%" stop-color="#e8728a"/>
-    </linearGradient>
-    <linearGradient id="txt" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#2d1520"/>
-      <stop offset="100%" stop-color="#3d1f2e"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fce4ec"/>
+      <stop offset="50%" stop-color="#f8d0dc"/>
+      <stop offset="100%" stop-color="#fce4ec"/>
     </linearGradient>
   </defs>
 
-  <!-- BS Monogram Circle -->
-  <circle cx="40" cy="40" r="37" fill="url(#pink)"/>
-  <circle cx="40" cy="40" r="33.5" fill="none" stroke="#fff" stroke-width="0.8" opacity="0.35"/>
+  <!-- Soft pink background -->
+  <rect width="600" height="600" fill="url(#bg)"/>
 
-  <!-- B letter -->
-  <text x="33" y="48" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="30" font-weight="700" fill="#fff" opacity="0.95">B</text>
-  <!-- S letter overlapping -->
-  <text x="50" y="52" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="26" font-weight="400" fill="#ffd6e0" font-style="italic" opacity="0.9">S</text>
+  <!-- Top: BHUVIKA STUDIO -->
+  <text x="300" y="95" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="28" font-weight="400" fill="#1a1a1a" letter-spacing="14">BHUVIKA STUDIO</text>
+  <line x1="130" y1="110" x2="470" y2="110" stroke="#b8868f" stroke-width="0.5" opacity="0.5"/>
 
-  <!-- Brand Name -->
-  <text x="95" y="34" font-family="Georgia, 'Playfair Display', serif" font-size="26" font-weight="700" fill="url(#txt)" letter-spacing="5">BHUVIKA</text>
-  <!-- Pink line -->
-  <rect x="95" y="42" width="185" height="1.5" fill="url(#pink)" opacity="0.5" rx="1"/>
-  <!-- STUDIO text -->
-  <text x="95" y="62" font-family="'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="url(#pink)" letter-spacing="13">STUDIO</text>
+  <!-- Main Monogram Area -->
+  <!-- Outer thin circle -->
+  <circle cx="300" cy="330" r="175" fill="none" stroke="#b8868f" stroke-width="0.6" opacity="0.35"/>
+
+  <!-- Large B -->
+  <text x="270" y="380" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="200" font-weight="700" fill="#1a1a1a" opacity="0.88">B</text>
+
+  <!-- Flowing S interlocking with B -->
+  <text x="360" y="400" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="140" font-weight="400" fill="#1a1a1a" font-style="italic" opacity="0.55">S</text>
+
+  <!-- Small BHUVIKA STUDIO inside monogram -->
+  <line x1="215" y1="415" x2="385" y2="415" stroke="#1a1a1a" stroke-width="0.4" opacity="0.25"/>
+  <text x="300" y="432" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="11" font-weight="400" fill="#1a1a1a" letter-spacing="7" opacity="0.6">BHUVIKA STUDIO</text>
+  <line x1="215" y1="440" x2="385" y2="440" stroke="#1a1a1a" stroke-width="0.4" opacity="0.25"/>
+
+  <!-- Bottom tagline -->
+  <text x="300" y="560" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="10" font-weight="400" fill="#8b6070" letter-spacing="8" opacity="0.5">ETHNIC FASHION BOUTIQUE</text>
 </svg>
