@@ -1,20 +1,41 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { User, LogOut } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
+import { User, LogOut, Home, ArrowLeft } from "lucide-react";
 import CartBadge from "./CartBadge";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   return (
     <header className="sticky top-0 z-30 border-b border-brand-100/60 bg-white/80 backdrop-blur-lg">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-2">
-        <Link href="/" className="transition hover:opacity-80">
-          <Image src="/logo.svg" alt="Bhuvika Studio" width={200} height={50} className="h-[42px] w-auto md:h-[52px]" priority />
-        </Link>
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2">
+        {/* Left: Back button (mobile, not on home) + Logo */}
+        <div className="flex items-center gap-2">
+          {!isHome && (
+            <button
+              onClick={() => router.back()}
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100 md:hidden"
+              aria-label="Go back"
+            >
+              <ArrowLeft size={18} />
+            </button>
+          )}
+          <Link href="/" className="transition hover:opacity-80">
+            <Image src="/logo.svg" alt="Bhuvika Studio" width={200} height={50} className="h-[38px] w-auto md:h-[52px]" priority />
+          </Link>
+        </div>
+
+        {/* Desktop nav */}
         <nav className="hidden items-center gap-6 text-sm font-semibold text-brand-800 md:flex">
+          <Link href="/" className="flex items-center gap-1.5 transition hover:text-brand-500">
+            <Home size={16} /> Home
+          </Link>
           <Link href="/shop" className="transition hover:text-brand-500">Shop</Link>
           <Link href="/categories" className="transition hover:text-brand-500">Categories</Link>
           {user ? (
@@ -31,8 +52,14 @@ export default function Header() {
           )}
           <CartBadge />
         </nav>
-        {/* Mobile: just show cart badge, bottom tab handles nav */}
-        <div className="flex items-center gap-3 md:hidden">
+
+        {/* Mobile: Home + Cart */}
+        <div className="flex items-center gap-2 md:hidden">
+          {!isHome && (
+            <Link href="/" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Home">
+              <Home size={18} />
+            </Link>
+          )}
           <CartBadge />
         </div>
       </div>
