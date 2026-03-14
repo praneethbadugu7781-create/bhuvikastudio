@@ -1,51 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" fill="none">
   <defs>
-    <linearGradient id="rose-grad" x1="0" y1="0" x2="60" y2="60" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#e35f74"/>
-      <stop offset="100%" stop-color="#bb3f57"/>
-    </linearGradient>
-    <linearGradient id="gold-accent" x1="0" y1="0" x2="50" y2="50" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#d4a574"/>
-      <stop offset="100%" stop-color="#c4956a"/>
-    </linearGradient>
-    <linearGradient id="text-grad" x1="0" y1="0" x2="250" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#2f1117"/>
-      <stop offset="100%" stop-color="#4a1d27"/>
+    <linearGradient id="gold-main" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#BF953F"/>
+      <stop offset="25%" stop-color="#FCF6BA"/>
+      <stop offset="50%" stop-color="#B38728"/>
+      <stop offset="75%" stop-color="#FBF5B7"/>
+      <stop offset="100%" stop-color="#AA771C"/>
     </linearGradient>
   </defs>
 
-  <!-- Logo Mark - Elegant "B" monogram inside a diamond/lotus shape -->
-  <g transform="translate(8, 4)">
-    <!-- Outer diamond frame -->
-    <path d="M36 2 L66 36 L36 70 L6 36 Z" stroke="url(#rose-grad)" stroke-width="2.2" fill="none" opacity="0.9"/>
-    <!-- Inner diamond frame -->
-    <path d="M36 10 L58 36 L36 62 L14 36 Z" stroke="url(#gold-accent)" stroke-width="1.2" fill="none" opacity="0.7"/>
+  <!-- Dark circle background -->
+  <circle cx="40" cy="40" r="38" fill="#0a0a0a"/>
+  <!-- Gold ring -->
+  <circle cx="40" cy="40" r="35" fill="none" stroke="url(#gold-main)" stroke-width="1.5"/>
+  <!-- Inner thin ring -->
+  <circle cx="40" cy="40" r="30" fill="none" stroke="url(#gold-main)" stroke-width="0.4" opacity="0.5"/>
+  <!-- Stylish B -->
+  <text x="40" y="51" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" fill="url(#gold-main)">B</text>
 
-    <!-- Decorative petals / lotus motif -->
-    <path d="M36 6 Q46 20 36 36 Q26 20 36 6Z" fill="url(#rose-grad)" opacity="0.15"/>
-    <path d="M36 66 Q46 52 36 36 Q26 52 36 66Z" fill="url(#rose-grad)" opacity="0.15"/>
-    <path d="M8 36 Q22 26 36 36 Q22 46 8 36Z" fill="url(#rose-grad)" opacity="0.12"/>
-    <path d="M64 36 Q50 26 36 36 Q50 46 64 36Z" fill="url(#rose-grad)" opacity="0.12"/>
-
-    <!-- Stylized "B" letter -->
-    <text x="36" y="44" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="32" font-weight="700" fill="url(#rose-grad)" letter-spacing="-1">B</text>
-
-    <!-- Small decorative dots at corners -->
-    <circle cx="36" cy="2" r="1.8" fill="url(#gold-accent)"/>
-    <circle cx="66" cy="36" r="1.8" fill="url(#gold-accent)"/>
-    <circle cx="36" cy="70" r="1.8" fill="url(#gold-accent)"/>
-    <circle cx="6" cy="36" r="1.8" fill="url(#gold-accent)"/>
-  </g>
-
-  <!-- Brand Name -->
-  <g transform="translate(88, 0)">
-    <!-- "BHUVIKA" - main text -->
-    <text x="0" y="38" font-family="Georgia, 'Playfair Display', serif" font-size="30" font-weight="700" fill="url(#text-grad)" letter-spacing="4">BHUVIKA</text>
-
-    <!-- Decorative line -->
-    <line x1="0" y1="48" x2="210" y2="48" stroke="url(#gold-accent)" stroke-width="0.8" opacity="0.6"/>
-
-    <!-- "STUDIO" - subtitle -->
-    <text x="0" y="66" font-family="'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#bb3f57" letter-spacing="12">STUDIO</text>
-  </g>
+  <!-- BHUVIKA text -->
+  <text x="95" y="38" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#0a0a0a" letter-spacing="5">BHUVIKA</text>
+  <!-- Gold underline -->
+  <rect x="95" y="46" width="200" height="1.2" fill="url(#gold-main)" opacity="0.6" rx="1"/>
+  <!-- STUDIO -->
+  <text x="95" y="65" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="300" fill="#888888" letter-spacing="12">STUDIO</text>
 </svg>

@@ -1,32 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72" fill="none">
   <defs>
-    <linearGradient id="rg" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#e35f74"/>
-      <stop offset="100%" stop-color="#bb3f57"/>
-    </linearGradient>
-    <linearGradient id="ga" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#d4a574"/>
-      <stop offset="100%" stop-color="#c4956a"/>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#BF953F"/>
+      <stop offset="25%" stop-color="#FCF6BA"/>
+      <stop offset="50%" stop-color="#B38728"/>
+      <stop offset="75%" stop-color="#FBF5B7"/>
+      <stop offset="100%" stop-color="#AA771C"/>
     </linearGradient>
   </defs>
-
-  <!-- Outer diamond -->
-  <path d="M36 2 L68 36 L36 70 L4 36 Z" stroke="url(#rg)" stroke-width="2.5" fill="none"/>
-  <!-- Inner diamond -->
-  <path d="M36 12 L58 36 L36 60 L14 36 Z" stroke="url(#ga)" stroke-width="1.2" fill="none" opacity="0.6"/>
-
-  <!-- Decorative petals -->
-  <path d="M36 6 Q48 22 36 36 Q24 22 36 6Z" fill="url(#rg)" opacity="0.15"/>
-  <path d="M36 66 Q48 50 36 36 Q24 50 36 66Z" fill="url(#rg)" opacity="0.15"/>
-  <path d="M6 36 Q22 24 36 36 Q22 48 6 36Z" fill="url(#rg)" opacity="0.12"/>
-  <path d="M66 36 Q50 24 36 36 Q50 48 66 36Z" fill="url(#rg)" opacity="0.12"/>
-
-  <!-- "B" monogram -->
-  <text x="36" y="44" text-anchor="middle" font-family="Georgia, 'Playfair Display', serif" font-size="34" font-weight="700" fill="url(#rg)">B</text>
-
-  <!-- Corner dots -->
-  <circle cx="36" cy="2" r="2" fill="url(#ga)"/>
-  <circle cx="68" cy="36" r="2" fill="url(#ga)"/>
-  <circle cx="36" cy="70" r="2" fill="url(#ga)"/>
-  <circle cx="4" cy="36" r="2" fill="url(#ga)"/>
+  <circle cx="36" cy="36" r="34" fill="#0a0a0a"/>
+  <circle cx="36" cy="36" r="31" fill="none" stroke="url(#g1)" stroke-width="1.5"/>
+  <circle cx="36" cy="36" r="26" fill="none" stroke="url(#g1)" stroke-width="0.4" opacity="0.5"/>
+  <text x="36" y="47" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="url(#g1)">B</text>
 </svg>
