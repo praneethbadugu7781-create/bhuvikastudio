@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
   const products = await prisma.product.findMany({
@@ -11,9 +10,6 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-
   const body = await req.json();
   const { name, slug, description, category, featured, isNewArrival, isBestSeller, stockStatus, variants, images } = body;
 

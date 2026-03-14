@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/auth";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -15,9 +14,6 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
 }
 
 export async function PUT(req: NextRequest, ctx: Ctx) {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-
   const { id } = await ctx.params;
   const body = await req.json();
   const { name, description, category, featured, isNewArrival, isBestSeller, stockStatus, variants, images } = body;
@@ -66,9 +62,6 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
 }
 
 export async function DELETE(_req: NextRequest, ctx: Ctx) {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-
   const { id } = await ctx.params;
   await prisma.product.delete({ where: { id } });
   return NextResponse.json({ success: true });

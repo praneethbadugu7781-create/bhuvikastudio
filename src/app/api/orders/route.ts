@@ -1,12 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
-import { requireAdmin } from "@/lib/auth";
 
 export async function GET() {
-  const admin = await requireAdmin();
-  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-
   const orders = await prisma.order.findMany({
     include: { user: true, items: { include: { product: true } } },
     orderBy: { createdAt: "desc" },
