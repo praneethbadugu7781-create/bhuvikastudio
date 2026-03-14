@@ -1,12 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, BarChart3,
-  Menu, X, ChevronLeft, LogOut,
+  Menu, X, ChevronLeft, ShieldX, Loader2,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -17,9 +17,50 @@ const sidebarLinks = [
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
 ];
 
+type AdminUser = { id: string; name: string | null; email: string | null; role: string } | null;
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [adminUser, setAdminUser] = useState<AdminUser>(null);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((user) => {
+        if (user && user.role === "ADMIN") {
+          setAdminUser(user);
+        } else {
+          setAdminUser(null);
+        }
+      })
+      .catch(() => setAdminUser(null))
+      .finally(() => setChecking(false));
+  }, []);
+
+  if (checking) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-brand-50">
+        <Loader2 size={32} className="animate-spin text-brand-500" />
+      </div>
+    );
+  }
+
+  if (!adminUser) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-brand-50 px-5 text-center">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
+          <ShieldX size={40} className="text-red-500" />
+        </div>
+        <h1 className="mt-6 text-2xl font-bold text-brand-950">Access Denied</h1>
+        <p className="mt-2 text-brand-600">You don&apos;t have permission to access the admin panel.</p>
+        <Link href="/" className="mt-6 rounded-full bg-brand-900 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-950">
+          Go to Store
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-brand-50">
@@ -36,15 +77,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {sidebarLinks.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
-                  active ? "bg-brand-800 text-white" : "text-brand-300 hover:bg-brand-800/50 hover:text-white"
-                }`}
-              >
-                <Icon size={18} />
-                {label}
+              <Link key={href} href={href} className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${active ? "bg-brand-800 text-white" : "text-brand-300 hover:bg-brand-800/50 hover:text-white"}`}>
+                <Icon size={18} /> {label}
               </Link>
             );
           })}
@@ -96,7 +130,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <button onClick={() => setSidebarOpen(true)} className="md:hidden"><Menu size={22} className="text-brand-900" /></button>
           <h1 className="text-sm font-bold uppercase tracking-wider text-brand-500">Admin Panel</h1>
           <div className="ml-auto flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-900 text-xs font-bold text-white">BS</div>
+            <span className="text-xs font-semibold text-brand-600">{adminUser.name || adminUser.email}</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-900 text-xs font-bold text-white">
+              {(adminUser.name || "A")[0].toUpperCase()}
+            </div>
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-5 md:p-8">{children}</main>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/auth";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -14,11 +15,13 @@ export async function GET(_req: NextRequest, ctx: Ctx) {
 }
 
 export async function PUT(req: NextRequest, ctx: Ctx) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
   const { id } = await ctx.params;
   const body = await req.json();
   const { name, description, category, featured, isNewArrival, isBestSeller, stockStatus, variants, images } = body;
 
-  // Update main product
   const product = await prisma.product.update({
     where: { id },
     data: {
@@ -32,7 +35,6 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     },
   });
 
-  // Replace variants if provided
   if (variants) {
     await prisma.productVariant.deleteMany({ where: { productId: id } });
     await prisma.productVariant.createMany({
@@ -48,7 +50,6 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     });
   }
 
-  // Replace images if provided
   if (images) {
     await prisma.productImage.deleteMany({ where: { productId: id } });
     await prisma.productImage.createMany({
@@ -65,6 +66,9 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
 }
 
 export async function DELETE(_req: NextRequest, ctx: Ctx) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+
   const { id } = await ctx.params;
   await prisma.product.delete({ where: { id } });
   return NextResponse.json({ success: true });
