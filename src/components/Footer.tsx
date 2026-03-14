@@ -80,9 +80,14 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-brand-800 px-5 py-5">
-        <p className="text-center text-xs text-brand-400">
-          &copy; 2026 Bhuvika Studio. All rights reserved.
-        </p>
+        <div className="mx-auto flex max-w-6xl items-center justify-between">
+          <p className="text-xs text-brand-400">
+            &copy; 2026 Bhuvika Studio. All rights reserved.
+          </p>
+          <Link href="/admin" className="text-xs text-brand-600 transition hover:text-brand-400">
+            Admin
+          </Link>
+        </div>
       </div>
     </footer>
   );
