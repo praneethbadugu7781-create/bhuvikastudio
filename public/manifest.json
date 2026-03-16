@@ -1,0 +1,12 @@
+{
+  "name": "Bhuvika Studio",
+  "short_name": "Bhuvika",
+  "description": "Shop premium Sarees, Lehengas, Western Wear & Kids Wear online at Bhuvika Studio",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fce4ec",
+  "theme_color": "#e8728a",
+  "icons": [
+    { "src": "/logo-icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
