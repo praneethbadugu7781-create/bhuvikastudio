@@ -3,11 +3,13 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Truck, CheckCircle, XCircle, Clock, Package, X, ChevronDown } from "lucide-react";
 
-type OrderItem = { id: string; quantity: number; unitPrice: string; product: { name: string; slug: string } };
+type OrderItem = { id: string; quantity: number; unitPrice: number; productName: string; size: string; color: string };
+type Address = { fullName: string; phone: string; line1: string; line2?: string; city: string; state: string; postalCode: string };
 type Order = {
   id: string; status: string; paymentStatus: string; paymentMethod: string;
-  subtotal: string; deliveryCharge: string; totalAmount: string; adminNote: string | null;
-  createdAt: string; user: { name: string | null; email: string | null; mobile: string | null };
+  subtotal: number; deliveryCharge: number; totalAmount: number; adminNote: string | null;
+  createdAt: string; user: { name: string | null; email: string | null; mobile: string | null } | null;
+  address: Address;
   items: OrderItem[];
 };
 
@@ -103,10 +105,23 @@ export default function AdminOrdersPage() {
             <div className="mt-6 space-y-4">
               <div className="rounded-xl bg-brand-50 p-4"><p className="text-xs text-brand-500">Order ID</p><p className="font-mono text-sm font-semibold text-brand-900">{detail.id}</p></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><p className="text-xs text-brand-500">Customer</p><p className="text-sm font-semibold text-brand-900">{detail.user?.name || "Guest"}</p></div>
+                <div><p className="text-xs text-brand-500">Customer</p><p className="text-sm font-semibold text-brand-900">{detail.user?.name || detail.address?.fullName || "Guest"}</p></div>
                 <div><p className="text-xs text-brand-500">Email</p><p className="text-sm text-brand-900">{detail.user?.email || "—"}</p></div>
-                <div><p className="text-xs text-brand-500">Payment</p><p className="text-sm font-semibold text-brand-900">{detail.paymentMethod}</p></div>
+                <div><p className="text-xs text-brand-500">Phone</p><p className="text-sm text-brand-900">{detail.address?.phone || detail.user?.mobile || "—"}</p></div>
                 <div><p className="text-xs text-brand-500">Date</p><p className="text-sm text-brand-900">{new Date(detail.createdAt).toLocaleString()}</p></div>
+              </div>
+              {detail.address && (
+                <div className="rounded-xl border border-brand-100 p-4">
+                  <p className="text-xs font-semibold text-brand-500 uppercase tracking-wide">Shipping Address</p>
+                  <p className="mt-2 text-sm font-semibold text-brand-900">{detail.address.fullName}</p>
+                  <p className="text-sm text-brand-700">{detail.address.line1}</p>
+                  {detail.address.line2 && <p className="text-sm text-brand-700">{detail.address.line2}</p>}
+                  <p className="text-sm text-brand-700">{detail.address.city}, {detail.address.state} - {detail.address.postalCode}</p>
+                  <p className="mt-1 text-sm font-semibold text-brand-800">📞 {detail.address.phone}</p>
+                </div>
+              )}
+              <div><p className="text-sm font-semibold text-brand-800">Payment Method</p>
+                <p className="mt-1 rounded-lg bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-900">{detail.paymentMethod}</p>
               </div>
               <div><p className="text-sm font-semibold text-brand-800">Order Status</p>
                 <select value={detail.status} onChange={e => { updateOrder(detail.id, { status: e.target.value }); setDetail({ ...detail, status: e.target.value }); }} disabled={updating} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none">
@@ -119,9 +134,9 @@ export default function AdminOrdersPage() {
                 </select>
               </div>
               <div><p className="text-sm font-semibold text-brand-800">Items</p>
-                <div className="mt-2 space-y-2">{detail.items.map(item => (
-                  <div key={item.id} className="flex justify-between rounded-xl bg-brand-50 p-3">
-                    <div><p className="text-sm font-semibold text-brand-900">{item.product.name}</p><p className="text-xs text-brand-500">x{item.quantity}</p></div>
+                <div className="mt-2 space-y-2">{detail.items.map((item, idx) => (
+                  <div key={item.id || idx} className="flex justify-between rounded-xl bg-brand-50 p-3">
+                    <div><p className="text-sm font-semibold text-brand-900">{item.productName}</p><p className="text-xs text-brand-500">x{item.quantity} • {item.size}</p></div>
                     <p className="text-sm font-semibold text-brand-900">₹{Number(item.unitPrice).toLocaleString("en-IN")}</p>
                   </div>
                 ))}</div>
