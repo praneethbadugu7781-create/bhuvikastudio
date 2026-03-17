@@ -23,7 +23,8 @@ export default function CheckoutPage() {
   const router = useRouter();
   const delivery = total > 2000 ? 0 : 80;
   const grandTotal = total + delivery;
-  const [payment, setPayment] = useState<"RAZORPAY" | "COD">("RAZORPAY");
+  const razorpayEnabled = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+  const [payment, setPayment] = useState<"RAZORPAY" | "COD">(razorpayEnabled ? "RAZORPAY" : "COD");
   const [placed, setPlaced] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
@@ -97,7 +98,7 @@ export default function CheckoutPage() {
       setError("Please fill in all address fields");
       return;
     }
-    if (payment === "RAZORPAY" && !razorpayReady) {
+    if (payment === "RAZORPAY" && razorpayEnabled && !razorpayReady) {
       setError("Payment system loading. Please wait a moment.");
       return;
     }
@@ -127,7 +128,7 @@ export default function CheckoutPage() {
         return; // handler will set placed/placing
       }
 
-      // COD — order placed directly
+      // COD or Razorpay not configured — order placed directly
       setPlaced(true);
       clear();
     } catch {
@@ -170,10 +171,12 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Script
-        src="https://checkout.razorpay.com/v1/checkout.js"
-        onLoad={() => setRazorpayReady(true)}
-      />
+      {razorpayEnabled && (
+        <Script
+          src="https://checkout.razorpay.com/v1/checkout.js"
+          onLoad={() => setRazorpayReady(true)}
+        />
+      )}
       <div className="mx-auto w-full max-w-5xl px-5 py-12">
         <AnimatedSection>
           <Link href="/cart" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 transition hover:text-brand-500"><ArrowLeft size={16} /> Back to Cart</Link>
@@ -197,10 +200,12 @@ export default function CheckoutPage() {
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-bold text-brand-950">Payment Method</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
+                {razorpayEnabled && (
                 <button onClick={() => setPayment("RAZORPAY")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "RAZORPAY" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
                   <CreditCard size={24} className={payment === "RAZORPAY" ? "text-brand-500" : "text-brand-400"} />
                   <div className="text-left"><p className="font-semibold text-brand-900">Pay Online</p><p className="text-xs text-brand-700">UPI, Cards, Net Banking</p></div>
                 </button>
+                )}
                 <button onClick={() => setPayment("COD")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "COD" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
                   <Banknote size={24} className={payment === "COD" ? "text-brand-500" : "text-brand-400"} />
                   <div className="text-left"><p className="font-semibold text-brand-900">Cash on Delivery</p><p className="text-xs text-brand-700">Pay when you receive</p></div>
