@@ -15,6 +15,20 @@ declare global {
   }
 }
 
+type ShippingSettings = {
+  freeThreshold: number;
+  defaultCharge: number;
+  codEnabled: boolean;
+  codCharge: number;
+};
+
+const DEFAULT_SHIPPING: ShippingSettings = {
+  freeThreshold: 2000,
+  defaultCharge: 80,
+  codEnabled: true,
+  codCharge: 0,
+};
+
 export default function CheckoutPage() {
   const items = useCart((s) => s.items);
   const total = useCart((s) => s.total());
@@ -22,7 +36,17 @@ export default function CheckoutPage() {
   const clear = useCart((s) => s.clear);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
-  const delivery = total > 2000 ? 0 : 80;
+
+  const [shipping, setShipping] = useState<ShippingSettings>(DEFAULT_SHIPPING);
+
+  useEffect(() => {
+    fetch("/api/settings/shipping")
+      .then(res => res.ok ? res.json() : DEFAULT_SHIPPING)
+      .then(data => setShipping(data))
+      .catch(() => {});
+  }, []);
+
+  const delivery = total > shipping.freeThreshold ? 0 : shipping.defaultCharge;
   const discount = appliedCoupon?.discount || 0;
   const grandTotal = total + delivery - discount;
   const razorpayEnabled = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
@@ -247,7 +271,7 @@ export default function CheckoutPage() {
                     <span>-&#8377;{discount.toLocaleString("en-IN")}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm text-brand-700"><span>Delivery</span><span>{delivery === 0 ? "FREE" : `₹${delivery}`}</span></div>
+                <div className="flex justify-between text-sm text-brand-700"><span>Shipping</span><span>{delivery === 0 ? "FREE" : `₹${delivery}`}</span></div>
                 <hr className="border-brand-100" />
                 <div className="flex justify-between text-xl font-bold text-brand-950"><span>Total</span><span>&#8377;{grandTotal.toLocaleString("en-IN")}</span></div>
               </div>

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Ticket, X, Check, Loader2 } from "lucide-react";
@@ -14,6 +14,20 @@ type AppliedCoupon = {
   discount: number;
 };
 
+type ShippingSettings = {
+  freeThreshold: number;
+  defaultCharge: number;
+  codEnabled: boolean;
+  codCharge: number;
+};
+
+const DEFAULT_SHIPPING: ShippingSettings = {
+  freeThreshold: 2000,
+  defaultCharge: 80,
+  codEnabled: true,
+  codCharge: 0,
+};
+
 export default function CartPage() {
   const items = useCart((s) => s.items);
   const remove = useCart((s) => s.remove);
@@ -25,8 +39,16 @@ export default function CartPage() {
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [shipping, setShipping] = useState<ShippingSettings>(DEFAULT_SHIPPING);
 
-  const delivery = total > 2000 ? 0 : 80;
+  useEffect(() => {
+    fetch("/api/settings/shipping")
+      .then(res => res.ok ? res.json() : DEFAULT_SHIPPING)
+      .then(data => setShipping(data))
+      .catch(() => {});
+  }, []);
+
+  const delivery = total > shipping.freeThreshold ? 0 : shipping.defaultCharge;
   const discount = appliedCoupon?.discount || 0;
   const grandTotal = total + delivery - discount;
 
@@ -181,8 +203,8 @@ export default function CartPage() {
             {discount > 0 && (
               <div className="flex justify-between text-green-600"><span>Coupon Discount</span><span className="font-semibold">-&#8377;{discount.toLocaleString("en-IN")}</span></div>
             )}
-            <div className="flex justify-between"><span>Delivery</span><span className="font-semibold">{delivery === 0 ? "FREE" : `₹${delivery}`}</span></div>
-            {delivery === 0 && <p className="text-xs font-semibold text-green-600">Free delivery on orders above ₹2,000!</p>}
+            <div className="flex justify-between"><span>Shipping</span><span className="font-semibold">{delivery === 0 ? "FREE" : `₹${delivery}`}</span></div>
+            {delivery === 0 && <p className="text-xs font-semibold text-green-600">Free shipping on orders above ₹{shipping.freeThreshold.toLocaleString("en-IN")}!</p>}
             <hr className="border-brand-100" />
             <div className="flex justify-between text-xl font-bold text-brand-950"><span>Total</span><span>&#8377;{grandTotal.toLocaleString("en-IN")}</span></div>
           </div>
