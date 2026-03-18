@@ -18,9 +18,15 @@ type Banner = {
   textColor: string;
 };
 
-const emptyForm = {
+type BannerForm = {
+  title: string; subtitle: string; imageUrl: string; mobileImageUrl: string; linkUrl: string; linkText: string;
+  position: "HERO" | "PROMO" | "CATEGORY" | "FOOTER"; displayOrder: number; isActive: boolean;
+  backgroundColor: string; textColor: string;
+};
+
+const emptyForm: BannerForm = {
   title: "", subtitle: "", imageUrl: "", mobileImageUrl: "", linkUrl: "/shop", linkText: "Shop Now",
-  position: "HERO" as const, displayOrder: 0, isActive: true, backgroundColor: "#fce4ec", textColor: "#1a1a1a",
+  position: "HERO", displayOrder: 0, isActive: true, backgroundColor: "#fce4ec", textColor: "#1a1a1a",
 };
 
 export default function BannersPage() {
