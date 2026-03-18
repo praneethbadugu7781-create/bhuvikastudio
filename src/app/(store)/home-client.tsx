@@ -53,48 +53,28 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
 
   return (
     <div className="overflow-hidden">
-      {/* Hero Banner - Full Width Image OR Default Hero */}
-      {heroBanner && heroBanner.imageUrl ? (
-        <section className="relative">
-          <Link href="/shop" className="block">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="relative"
-            >
-              <img
-                src={heroBanner.imageUrl}
-                alt={heroBanner.title}
-                className="w-full h-auto max-h-[500px] object-cover"
-              />
-              {/* Text overlay */}
-              {(heroBanner.title || heroBanner.subtitle) && (
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end">
-                  <div className="p-6 md:p-10 text-white">
-                    {heroBanner.title && <h2 className="font-display text-3xl md:text-5xl">{heroBanner.title}</h2>}
-                    {heroBanner.subtitle && <p className="mt-2 text-lg opacity-90">{heroBanner.subtitle}</p>}
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </Link>
-        </section>
-      ) : (
-        <section className="hero-bg relative">
-          <div className="absolute inset-0 overflow-hidden">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-              className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-brand-300/20"
-            />
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-              className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-brand-500/10"
-            />
-          </div>
-          <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-24 md:py-32">
+      {/* Hero with animated background and banner image on right */}
+      <section className="hero-bg relative">
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+            className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-brand-300/20"
+          />
+          <motion.div
+            animate={{ rotate: -360 }}
+            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+            className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-brand-500/10"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute right-1/4 top-1/3 h-48 w-48 rounded-full bg-brand-400/10"
+          />
+        </div>
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col md:flex-row md:items-center gap-8 px-5 py-20 md:py-28">
+          {/* Left - Text Content */}
+          <div className="flex-1">
             <motion.p
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -107,7 +87,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="font-display text-5xl leading-tight md:text-7xl"
+              className="mt-4 font-display text-4xl leading-tight md:text-6xl"
             >
               <span className="gradient-text">Style Stories</span>
               <br />
@@ -117,7 +97,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="max-w-2xl text-lg text-brand-800"
+              className="mt-4 max-w-lg text-lg text-brand-800"
             >
               Discover Western Wear, Lehengas, Sarees, Kids Wear, and festive edits curated for women and families.
             </motion.p>
@@ -125,7 +105,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="flex flex-col gap-3 sm:flex-row"
+              className="mt-6 flex flex-col gap-3 sm:flex-row"
             >
               <Link
                 href="/shop"
@@ -142,8 +122,39 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
               </Link>
             </motion.div>
           </div>
-        </section>
-      )}
+
+          {/* Right - Banner Image */}
+          {heroBanner && heroBanner.imageUrl && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, x: 50 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="flex-1 flex justify-center md:justify-end"
+            >
+              <Link href="/shop" className="group relative">
+                <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                  <img
+                    src={heroBanner.imageUrl}
+                    alt={heroBanner.title || "Featured"}
+                    className="h-64 w-72 md:h-80 md:w-80 object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {/* Overlay with title */}
+                  {heroBanner.title && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end">
+                      <div className="p-4">
+                        <h3 className="text-xl font-bold text-white">{heroBanner.title}</h3>
+                        {heroBanner.subtitle && <p className="text-sm text-white/80">{heroBanner.subtitle}</p>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* Decorative border */}
+                <div className="absolute -inset-3 -z-10 rounded-2xl border-2 border-brand-300/30" />
+              </Link>
+            </motion.div>
+          )}
+        </div>
+      </section>
 
       {/* Features Strip */}
       <section className="border-b border-brand-100 bg-white">
