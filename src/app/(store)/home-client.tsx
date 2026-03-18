@@ -40,6 +40,7 @@ const features = [
 export default function HomeClient({ products, featured }: { products: CatalogItem[]; featured: CatalogItem[] }) {
   const newArrivals = products.slice(0, 3);
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     fetch("/api/banners")
@@ -48,12 +49,21 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
       .catch(() => {});
   }, []);
 
-  const heroBanner = banners.find(b => b.position === "HERO");
+  const heroBanners = banners.filter(b => b.position === "HERO" && b.imageUrl);
   const promoBanners = banners.filter(b => b.position === "PROMO");
+
+  // Auto-slide for hero banners
+  useEffect(() => {
+    if (heroBanners.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % heroBanners.length);
+    }, 4000); // Change slide every 4 seconds
+    return () => clearInterval(interval);
+  }, [heroBanners.length]);
 
   return (
     <div className="overflow-hidden">
-      {/* Hero with animated background and banner image on right */}
+      {/* Hero with animated background and banner slider on right */}
       <section className="hero-bg relative">
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -72,7 +82,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
             className="absolute right-1/4 top-1/3 h-48 w-48 rounded-full bg-brand-400/10"
           />
         </div>
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col md:flex-row md:items-center gap-8 px-5 py-20 md:py-28">
+        <div className="relative mx-auto flex w-full max-w-6xl flex-col md:flex-row md:items-center gap-8 px-5 py-16 md:py-24">
           {/* Left - Text Content */}
           <div className="flex-1">
             <motion.p
@@ -123,34 +133,62 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
             </motion.div>
           </div>
 
-          {/* Right - Banner Image */}
-          {heroBanner && heroBanner.imageUrl && (
+          {/* Right - Banner Slider */}
+          {heroBanners.length > 0 && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9, x: 50 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex-1 flex justify-center md:justify-end"
+              className="flex-1 flex flex-col items-center md:items-end"
             >
               <Link href="/shop" className="group relative">
-                <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                  <img
-                    src={heroBanner.imageUrl}
-                    alt={heroBanner.title || "Featured"}
-                    className="h-64 w-72 md:h-80 md:w-80 object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  {/* Overlay with title */}
-                  {heroBanner.title && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end">
-                      <div className="p-4">
-                        <h3 className="text-xl font-bold text-white">{heroBanner.title}</h3>
-                        {heroBanner.subtitle && <p className="text-sm text-white/80">{heroBanner.subtitle}</p>}
-                      </div>
-                    </div>
-                  )}
+                <div className="relative overflow-hidden rounded-2xl shadow-2xl h-80 w-80 md:h-96 md:w-96">
+                  {heroBanners.map((banner, index) => (
+                    <motion.div
+                      key={banner.id}
+                      initial={{ opacity: 0 }}
+                      animate={{
+                        opacity: index === currentSlide ? 1 : 0,
+                        scale: index === currentSlide ? 1 : 1.1
+                      }}
+                      transition={{ duration: 0.7 }}
+                      className="absolute inset-0"
+                    >
+                      <img
+                        src={banner.imageUrl}
+                        alt={banner.title || "Featured"}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      {/* Overlay with title */}
+                      {banner.title && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end">
+                          <div className="p-5">
+                            <h3 className="text-2xl font-bold text-white">{banner.title}</h3>
+                            {banner.subtitle && <p className="text-sm text-white/80 mt-1">{banner.subtitle}</p>}
+                          </div>
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
                 </div>
                 {/* Decorative border */}
-                <div className="absolute -inset-3 -z-10 rounded-2xl border-2 border-brand-300/30" />
+                <div className="absolute -inset-4 -z-10 rounded-2xl border-2 border-brand-300/30" />
               </Link>
+
+              {/* Slide indicators */}
+              {heroBanners.length > 1 && (
+                <div className="flex gap-2 mt-4">
+                  {heroBanners.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`h-2 rounded-full transition-all ${
+                        index === currentSlide ? "w-6 bg-brand-600" : "w-2 bg-brand-300"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </motion.div>
           )}
         </div>
