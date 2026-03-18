@@ -8,6 +8,7 @@ type Address = { fullName: string; phone: string; line1: string; line2?: string;
 type Order = {
   id: string; status: string; paymentStatus: string; paymentMethod: string;
   subtotal: number; deliveryCharge: number; totalAmount: number; adminNote: string | null;
+  couponCode: string | null; couponDiscount: number;
   createdAt: string; user: { name: string | null; email: string | null; mobile: string | null } | null;
   address: Address;
   items: OrderItem[];
@@ -143,7 +144,13 @@ export default function AdminOrdersPage() {
               </div>
               <div className="rounded-xl bg-brand-950 p-4 text-white">
                 <div className="flex justify-between text-sm"><span>Subtotal</span><span>₹{Number(detail.subtotal).toLocaleString("en-IN")}</span></div>
-                <div className="flex justify-between text-sm mt-1"><span>Delivery</span><span>₹{Number(detail.deliveryCharge).toLocaleString("en-IN")}</span></div>
+                {detail.couponCode && detail.couponDiscount > 0 && (
+                  <div className="flex justify-between text-sm mt-1 text-green-400">
+                    <span>Coupon ({detail.couponCode})</span>
+                    <span>-₹{Number(detail.couponDiscount).toLocaleString("en-IN")}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm mt-1"><span>Shipping</span><span>{Number(detail.deliveryCharge) === 0 ? "FREE" : `₹${Number(detail.deliveryCharge).toLocaleString("en-IN")}`}</span></div>
                 <div className="flex justify-between text-lg font-bold mt-2 pt-2 border-t border-brand-800"><span>Total</span><span>₹{Number(detail.totalAmount).toLocaleString("en-IN")}</span></div>
               </div>
             </div>
