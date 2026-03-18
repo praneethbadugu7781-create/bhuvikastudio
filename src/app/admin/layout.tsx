@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, BarChart3,
   Menu, X, ChevronLeft, LogIn, Lock, LogOut, Loader2,
+  Truck, Ticket, Image as ImageIcon, Star, Settings,
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -15,6 +16,10 @@ const sidebarLinks = [
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/coupons", label: "Coupons", icon: Ticket },
+  { href: "/admin/banners", label: "Banners", icon: ImageIcon },
+  { href: "/admin/reviews", label: "Reviews", icon: Star },
+  { href: "/admin/shipping", label: "Shipping", icon: Truck },
 ];
 
 type AdminUser = { id: string; name: string; email: string; role: string };
