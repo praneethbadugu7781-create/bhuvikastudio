@@ -1,10 +1,23 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Truck, ShieldCheck, Star } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import ProductCard from "@/components/ProductCard";
 import AnimatedSection from "@/components/AnimatedSection";
+
+type Banner = {
+  id: string;
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  linkUrl: string;
+  linkText: string;
+  position: string;
+  backgroundColor: string;
+  textColor: string;
+};
 
 const categoryImages: Record<string, string> = {
   "Western Wear": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
@@ -30,72 +43,134 @@ const features = [
 
 export default function HomeClient({ products, featured }: { products: CatalogItem[]; featured: CatalogItem[] }) {
   const newArrivals = products.slice(0, 3);
+  const [banners, setBanners] = useState<Banner[]>([]);
+
+  useEffect(() => {
+    fetch("/api/banners")
+      .then(res => res.ok ? res.json() : [])
+      .then(data => setBanners(data))
+      .catch(() => {});
+  }, []);
+
+  const heroBanner = banners.find(b => b.position === "HERO");
+  const promoBanners = banners.filter(b => b.position === "PROMO");
 
   return (
     <div className="overflow-hidden">
       {/* Hero */}
-      <section className="hero-bg relative">
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-            className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-brand-300/20"
-          />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-            className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-brand-500/10"
-          />
-        </div>
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-24 md:py-32">
-          <motion.p
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-sm font-bold uppercase tracking-[0.25em] text-brand-700"
-          >
-            Bhuvika Studio &bull; Vijayawada
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-display text-5xl leading-tight md:text-7xl"
-          >
-            <span className="gradient-text">Style Stories</span>
-            <br />
-            for Every Celebration
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="max-w-2xl text-lg text-brand-800"
-          >
-            Discover Western Wear, Lehengas, Sarees, Kids Wear, and festive edits curated for women and families.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-col gap-3 sm:flex-row"
-          >
-            <Link
-              href="/shop"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-900 px-8 py-3.5 font-semibold text-white transition-all hover:bg-brand-950 hover:shadow-lg hover:shadow-brand-900/25"
+      {heroBanner ? (
+        <section className="relative" style={{ backgroundColor: heroBanner.backgroundColor }}>
+          <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-5 py-16 md:flex-row md:py-20">
+            <div className="flex-1 text-center md:text-left">
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7 }}
+                className="font-display text-4xl leading-tight md:text-6xl"
+                style={{ color: heroBanner.textColor }}
+              >
+                {heroBanner.title}
+              </motion.h1>
+              {heroBanner.subtitle && (
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="mt-4 text-lg opacity-80"
+                  style={{ color: heroBanner.textColor }}
+                >
+                  {heroBanner.subtitle}
+                </motion.p>
+              )}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
+                <Link
+                  href={heroBanner.linkUrl}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-900 px-8 py-3.5 font-semibold text-white transition-all hover:bg-brand-950 hover:shadow-lg"
+                >
+                  {heroBanner.linkText || "Shop Now"} <ArrowRight size={18} />
+                </Link>
+              </motion.div>
+            </div>
+            {heroBanner.imageUrl && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7, delay: 0.2 }}
+                className="flex-1"
+              >
+                <img src={heroBanner.imageUrl} alt={heroBanner.title} className="mx-auto max-h-80 rounded-2xl object-cover shadow-xl md:max-h-96" />
+              </motion.div>
+            )}
+          </div>
+        </section>
+      ) : (
+        <section className="hero-bg relative">
+          <div className="absolute inset-0 overflow-hidden">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+              className="absolute -right-32 -top-32 h-96 w-96 rounded-full bg-brand-300/20"
+            />
+            <motion.div
+              animate={{ rotate: -360 }}
+              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+              className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-brand-500/10"
+            />
+          </div>
+          <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-24 md:py-32">
+            <motion.p
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-sm font-bold uppercase tracking-[0.25em] text-brand-700"
             >
-              Start Shopping
-              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link
-              href="/categories"
-              className="inline-flex items-center justify-center rounded-full border-2 border-brand-900 px-8 py-3.5 font-semibold text-brand-900 transition-all hover:bg-brand-900 hover:text-white"
+              Bhuvika Studio &bull; Vijayawada
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="font-display text-5xl leading-tight md:text-7xl"
             >
-              Browse Categories
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+              <span className="gradient-text">Style Stories</span>
+              <br />
+              for Every Celebration
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="max-w-2xl text-lg text-brand-800"
+            >
+              Discover Western Wear, Lehengas, Sarees, Kids Wear, and festive edits curated for women and families.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="flex flex-col gap-3 sm:flex-row"
+            >
+              <Link
+                href="/shop"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-900 px-8 py-3.5 font-semibold text-white transition-all hover:bg-brand-950 hover:shadow-lg hover:shadow-brand-900/25"
+              >
+                Start Shopping
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link
+                href="/categories"
+                className="inline-flex items-center justify-center rounded-full border-2 border-brand-900 px-8 py-3.5 font-semibold text-brand-900 transition-all hover:bg-brand-900 hover:text-white"
+              >
+                Browse Categories
+              </Link>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* Features Strip */}
       <section className="border-b border-brand-100 bg-white">
@@ -115,6 +190,51 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
           ))}
         </div>
       </section>
+
+      {/* Promo Banners */}
+      {promoBanners.length > 0 && (
+        <section className="mx-auto w-full max-w-6xl px-5 py-10">
+          <div className={`grid gap-4 ${promoBanners.length === 1 ? "" : promoBanners.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+            {promoBanners.map((banner, i) => (
+              <motion.div
+                key={banner.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.1 }}
+              >
+                <Link
+                  href={banner.linkUrl}
+                  className="group relative block overflow-hidden rounded-2xl"
+                  style={{ backgroundColor: banner.backgroundColor }}
+                >
+                  {banner.imageUrl ? (
+                    <div className="relative aspect-[2/1]">
+                      <img src={banner.imageUrl} alt={banner.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <div className="absolute bottom-0 left-0 p-5">
+                        <h3 className="text-xl font-bold text-white">{banner.title}</h3>
+                        {banner.subtitle && <p className="mt-1 text-sm text-white/80">{banner.subtitle}</p>}
+                        <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-white">
+                          {banner.linkText || "Shop Now"} <ArrowRight size={14} />
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-6" style={{ color: banner.textColor }}>
+                      <h3 className="text-xl font-bold">{banner.title}</h3>
+                      {banner.subtitle && <p className="mt-1 text-sm opacity-80">{banner.subtitle}</p>}
+                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold underline">
+                        {banner.linkText || "Shop Now"} <ArrowRight size={14} />
+                      </span>
+                    </div>
+                  )}
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Featured Products */}
       <section className="mx-auto w-full max-w-6xl px-5 py-16">

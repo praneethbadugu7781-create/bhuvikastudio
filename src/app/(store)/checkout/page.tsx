@@ -18,11 +18,13 @@ declare global {
 export default function CheckoutPage() {
   const items = useCart((s) => s.items);
   const total = useCart((s) => s.total());
+  const appliedCoupon = useCart((s) => s.appliedCoupon);
   const clear = useCart((s) => s.clear);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
   const delivery = total > 2000 ? 0 : 80;
-  const grandTotal = total + delivery;
+  const discount = appliedCoupon?.discount || 0;
+  const grandTotal = total + delivery - discount;
   const razorpayEnabled = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
   const [payment, setPayment] = useState<"RAZORPAY" | "COD">(razorpayEnabled ? "RAZORPAY" : "COD");
   const [placed, setPlaced] = useState(false);
@@ -109,9 +111,11 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          address: { fullName, phone, line1, city, postalCode },
+          address: { fullName, phone, email: addressEmail, line1, city, postalCode },
           paymentMethod: payment,
           items: items.map(i => ({ slug: i.slug, size: i.selectedSize, qty: i.qty })),
+          couponCode: appliedCoupon?.code || null,
+          couponDiscount: discount,
         }),
       });
       if (!res.ok) {
@@ -237,6 +241,12 @@ export default function CheckoutPage() {
                 ))}
                 <hr className="border-brand-100" />
                 <div className="flex justify-between text-sm text-brand-700"><span>Subtotal</span><span>&#8377;{total.toLocaleString("en-IN")}</span></div>
+                {discount > 0 && appliedCoupon && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Coupon ({appliedCoupon.code})</span>
+                    <span>-&#8377;{discount.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm text-brand-700"><span>Delivery</span><span>{delivery === 0 ? "FREE" : `₹${delivery}`}</span></div>
                 <hr className="border-brand-100" />
                 <div className="flex justify-between text-xl font-bold text-brand-950"><span>Total</span><span>&#8377;{grandTotal.toLocaleString("en-IN")}</span></div>
