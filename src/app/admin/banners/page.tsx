@@ -8,25 +8,24 @@ type Banner = {
   title: string;
   subtitle: string;
   imageUrl: string;
-  mobileImageUrl: string | null;
-  linkUrl: string;
-  linkText: string;
-  position: "HERO" | "PROMO" | "CATEGORY" | "FOOTER";
-  displayOrder: number;
+  position: "HERO" | "PROMO";
   isActive: boolean;
-  backgroundColor: string;
-  textColor: string;
 };
 
 type BannerForm = {
-  title: string; subtitle: string; imageUrl: string; mobileImageUrl: string; linkUrl: string; linkText: string;
-  position: "HERO" | "PROMO" | "CATEGORY" | "FOOTER"; displayOrder: number; isActive: boolean;
-  backgroundColor: string; textColor: string;
+  title: string;
+  subtitle: string;
+  imageUrl: string;
+  position: "HERO" | "PROMO";
+  isActive: boolean;
 };
 
 const emptyForm: BannerForm = {
-  title: "", subtitle: "", imageUrl: "", mobileImageUrl: "", linkUrl: "/shop", linkText: "Shop Now",
-  position: "HERO", displayOrder: 0, isActive: true, backgroundColor: "#fce4ec", textColor: "#1a1a1a",
+  title: "",
+  subtitle: "",
+  imageUrl: "",
+  position: "HERO",
+  isActive: true,
 };
 
 export default function BannersPage() {
@@ -56,22 +55,32 @@ export default function BannersPage() {
     if (res.ok) {
       const data = await res.json();
       setForm(f => ({ ...f, imageUrl: data.url }));
+    } else {
+      alert("Failed to upload image. Please try again.");
     }
   };
 
   const save = async () => {
+    if (!form.title) {
+      alert("Please enter a title");
+      return;
+    }
     setSaving(true);
     const method = editing ? "PUT" : "POST";
     const url = editing ? `/api/banners/${editing}` : "/api/banners";
-    await fetch(url, {
+    const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-    await load();
-    setShowForm(false);
-    setForm(emptyForm);
-    setEditing(null);
+    if (res.ok) {
+      await load();
+      setShowForm(false);
+      setForm(emptyForm);
+      setEditing(null);
+    } else {
+      alert("Failed to save banner");
+    }
     setSaving(false);
   };
 
@@ -88,22 +97,25 @@ export default function BannersPage() {
 
   const edit = (b: Banner) => {
     setForm({
-      title: b.title, subtitle: b.subtitle, imageUrl: b.imageUrl, mobileImageUrl: b.mobileImageUrl || "",
-      linkUrl: b.linkUrl, linkText: b.linkText, position: b.position, displayOrder: b.displayOrder,
-      isActive: b.isActive, backgroundColor: b.backgroundColor, textColor: b.textColor,
+      title: b.title,
+      subtitle: b.subtitle,
+      imageUrl: b.imageUrl,
+      position: b.position,
+      isActive: b.isActive,
     });
     setEditing(b.id);
     setShowForm(true);
   };
 
-  const positions = ["HERO", "PROMO", "CATEGORY", "FOOTER"];
+  const heroBanners = banners.filter(b => b.position === "HERO");
+  const promoBanners = banners.filter(b => b.position === "PROMO");
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display text-3xl text-brand-950">Banners</h1>
-          <p className="mt-1 text-brand-700">Manage homepage & promo banners</p>
+          <p className="mt-1 text-brand-700">Manage homepage banners</p>
         </div>
         <button onClick={() => { setForm(emptyForm); setEditing(null); setShowForm(true); }} className="flex items-center gap-2 rounded-full bg-brand-900 px-5 py-2.5 font-semibold text-white hover:bg-brand-950">
           <Plus size={18} /> Add Banner
@@ -119,55 +131,97 @@ export default function BannersPage() {
           <p className="mt-2 text-brand-700">Add banners to showcase on your homepage</p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {positions.map(pos => {
-            const posBanners = banners.filter(b => b.position === pos);
-            if (posBanners.length === 0) return null;
-            return (
-              <div key={pos}>
-                <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-500">{pos} Banners</h3>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {posBanners.map(b => (
-                    <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`rounded-2xl border overflow-hidden shadow-sm ${b.isActive ? "border-brand-100 bg-white" : "border-gray-200 bg-gray-50 opacity-60"}`}>
-                      {b.imageUrl && (
-                        <div className="aspect-[2/1] bg-brand-50">
-                          <img src={b.imageUrl} alt={b.title} className="h-full w-full object-cover" />
-                        </div>
-                      )}
-                      <div className="p-4">
-                        <h4 className="font-semibold text-brand-900">{b.title}</h4>
-                        {b.subtitle && <p className="text-sm text-brand-600">{b.subtitle}</p>}
-                        <div className="mt-3 flex items-center justify-between">
-                          <span className="text-xs text-brand-500">{b.linkUrl}</span>
-                          <div className="flex gap-1">
-                            <button onClick={() => toggle(b.id)} className={`p-2 rounded-lg ${b.isActive ? "text-green-500 hover:bg-green-50" : "text-gray-400 hover:bg-gray-100"}`}>
-                              {b.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-                            </button>
-                            <button onClick={() => edit(b)} className="p-2 text-brand-500 hover:bg-brand-50 rounded-lg"><Edit2 size={16} /></button>
-                            <button onClick={() => remove(b.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
-                          </div>
+        <div className="space-y-6">
+          {/* Hero Banners */}
+          {heroBanners.length > 0 && (
+            <div>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-500">Hero Banner (Main Section)</h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {heroBanners.map(b => (
+                  <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`rounded-2xl border overflow-hidden shadow-sm ${b.isActive ? "border-brand-100 bg-white" : "border-gray-200 bg-gray-50 opacity-60"}`}>
+                    {b.imageUrl ? (
+                      <div className="aspect-[2/1] bg-brand-50">
+                        <img src={b.imageUrl} alt={b.title} className="h-full w-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="aspect-[2/1] bg-brand-100 flex items-center justify-center">
+                        <ImageIcon size={32} className="text-brand-300" />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <h4 className="font-semibold text-brand-900">{b.title}</h4>
+                      {b.subtitle && <p className="text-sm text-brand-600">{b.subtitle}</p>}
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className={`text-xs px-2 py-1 rounded-full ${b.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                          {b.isActive ? "Active" : "Inactive"}
+                        </span>
+                        <div className="flex gap-1">
+                          <button onClick={() => toggle(b.id)} className={`p-2 rounded-lg ${b.isActive ? "text-green-500 hover:bg-green-50" : "text-gray-400 hover:bg-gray-100"}`}>
+                            {b.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
+                          </button>
+                          <button onClick={() => edit(b)} className="p-2 text-brand-500 hover:bg-brand-50 rounded-lg"><Edit2 size={16} /></button>
+                          <button onClick={() => remove(b.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
                         </div>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            );
-          })}
+            </div>
+          )}
+
+          {/* Promo Banners */}
+          {promoBanners.length > 0 && (
+            <div>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-brand-500">Promo Banners</h3>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {promoBanners.map(b => (
+                  <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`rounded-2xl border overflow-hidden shadow-sm ${b.isActive ? "border-brand-100 bg-white" : "border-gray-200 bg-gray-50 opacity-60"}`}>
+                    {b.imageUrl ? (
+                      <div className="aspect-[2/1] bg-brand-50">
+                        <img src={b.imageUrl} alt={b.title} className="h-full w-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="aspect-[2/1] bg-brand-100 flex items-center justify-center">
+                        <ImageIcon size={32} className="text-brand-300" />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <h4 className="font-semibold text-brand-900">{b.title}</h4>
+                      {b.subtitle && <p className="text-sm text-brand-600">{b.subtitle}</p>}
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className={`text-xs px-2 py-1 rounded-full ${b.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
+                          {b.isActive ? "Active" : "Inactive"}
+                        </span>
+                        <div className="flex gap-1">
+                          <button onClick={() => toggle(b.id)} className={`p-2 rounded-lg ${b.isActive ? "text-green-500 hover:bg-green-50" : "text-gray-400 hover:bg-gray-100"}`}>
+                            {b.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
+                          </button>
+                          <button onClick={() => edit(b)} className="p-2 text-brand-500 hover:bg-brand-50 rounded-lg"><Edit2 size={16} /></button>
+                          <button onClick={() => remove(b.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 size={16} /></button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Form Modal */}
+      {/* Simple Form Modal */}
       <AnimatePresence>
         {showForm && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowForm(false)} className="fixed inset-0 z-50 bg-black/50" />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="fixed left-1/2 top-1/2 z-50 w-full max-w-xl max-h-[90vh] overflow-y-auto -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-display text-2xl text-brand-950">{editing ? "Edit Banner" : "Add Banner"}</h2>
                 <button onClick={() => setShowForm(false)} className="p-2 hover:bg-brand-50 rounded-lg"><X size={20} /></button>
               </div>
               <div className="space-y-4">
+                {/* Image Upload */}
                 <div>
                   <label className="text-sm font-semibold text-brand-800">Banner Image</label>
                   <input type="file" ref={fileRef} accept="image/*" onChange={e => e.target.files?.[0] && uploadImage(e.target.files[0])} className="hidden" />
@@ -177,45 +231,40 @@ export default function BannersPage() {
                       <button onClick={() => setForm(f => ({ ...f, imageUrl: "" }))} className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow"><X size={14} /></button>
                     </div>
                   ) : (
-                    <button onClick={() => fileRef.current?.click()} disabled={uploading} className="mt-2 w-full rounded-xl border-2 border-dashed border-brand-200 p-8 text-center hover:border-brand-400">
+                    <button onClick={() => fileRef.current?.click()} disabled={uploading} className="mt-2 w-full rounded-xl border-2 border-dashed border-brand-200 p-6 text-center hover:border-brand-400">
                       <Upload className="mx-auto text-brand-400" size={24} />
-                      <p className="mt-2 text-sm text-brand-600">{uploading ? "Uploading..." : "Click to upload"}</p>
+                      <p className="mt-2 text-sm text-brand-600">{uploading ? "Uploading..." : "Click to upload image"}</p>
                     </button>
                   )}
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="text-sm font-semibold text-brand-800">Title</label>
-                    <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Summer Sale" className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-brand-800">Position</label>
-                    <select value={form.position} onChange={e => setForm(f => ({ ...f, position: e.target.value as Banner["position"] }))} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none">
-                      <option value="HERO">Hero (Main)</option>
-                      <option value="PROMO">Promo</option>
-                      <option value="CATEGORY">Category</option>
-                      <option value="FOOTER">Footer</option>
-                    </select>
-                  </div>
-                </div>
+
+                {/* Title */}
                 <div>
-                  <label className="text-sm font-semibold text-brand-800">Subtitle</label>
-                  <input value={form.subtitle} onChange={e => setForm(f => ({ ...f, subtitle: e.target.value }))} placeholder="Up to 50% off on selected items" className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
+                  <label className="text-sm font-semibold text-brand-800">Title *</label>
+                  <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Summer Sale" className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="text-sm font-semibold text-brand-800">Link URL</label>
-                    <input value={form.linkUrl} onChange={e => setForm(f => ({ ...f, linkUrl: e.target.value }))} placeholder="/shop" className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-brand-800">Button Text</label>
-                    <input value={form.linkText} onChange={e => setForm(f => ({ ...f, linkText: e.target.value }))} placeholder="Shop Now" className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
-                  </div>
+
+                {/* Subtitle */}
+                <div>
+                  <label className="text-sm font-semibold text-brand-800">Subtitle (optional)</label>
+                  <input value={form.subtitle} onChange={e => setForm(f => ({ ...f, subtitle: e.target.value }))} placeholder="Up to 50% off" className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
                 </div>
+
+                {/* Position */}
+                <div>
+                  <label className="text-sm font-semibold text-brand-800">Where to show?</label>
+                  <select value={form.position} onChange={e => setForm(f => ({ ...f, position: e.target.value as "HERO" | "PROMO" }))} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none">
+                    <option value="HERO">Hero (Main top section)</option>
+                    <option value="PROMO">Promo (Below features)</option>
+                  </select>
+                </div>
+
+                {/* Active Toggle */}
                 <div className="flex items-center gap-3">
                   <input type="checkbox" checked={form.isActive} id="active" onChange={e => setForm(f => ({ ...f, isActive: e.target.checked }))} className="h-5 w-5 rounded border-brand-300 text-brand-600" />
-                  <label htmlFor="active" className="text-sm font-semibold text-brand-800">Active</label>
+                  <label htmlFor="active" className="text-sm font-semibold text-brand-800">Show on website</label>
                 </div>
+
                 <button onClick={save} disabled={saving || !form.title} className="w-full rounded-full bg-brand-900 py-3 font-semibold text-white hover:bg-brand-950 disabled:opacity-50">
                   {saving ? "Saving..." : editing ? "Update Banner" : "Create Banner"}
                 </button>

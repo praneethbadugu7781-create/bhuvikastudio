@@ -12,11 +12,7 @@ type Banner = {
   title: string;
   subtitle: string;
   imageUrl: string;
-  linkUrl: string;
-  linkText: string;
   position: string;
-  backgroundColor: string;
-  textColor: string;
 };
 
 const categoryImages: Record<string, string> = {
@@ -57,55 +53,32 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
 
   return (
     <div className="overflow-hidden">
-      {/* Hero */}
-      {heroBanner ? (
-        <section className="relative" style={{ backgroundColor: heroBanner.backgroundColor }}>
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-5 py-16 md:flex-row md:py-20">
-            <div className="flex-1 text-center md:text-left">
-              <motion.h1
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="font-display text-4xl leading-tight md:text-6xl"
-                style={{ color: heroBanner.textColor }}
-              >
-                {heroBanner.title}
-              </motion.h1>
-              {heroBanner.subtitle && (
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  className="mt-4 text-lg opacity-80"
-                  style={{ color: heroBanner.textColor }}
-                >
-                  {heroBanner.subtitle}
-                </motion.p>
+      {/* Hero Banner - Full Width Image OR Default Hero */}
+      {heroBanner && heroBanner.imageUrl ? (
+        <section className="relative">
+          <Link href="/shop" className="block">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative"
+            >
+              <img
+                src={heroBanner.imageUrl}
+                alt={heroBanner.title}
+                className="w-full h-auto max-h-[500px] object-cover"
+              />
+              {/* Text overlay */}
+              {(heroBanner.title || heroBanner.subtitle) && (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end">
+                  <div className="p-6 md:p-10 text-white">
+                    {heroBanner.title && <h2 className="font-display text-3xl md:text-5xl">{heroBanner.title}</h2>}
+                    {heroBanner.subtitle && <p className="mt-2 text-lg opacity-90">{heroBanner.subtitle}</p>}
+                  </div>
+                </div>
               )}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <Link
-                  href={heroBanner.linkUrl}
-                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-900 px-8 py-3.5 font-semibold text-white transition-all hover:bg-brand-950 hover:shadow-lg"
-                >
-                  {heroBanner.linkText || "Shop Now"} <ArrowRight size={18} />
-                </Link>
-              </motion.div>
-            </div>
-            {heroBanner.imageUrl && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.7, delay: 0.2 }}
-                className="flex-1"
-              >
-                <img src={heroBanner.imageUrl} alt={heroBanner.title} className="mx-auto max-h-80 rounded-2xl object-cover shadow-xl md:max-h-96" />
-              </motion.div>
-            )}
-          </div>
+            </motion.div>
+          </Link>
         </section>
       ) : (
         <section className="hero-bg relative">
@@ -191,9 +164,9 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         </div>
       </section>
 
-      {/* Promo Banners */}
+      {/* Promo Banners - Simple Image Grid */}
       {promoBanners.length > 0 && (
-        <section className="mx-auto w-full max-w-6xl px-5 py-10">
+        <section className="mx-auto w-full max-w-6xl px-5 py-8">
           <div className={`grid gap-4 ${promoBanners.length === 1 ? "" : promoBanners.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
             {promoBanners.map((banner, i) => (
               <motion.div
@@ -203,30 +176,23 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
               >
-                <Link
-                  href={banner.linkUrl}
-                  className="group relative block overflow-hidden rounded-2xl"
-                  style={{ backgroundColor: banner.backgroundColor }}
-                >
+                <Link href="/shop" className="group block overflow-hidden rounded-2xl">
                   {banner.imageUrl ? (
                     <div className="relative aspect-[2/1]">
                       <img src={banner.imageUrl} alt={banner.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute bottom-0 left-0 p-5">
-                        <h3 className="text-xl font-bold text-white">{banner.title}</h3>
-                        {banner.subtitle && <p className="mt-1 text-sm text-white/80">{banner.subtitle}</p>}
-                        <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-white">
-                          {banner.linkText || "Shop Now"} <ArrowRight size={14} />
-                        </span>
-                      </div>
+                      {(banner.title || banner.subtitle) && (
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                          <div className="p-4">
+                            {banner.title && <h3 className="text-xl font-bold text-white">{banner.title}</h3>}
+                            {banner.subtitle && <p className="mt-1 text-sm text-white/80">{banner.subtitle}</p>}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ) : (
-                    <div className="p-6" style={{ color: banner.textColor }}>
-                      <h3 className="text-xl font-bold">{banner.title}</h3>
-                      {banner.subtitle && <p className="mt-1 text-sm opacity-80">{banner.subtitle}</p>}
-                      <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold underline">
-                        {banner.linkText || "Shop Now"} <ArrowRight size={14} />
-                      </span>
+                    <div className="aspect-[2/1] bg-brand-100 p-6 flex flex-col justify-center">
+                      <h3 className="text-xl font-bold text-brand-900">{banner.title}</h3>
+                      {banner.subtitle && <p className="mt-1 text-sm text-brand-600">{banner.subtitle}</p>}
                     </div>
                   )}
                 </Link>
