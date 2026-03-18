@@ -18,9 +18,14 @@ type Coupon = {
   description: string;
 };
 
-const emptyForm = {
-  code: "", type: "PERCENT" as const, value: 10, minCartValue: 0, maxDiscount: null as number | null,
-  usageLimit: null as number | null, validUntil: "", description: "", isActive: true,
+type CouponForm = {
+  code: string; type: "PERCENT" | "FLAT"; value: number; minCartValue: number;
+  maxDiscount: number | null; usageLimit: number | null; validUntil: string; description: string; isActive: boolean;
+};
+
+const emptyForm: CouponForm = {
+  code: "", type: "PERCENT", value: 10, minCartValue: 0, maxDiscount: null,
+  usageLimit: null, validUntil: "", description: "", isActive: true,
 };
 
 export default function CouponsPage() {
