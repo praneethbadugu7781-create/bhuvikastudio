@@ -48,16 +48,21 @@ export default function BannersPage() {
 
   const uploadImage = async (file: File) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("image", file);
     setUploading(true);
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
-    setUploading(false);
-    if (res.ok) {
-      const data = await res.json();
-      setForm(f => ({ ...f, imageUrl: data.url }));
-    } else {
-      alert("Failed to upload image. Please try again.");
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData, credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setForm(f => ({ ...f, imageUrl: data.url }));
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Failed to upload image. Please try again.");
+      }
+    } catch {
+      alert("Upload failed. Check your connection.");
     }
+    setUploading(false);
   };
 
   const save = async () => {
