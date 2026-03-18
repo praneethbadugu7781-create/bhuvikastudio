@@ -16,6 +16,7 @@ export type AppliedCoupon = {
 type CartState = {
   items: CartEntry[];
   appliedCoupon: AppliedCoupon;
+  _hasHydrated: boolean;
   add: (item: CatalogItem, size: string) => void;
   remove: (slug: string) => void;
   updateQty: (slug: string, qty: number) => void;
@@ -23,6 +24,7 @@ type CartState = {
   total: () => number;
   count: () => number;
   setAppliedCoupon: (coupon: AppliedCoupon) => void;
+  setHasHydrated: (state: boolean) => void;
 };
 
 export const useCart = create<CartState>()(
@@ -30,6 +32,7 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       items: [],
       appliedCoupon: null,
+      _hasHydrated: false,
       add: (item, size) =>
         set((s) => {
           const exists = s.items.find((i) => i.slug === item.slug && i.selectedSize === size);
@@ -47,9 +50,13 @@ export const useCart = create<CartState>()(
       total: () => get().items.reduce((sum, i) => sum + i.price * i.qty, 0),
       count: () => get().items.reduce((sum, i) => sum + i.qty, 0),
       setAppliedCoupon: (coupon) => set({ appliedCoupon: coupon }),
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
       name: "bhuvika-cart",
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

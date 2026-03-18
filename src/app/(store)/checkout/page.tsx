@@ -34,6 +34,7 @@ export default function CheckoutPage() {
   const total = useCart((s) => s.total());
   const appliedCoupon = useCart((s) => s.appliedCoupon);
   const clear = useCart((s) => s.clear);
+  const hasHydrated = useCart((s) => s._hasHydrated);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
@@ -120,6 +121,10 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     if (!user) { router.push("/login?redirect=/checkout"); return; }
+    if (!hasHydrated) {
+      setError("Loading cart data. Please wait a moment.");
+      return;
+    }
     if (!fullName || !phone || !line1 || !city || !postalCode) {
       setError("Please fill in all address fields");
       return;
@@ -130,6 +135,11 @@ export default function CheckoutPage() {
     }
     setError("");
     setPlacing(true);
+
+    // Get fresh values from store to ensure we have hydrated data
+    const currentCoupon = useCart.getState().appliedCoupon;
+    const couponDiscount = currentCoupon?.discount || 0;
+
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -138,8 +148,8 @@ export default function CheckoutPage() {
           address: { fullName, phone, email: addressEmail, line1, city, postalCode },
           paymentMethod: payment,
           items: items.map(i => ({ slug: i.slug, size: i.selectedSize, qty: i.qty })),
-          couponCode: appliedCoupon?.code || null,
-          couponDiscount: discount,
+          couponCode: currentCoupon?.code || null,
+          couponDiscount: couponDiscount,
         }),
       });
       if (!res.ok) {
