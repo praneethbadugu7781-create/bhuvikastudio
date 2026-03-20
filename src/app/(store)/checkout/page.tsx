@@ -165,9 +165,8 @@ export default function CheckoutPage() {
     console.log("Order request body:", JSON.stringify(orderData));
 
     try {
-      // Call backend directly to ensure coupon data is sent correctly
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
-      const res = await fetch(`${apiUrl}/api/orders`, {
+      // Use proxy to maintain authentication cookies
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
