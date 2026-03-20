@@ -153,17 +153,23 @@ export default function CheckoutPage() {
 
     console.log("Placing order with coupon:", { couponCode, couponDiscount, appliedCoupon, refCoupon: couponRef.current });
 
+    // Build request body
+    const orderData = {
+      address: { fullName, phone, email: addressEmail, line1, city, postalCode },
+      paymentMethod: payment,
+      items: items.map(i => ({ slug: i.slug, size: i.selectedSize, qty: i.qty })),
+      couponCode: couponCode,
+      couponDiscount: couponDiscount,
+    };
+
+    console.log("Order request body:", JSON.stringify(orderData));
+
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          address: { fullName, phone, email: addressEmail, line1, city, postalCode },
-          paymentMethod: payment,
-          items: items.map(i => ({ slug: i.slug, size: i.selectedSize, qty: i.qty })),
-          couponCode,
-          couponDiscount,
-        }),
+        credentials: "include",
+        body: JSON.stringify(orderData),
       });
       if (!res.ok) {
         const err = await res.json();
