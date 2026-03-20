@@ -4,7 +4,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, CreditCard, Banknote, Truck, ArrowLeft, ArrowRight, LogIn, Shield } from "lucide-react";
+import { CheckCircle, CreditCard, Banknote, Truck, ArrowLeft, ArrowRight, LogIn, Shield, Plus, MapPin, Trash2, Edit2 } from "lucide-react";
 import { useCart, AppliedCoupon } from "@/store/cart";
 import { useAuth } from "@/context/AuthContext";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -20,6 +20,18 @@ type ShippingSettings = {
   defaultCharge: number;
   codEnabled: boolean;
   codCharge: number;
+};
+
+type SavedAddress = {
+  _id: string;
+  fullName: string;
+  phone: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  isDefault: boolean;
 };
 
 const DEFAULT_SHIPPING: ShippingSettings = {
@@ -49,6 +61,12 @@ export default function CheckoutPage() {
   }, [appliedCoupon]);
 
   const [shipping, setShipping] = useState<ShippingSettings>(DEFAULT_SHIPPING);
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+  const [showNewAddressForm, setShowNewAddressForm] = useState(false);
+  const [saveAddress, setSaveAddress] = useState(true);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [editingAddress, setEditingAddress] = useState<SavedAddress | null>(null);
 
   useEffect(() => {
     fetch("/api/settings/shipping")
@@ -56,6 +74,31 @@ export default function CheckoutPage() {
       .then(data => setShipping(data))
       .catch(() => {});
   }, []);
+
+  // Fetch saved addresses
+  useEffect(() => {
+    if (user) {
+      fetch("/api/addresses", { credentials: "include" })
+        .then(res => res.ok ? res.json() : [])
+        .then(data => {
+          setSavedAddresses(data);
+          // Auto-select default address
+          const defaultAddr = data.find((a: SavedAddress) => a.isDefault);
+          if (defaultAddr) {
+            setSelectedAddressId(defaultAddr._id);
+          } else if (data.length > 0) {
+            setSelectedAddressId(data[0]._id);
+          } else {
+            setShowNewAddressForm(true);
+          }
+          setLoadingAddresses(false);
+        })
+        .catch(() => setLoadingAddresses(false));
+    } else {
+      setLoadingAddresses(false);
+      setShowNewAddressForm(true);
+    }
+  }, [user]);
 
   const delivery = total > shipping.freeThreshold ? 0 : shipping.defaultCharge;
   const discount = appliedCoupon?.discount || 0;
@@ -67,11 +110,12 @@ export default function CheckoutPage() {
   const [error, setError] = useState("");
   const [razorpayReady, setRazorpayReady] = useState(false);
 
-  // Address fields
+  // Address fields for new address
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [addressEmail, setAddressEmail] = useState("");
   const [line1, setLine1] = useState("");
+  const [line2, setLine2] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
 
@@ -80,7 +124,107 @@ export default function CheckoutPage() {
     if (user?.name) setFullName(user.name);
   }, [user]);
 
+  const clearAddressForm = () => {
+    setFullName(user?.name || "");
+    setPhone("");
+    setLine1("");
+    setLine2("");
+    setCity("");
+    setPostalCode("");
+    setEditingAddress(null);
+  };
+
+  const handleEditAddress = (addr: SavedAddress) => {
+    setEditingAddress(addr);
+    setFullName(addr.fullName);
+    setPhone(addr.phone);
+    setLine1(addr.line1);
+    setLine2(addr.line2 || "");
+    setCity(addr.city);
+    setPostalCode(addr.postalCode);
+    setShowNewAddressForm(true);
+    setSelectedAddressId(null);
+  };
+
+  const handleDeleteAddress = async (id: string) => {
+    try {
+      const res = await fetch(`/api/addresses/${id}`, { method: "DELETE", credentials: "include" });
+      if (res.ok) {
+        setSavedAddresses(prev => prev.filter(a => a._id !== id));
+        if (selectedAddressId === id) {
+          const remaining = savedAddresses.filter(a => a._id !== id);
+          if (remaining.length > 0) {
+            setSelectedAddressId(remaining[0]._id);
+          } else {
+            setSelectedAddressId(null);
+            setShowNewAddressForm(true);
+          }
+        }
+      }
+    } catch {
+      // Ignore
+    }
+  };
+
+  const handleSaveNewAddress = async () => {
+    if (!fullName || !phone || !line1 || !city || !postalCode) {
+      setError("Please fill in all required address fields");
+      return null;
+    }
+
+    const addressData = { fullName, phone, line1, line2, city, state: "Andhra Pradesh", postalCode, isDefault: savedAddresses.length === 0 };
+
+    try {
+      if (editingAddress) {
+        const res = await fetch(`/api/addresses/${editingAddress._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(addressData),
+        });
+        if (res.ok) {
+          const updated = await res.json();
+          setSavedAddresses(prev => prev.map(a => a._id === updated._id ? updated : a));
+          setSelectedAddressId(updated._id);
+          setShowNewAddressForm(false);
+          clearAddressForm();
+          return updated;
+        }
+      } else {
+        const res = await fetch("/api/addresses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(addressData),
+        });
+        if (res.ok) {
+          const newAddr = await res.json();
+          setSavedAddresses(prev => [...prev, newAddr]);
+          setSelectedAddressId(newAddr._id);
+          setShowNewAddressForm(false);
+          clearAddressForm();
+          return newAddr;
+        }
+      }
+    } catch {
+      // Continue without saving
+    }
+    return null;
+  };
+
+  const getSelectedAddress = (): { fullName: string; phone: string; line1: string; city: string; postalCode: string } | null => {
+    if (selectedAddressId) {
+      const addr = savedAddresses.find(a => a._id === selectedAddressId);
+      if (addr) return addr;
+    }
+    if (showNewAddressForm && fullName && phone && line1 && city && postalCode) {
+      return { fullName, phone, line1, city, postalCode };
+    }
+    return null;
+  };
+
   const openRazorpay = (razorpayOrderId: string, orderId: string, amount: number) => {
+    const addr = getSelectedAddress();
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: amount * 100,
@@ -113,9 +257,9 @@ export default function CheckoutPage() {
         setPlacing(false);
       },
       prefill: {
-        name: fullName,
+        name: addr?.fullName || fullName,
         email: addressEmail || user?.email,
-        contact: phone,
+        contact: addr?.phone || phone,
       },
       theme: { color: "#7c3aed" },
       modal: {
@@ -135,10 +279,21 @@ export default function CheckoutPage() {
       setError("Loading cart data. Please wait a moment.");
       return;
     }
-    if (!fullName || !phone || !line1 || !city || !postalCode) {
-      setError("Please fill in all address fields");
+
+    // Get address
+    let address = getSelectedAddress();
+
+    // If using new address form and want to save it
+    if (showNewAddressForm && saveAddress && !selectedAddressId) {
+      const saved = await handleSaveNewAddress();
+      if (saved) address = saved;
+    }
+
+    if (!address) {
+      setError("Please select or enter a delivery address");
       return;
     }
+
     if (payment === "RAZORPAY" && razorpayEnabled && !razorpayReady) {
       setError("Payment system loading. Please wait a moment.");
       return;
@@ -151,21 +306,16 @@ export default function CheckoutPage() {
     const couponCode = coupon?.code || null;
     const couponDiscount = coupon?.discount || 0;
 
-    console.log("Placing order with coupon:", { couponCode, couponDiscount, appliedCoupon, refCoupon: couponRef.current });
-
     // Build request body
     const orderData = {
-      address: { fullName, phone, email: addressEmail, line1, city, postalCode },
+      address: { fullName: address.fullName, phone: address.phone, email: addressEmail, line1: address.line1, city: address.city, postalCode: address.postalCode },
       paymentMethod: payment,
       items: items.map(i => ({ slug: i.slug, size: i.selectedSize, qty: i.qty })),
       couponCode: couponCode,
       couponDiscount: couponDiscount,
     };
 
-    console.log("Order request body:", JSON.stringify(orderData));
-
     try {
-      // Use proxy to maintain authentication cookies
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -183,7 +333,7 @@ export default function CheckoutPage() {
       // If Razorpay, open payment modal
       if (payment === "RAZORPAY" && order.razorpayOrderId) {
         openRazorpay(order.razorpayOrderId, order.id || order._id, order.totalAmount);
-        return; // handler will set placed/placing
+        return;
       }
 
       // COD or Razorpay not configured — order placed directly
@@ -244,15 +394,84 @@ export default function CheckoutPage() {
         <div className="mt-8 grid gap-8 lg:grid-cols-[3fr_2fr]">
           <div className="space-y-6">
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
-              <div className="flex items-center gap-2"><Truck size={20} className="text-brand-500" /><h2 className="text-xl font-bold text-brand-950">Delivery Address</h2></div>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
-                <input value={fullName} onChange={e => setFullName(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Full Name *" />
-                <input value={phone} onChange={e => setPhone(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Phone Number *" />
-                <input value={addressEmail} onChange={e => setAddressEmail(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 md:col-span-2" placeholder="Email Address" />
-                <textarea value={line1} onChange={e => setLine1(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 md:col-span-2" rows={3} placeholder="House No, Street, Area *" />
-                <input value={city} onChange={e => setCity(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="City *" />
-                <input value={postalCode} onChange={e => setPostalCode(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="PIN Code *" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2"><Truck size={20} className="text-brand-500" /><h2 className="text-xl font-bold text-brand-950">Delivery Address</h2></div>
+                {savedAddresses.length > 0 && !showNewAddressForm && (
+                  <button onClick={() => { setShowNewAddressForm(true); setSelectedAddressId(null); clearAddressForm(); }} className="flex items-center gap-1 text-sm font-semibold text-brand-500 hover:text-brand-700">
+                    <Plus size={16} /> Add New
+                  </button>
+                )}
               </div>
+
+              {loadingAddresses ? (
+                <div className="mt-4 flex items-center justify-center py-8">
+                  <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+                </div>
+              ) : (
+                <>
+                  {/* Saved Addresses */}
+                  {savedAddresses.length > 0 && !showNewAddressForm && (
+                    <div className="mt-4 space-y-3">
+                      {savedAddresses.map((addr) => (
+                        <div
+                          key={addr._id}
+                          onClick={() => setSelectedAddressId(addr._id)}
+                          className={`cursor-pointer rounded-xl border-2 p-4 transition ${selectedAddressId === addr._id ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3">
+                              <MapPin size={20} className={selectedAddressId === addr._id ? "text-brand-500" : "text-brand-400"} />
+                              <div>
+                                <p className="font-semibold text-brand-900">{addr.fullName}</p>
+                                <p className="text-sm text-brand-700">{addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}</p>
+                                <p className="text-sm text-brand-700">{addr.city}, {addr.state} - {addr.postalCode}</p>
+                                <p className="text-sm text-brand-600">Phone: {addr.phone}</p>
+                                {addr.isDefault && <span className="mt-1 inline-block rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700">Default</span>}
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={(e) => { e.stopPropagation(); handleEditAddress(addr); }} className="rounded-lg p-1.5 text-brand-400 hover:bg-brand-100 hover:text-brand-600">
+                                <Edit2 size={16} />
+                              </button>
+                              <button onClick={(e) => { e.stopPropagation(); handleDeleteAddress(addr._id); }} className="rounded-lg p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600">
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* New Address Form */}
+                  <AnimatePresence>
+                    {showNewAddressForm && (
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                        <div className="mt-4 grid gap-4 md:grid-cols-2">
+                          <input value={fullName} onChange={e => setFullName(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Full Name *" />
+                          <input value={phone} onChange={e => setPhone(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="Phone Number *" />
+                          <input value={addressEmail} onChange={e => setAddressEmail(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 md:col-span-2" placeholder="Email Address" />
+                          <textarea value={line1} onChange={e => setLine1(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 md:col-span-2" rows={2} placeholder="House No, Street, Area *" />
+                          <input value={line2} onChange={e => setLine2(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 md:col-span-2" placeholder="Landmark (optional)" />
+                          <input value={city} onChange={e => setCity(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="City *" />
+                          <input value={postalCode} onChange={e => setPostalCode(e.target.value)} className="rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" placeholder="PIN Code *" />
+                        </div>
+                        <div className="mt-4 flex items-center justify-between">
+                          <label className="flex items-center gap-2 text-sm text-brand-700">
+                            <input type="checkbox" checked={saveAddress} onChange={e => setSaveAddress(e.target.checked)} className="h-4 w-4 rounded border-brand-300 text-brand-500 focus:ring-brand-500" />
+                            Save this address for future orders
+                          </label>
+                          {savedAddresses.length > 0 && (
+                            <button onClick={() => { setShowNewAddressForm(false); setSelectedAddressId(savedAddresses[0]._id); clearAddressForm(); }} className="text-sm font-semibold text-brand-500 hover:text-brand-700">
+                              Cancel
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </>
+              )}
             </motion.section>
 
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
