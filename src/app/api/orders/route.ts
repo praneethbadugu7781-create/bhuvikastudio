@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+const BUILD_TIME = new Date().toISOString();
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,8 +28,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const cookie = request.headers.get("cookie") || "";
 
-    // Log what we're forwarding
-    console.log("API Route - Forwarding order:", JSON.stringify(body, null, 2));
+    // Ensure coupon fields exist with defaults
+    const orderPayload = {
+      ...body,
+      couponCode: body.couponCode ?? null,
+      couponDiscount: body.couponDiscount ?? 0,
+    };
+
+    // Log for debugging
+    console.log(`[${BUILD_TIME}] API Route - Order payload:`, JSON.stringify(orderPayload, null, 2));
 
     const response = await fetch(`${API_URL}/api/orders`, {
       method: "POST",
@@ -36,7 +44,7 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
         "Cookie": cookie,
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(orderPayload),
     });
 
     const data = await response.json();
