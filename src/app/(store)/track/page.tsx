@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Package, Truck, CheckCircle, Clock, Search, MapPin, ExternalLink } from "lucide-react";
@@ -46,7 +46,7 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; col
   CANCELLED: { label: "Cancelled", icon: Clock, color: "text-red-500" },
 };
 
-export default function TrackOrderPage() {
+function TrackOrderContent() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState(searchParams.get("orderId") || "");
   const [tracking, setTracking] = useState<TrackingData | null>(null);
@@ -285,5 +285,13 @@ export default function TrackOrderPage() {
         </motion.div>
       )}
     </div>
+  );
+}
+
+export default function TrackOrderPage() {
+  return (
+    <Suspense fallback={<div className="mx-auto w-full max-w-3xl px-5 py-12 text-center text-brand-700">Loading...</div>}>
+      <TrackOrderContent />
+    </Suspense>
   );
 }
