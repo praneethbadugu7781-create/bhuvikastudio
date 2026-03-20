@@ -1,11 +1,11 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, CreditCard, Banknote, Truck, ArrowLeft, ArrowRight, LogIn, Shield } from "lucide-react";
-import { useCart } from "@/store/cart";
+import { useCart, AppliedCoupon } from "@/store/cart";
 import { useAuth } from "@/context/AuthContext";
 import AnimatedSection from "@/components/AnimatedSection";
 
@@ -37,6 +37,16 @@ export default function CheckoutPage() {
   const hasHydrated = useCart((s) => s._hasHydrated);
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+
+  // Store coupon in ref to prevent losing it
+  const couponRef = useRef<AppliedCoupon>(null);
+
+  // Update ref whenever appliedCoupon changes and is valid
+  useEffect(() => {
+    if (appliedCoupon && appliedCoupon.discount > 0) {
+      couponRef.current = appliedCoupon;
+    }
+  }, [appliedCoupon]);
 
   const [shipping, setShipping] = useState<ShippingSettings>(DEFAULT_SHIPPING);
 
@@ -136,9 +146,12 @@ export default function CheckoutPage() {
     setError("");
     setPlacing(true);
 
-    // Get fresh values from store to ensure we have hydrated data
-    const currentCoupon = useCart.getState().appliedCoupon;
-    const couponDiscount = currentCoupon?.discount || 0;
+    // Use appliedCoupon from subscription, fallback to ref, fallback to store
+    const coupon = appliedCoupon || couponRef.current || useCart.getState().appliedCoupon;
+    const couponCode = coupon?.code || null;
+    const couponDiscount = coupon?.discount || 0;
+
+    console.log("Placing order with coupon:", { couponCode, couponDiscount, appliedCoupon, refCoupon: couponRef.current });
 
     try {
       const res = await fetch("/api/orders", {
@@ -148,8 +161,8 @@ export default function CheckoutPage() {
           address: { fullName, phone, email: addressEmail, line1, city, postalCode },
           paymentMethod: payment,
           items: items.map(i => ({ slug: i.slug, size: i.selectedSize, qty: i.qty })),
-          couponCode: currentCoupon?.code || null,
-          couponDiscount: couponDiscount,
+          couponCode,
+          couponDiscount,
         }),
       });
       if (!res.ok) {
