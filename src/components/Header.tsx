@@ -40,9 +40,9 @@ export default function Header() {
           <Link href="/categories" className="transition hover:text-brand-500">Categories</Link>
           {user ? (
             <div className="flex items-center gap-3">
-              <span className="flex items-center gap-1.5 text-brand-600">
+              <Link href="/account" className="flex items-center gap-1.5 text-brand-600 transition hover:text-brand-900">
                 <User size={15} /> {user.name || user.email?.split("@")[0]}
-              </span>
+              </Link>
               <button onClick={logout} className="flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-100">
                 <LogOut size={13} /> Logout
               </button>
@@ -53,11 +53,20 @@ export default function Header() {
           <CartBadge />
         </nav>
 
-        {/* Mobile: Home + Cart */}
+        {/* Mobile: Home + Account + Cart */}
         <div className="flex items-center gap-2 md:hidden">
           {!isHome && (
             <Link href="/" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Home">
               <Home size={18} />
+            </Link>
+          )}
+          {user ? (
+            <Link href="/account" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Account">
+              <User size={18} />
+            </Link>
+          ) : (
+            <Link href="/login" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-900 text-white transition hover:bg-brand-950" aria-label="Login">
+              <User size={18} />
             </Link>
           )}
           <CartBadge />
