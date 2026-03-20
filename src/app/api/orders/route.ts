@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+// Hardcode the backend URL to rule out env variable issues
+const API_URL = "https://bhuvika-api.onrender.com";
 const BUILD_TIME = new Date().toISOString();
 
 export async function GET(request: NextRequest) {
@@ -13,6 +14,7 @@ export async function GET(request: NextRequest) {
         "Content-Type": "application/json",
         "Cookie": cookie,
       },
+      cache: "no-store",
     });
 
     const data = await response.json();
@@ -30,21 +32,28 @@ export async function POST(request: NextRequest) {
 
     // Ensure coupon fields exist with defaults
     const orderPayload = {
-      ...body,
-      couponCode: body.couponCode ?? null,
-      couponDiscount: body.couponDiscount ?? 0,
+      address: body.address,
+      paymentMethod: body.paymentMethod,
+      items: body.items,
+      couponCode: body.couponCode || null,
+      couponDiscount: Number(body.couponDiscount) || 0,
     };
 
+    const bodyString = JSON.stringify(orderPayload);
+
     // Log for debugging
-    console.log(`[${BUILD_TIME}] API Route - Order payload:`, JSON.stringify(orderPayload, null, 2));
+    console.log(`[${BUILD_TIME}] API Route - Sending to backend:`, bodyString);
+    console.log(`[${BUILD_TIME}] API Route - Content-Length:`, bodyString.length);
 
     const response = await fetch(`${API_URL}/api/orders`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Content-Length": String(bodyString.length),
         "Cookie": cookie,
       },
-      body: JSON.stringify(orderPayload),
+      body: bodyString,
+      cache: "no-store",
     });
 
     const data = await response.json();
