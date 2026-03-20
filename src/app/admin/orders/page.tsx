@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Truck, CheckCircle, XCircle, Clock, Package, X, ChevronDown } from "lucide-react";
+import { Search, Truck, CheckCircle, XCircle, Clock, Package, X, ChevronDown, ExternalLink, Copy } from "lucide-react";
 
 type OrderItem = { id: string; quantity: number; unitPrice: number; productName: string; size: string; color: string };
 type Address = { fullName: string; phone: string; line1: string; line2?: string; city: string; state: string; postalCode: string };
@@ -9,6 +9,8 @@ type Order = {
   id: string; status: string; paymentStatus: string; paymentMethod: string;
   subtotal: number; deliveryCharge: number; totalAmount: number; adminNote: string | null;
   couponCode: string | null; couponDiscount: number;
+  trackingNumber: string | null; courierCompany: string | null; trackingUrl: string | null;
+  shippedAt: string | null; deliveredAt: string | null;
   createdAt: string; user: { name: string | null; email: string | null; mobile: string | null } | null;
   address: Address;
   items: OrderItem[];
@@ -22,6 +24,18 @@ const statusColors: Record<string, string> = {
 const allStatuses = ["PENDING", "CONFIRMED", "PACKED", "SHIPPED", "DELIVERED", "CANCELLED"];
 const payStatuses = ["PENDING", "VERIFIED", "REJECTED"];
 
+const courierOptions = [
+  { name: "Select Courier", value: "" },
+  { name: "Delhivery", value: "Delhivery", trackingBase: "https://www.delhivery.com/track/package/" },
+  { name: "Blue Dart", value: "Blue Dart", trackingBase: "https://www.bluedart.com/tracking/" },
+  { name: "DTDC", value: "DTDC", trackingBase: "https://www.dtdc.in/tracking.asp?tracking_no=" },
+  { name: "Ecom Express", value: "Ecom Express", trackingBase: "https://ecomexpress.in/tracking/" },
+  { name: "Xpressbees", value: "Xpressbees", trackingBase: "https://www.xpressbees.com/track?trackingId=" },
+  { name: "Shiprocket", value: "Shiprocket", trackingBase: "https://shiprocket.in/tracking/" },
+  { name: "India Post", value: "India Post", trackingBase: "https://www.indiapost.gov.in/_layouts/15/DOP.Portal.Tracking/TrackConsignment.aspx?TrackCon=" },
+  { name: "Other", value: "Other", trackingBase: "" },
+];
+
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [search, setSearch] = useState("");
@@ -29,6 +43,12 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [detail, setDetail] = useState<Order | null>(null);
   const [updating, setUpdating] = useState(false);
+
+  // Shipping fields
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [courierCompany, setCourierCompany] = useState("");
+  const [trackingUrl, setTrackingUrl] = useState("");
+  const [showShippingForm, setShowShippingForm] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -42,11 +62,70 @@ export default function AdminOrdersPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const updateOrder = async (id: string, data: Record<string, string>) => {
+  useEffect(() => {
+    if (detail) {
+      setTrackingNumber(detail.trackingNumber || "");
+      setCourierCompany(detail.courierCompany || "");
+      setTrackingUrl(detail.trackingUrl || "");
+      setShowShippingForm(detail.status === "SHIPPED" || detail.status === "DELIVERED");
+    }
+  }, [detail]);
+
+  const handleCourierChange = (value: string) => {
+    setCourierCompany(value);
+    const courier = courierOptions.find(c => c.value === value);
+    if (courier && courier.trackingBase && trackingNumber) {
+      setTrackingUrl(courier.trackingBase + trackingNumber);
+    }
+  };
+
+  const handleTrackingNumberChange = (value: string) => {
+    setTrackingNumber(value);
+    const courier = courierOptions.find(c => c.value === courierCompany);
+    if (courier && courier.trackingBase && value) {
+      setTrackingUrl(courier.trackingBase + value);
+    }
+  };
+
+  const updateOrder = async (id: string, data: Record<string, string | null>) => {
     setUpdating(true);
     await fetch(`/api/orders/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
     await load();
     setUpdating(false);
+  };
+
+  const handleStatusChange = async (newStatus: string) => {
+    if (!detail) return;
+
+    if (newStatus === "SHIPPED") {
+      setShowShippingForm(true);
+      setDetail({ ...detail, status: newStatus });
+    } else {
+      await updateOrder(detail.id, { status: newStatus });
+      setDetail({ ...detail, status: newStatus });
+      setShowShippingForm(newStatus === "DELIVERED");
+    }
+  };
+
+  const handleSaveShipping = async () => {
+    if (!detail) return;
+    await updateOrder(detail.id, {
+      status: detail.status,
+      trackingNumber: trackingNumber || null,
+      courierCompany: courierCompany || null,
+      trackingUrl: trackingUrl || null,
+    });
+    setDetail({
+      ...detail,
+      trackingNumber,
+      courierCompany,
+      trackingUrl,
+    });
+  };
+
+  const copyTrackingLink = () => {
+    const trackUrl = `${window.location.origin}/track?orderId=${detail?.id}`;
+    navigator.clipboard.writeText(trackUrl);
   };
 
   const filtered = orders.filter(o => {
@@ -104,7 +183,14 @@ export default function AdminOrdersPage() {
           <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 50 }} className="fixed right-0 top-0 z-50 h-full w-full max-w-lg overflow-y-auto bg-white p-6 shadow-2xl">
             <div className="flex items-center justify-between"><h2 className="font-display text-2xl text-brand-950">Order Details</h2><button onClick={() => setDetail(null)} className="rounded-lg p-2 hover:bg-brand-50"><X size={20} /></button></div>
             <div className="mt-6 space-y-4">
-              <div className="rounded-xl bg-brand-50 p-4"><p className="text-xs text-brand-500">Order ID</p><p className="font-mono text-sm font-semibold text-brand-900">{detail.id}</p></div>
+              <div className="rounded-xl bg-brand-50 p-4">
+                <div className="flex justify-between items-center">
+                  <div><p className="text-xs text-brand-500">Order ID</p><p className="font-mono text-sm font-semibold text-brand-900">{detail.id}</p></div>
+                  <button onClick={copyTrackingLink} className="flex items-center gap-1 rounded-lg bg-brand-100 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-200">
+                    <Copy size={14} /> Copy Track Link
+                  </button>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><p className="text-xs text-brand-500">Customer</p><p className="text-sm font-semibold text-brand-900">{detail.user?.name || detail.address?.fullName || "Guest"}</p></div>
                 <div><p className="text-xs text-brand-500">Email</p><p className="text-sm text-brand-900">{detail.user?.email || "—"}</p></div>
@@ -125,10 +211,43 @@ export default function AdminOrdersPage() {
                 <p className="mt-1 rounded-lg bg-brand-50 px-3 py-2 text-sm font-semibold text-brand-900">{detail.paymentMethod}</p>
               </div>
               <div><p className="text-sm font-semibold text-brand-800">Order Status</p>
-                <select value={detail.status} onChange={e => { updateOrder(detail.id, { status: e.target.value }); setDetail({ ...detail, status: e.target.value }); }} disabled={updating} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none">
+                <select value={detail.status} onChange={e => handleStatusChange(e.target.value)} disabled={updating} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none">
                   {allStatuses.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
+
+              {/* Shipping Details Section */}
+              {showShippingForm && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl border-2 border-purple-200 bg-purple-50 p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Truck size={18} className="text-purple-600" />
+                    <p className="text-sm font-bold text-purple-900">Shipping Details</p>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-purple-700">Courier Company</label>
+                    <select value={courierCompany} onChange={e => handleCourierChange(e.target.value)} className="mt-1 w-full rounded-lg border border-purple-200 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500">
+                      {courierOptions.map(c => <option key={c.value} value={c.value}>{c.name}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-purple-700">Tracking Number / AWB</label>
+                    <input value={trackingNumber} onChange={e => handleTrackingNumberChange(e.target.value)} placeholder="Enter tracking number" className="mt-1 w-full rounded-lg border border-purple-200 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500" />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-purple-700">Tracking URL (auto-generated)</label>
+                    <input value={trackingUrl} onChange={e => setTrackingUrl(e.target.value)} placeholder="https://..." className="mt-1 w-full rounded-lg border border-purple-200 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500" />
+                  </div>
+                  <button onClick={handleSaveShipping} disabled={updating} className="w-full rounded-lg bg-purple-600 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50">
+                    {updating ? "Saving..." : "Save & Send Email to Customer"}
+                  </button>
+                  {detail.trackingNumber && (
+                    <a href={detail.trackingUrl || "#"} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-800">
+                      <ExternalLink size={14} /> Open Tracking Page
+                    </a>
+                  )}
+                </motion.div>
+              )}
+
               <div><p className="text-sm font-semibold text-brand-800">Payment Status</p>
                 <select value={detail.paymentStatus} onChange={e => { updateOrder(detail.id, { paymentStatus: e.target.value }); setDetail({ ...detail, paymentStatus: e.target.value }); }} disabled={updating} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none">
                   {payStatuses.map(s => <option key={s} value={s}>{s}</option>)}
