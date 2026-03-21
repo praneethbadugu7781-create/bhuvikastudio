@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield } from "lucide-react";
+import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import { useCart } from "@/store/cart";
 import ProductCard from "@/components/ProductCard";
@@ -11,6 +11,8 @@ import AnimatedSection from "@/components/AnimatedSection";
 export default function ProductPageClient({ product, related }: { product: CatalogItem | null; related: CatalogItem[] }) {
   const addToCart = useCart((s) => s.add);
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [selectedColorIdx, setSelectedColorIdx] = useState<number>(0);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [added, setAdded] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -25,6 +27,25 @@ export default function ProductPageClient({ product, related }: { product: Catal
       </div>
     );
   }
+
+  const hasColorOptions = product.colorOptions && product.colorOptions.length > 0;
+  const selectedColor = hasColorOptions ? product.colorOptions![selectedColorIdx] : null;
+
+  // Get images based on selected color
+  const displayImages = selectedColor && selectedColor.images.length > 0
+    ? selectedColor.images
+    : product.images && product.images.length > 0
+      ? product.images
+      : [product.image];
+
+  const currentImage = displayImages[currentImageIdx] || displayImages[0];
+  const currentColorName = selectedColor?.colorName || product.color;
+
+  const handleColorChange = (idx: number) => {
+    setSelectedColorIdx(idx);
+    setCurrentImageIdx(0);
+    setImgLoaded(false);
+  };
 
   const handleAdd = () => {
     if (!product) return;
@@ -46,17 +67,40 @@ export default function ProductPageClient({ product, related }: { product: Catal
       </motion.div>
 
       <div className="mt-8 grid gap-10 md:grid-cols-2">
-        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="relative overflow-hidden rounded-3xl bg-brand-50">
-          {!imgLoaded && <div className="absolute inset-0 shimmer rounded-3xl" />}
-          <img src={product.image} alt={product.name} onLoad={() => setImgLoaded(true)} className="h-[500px] w-full object-cover transition-transform duration-700 hover:scale-105 md:h-[600px]" />
-          {product.oldPrice && (
-            <span className="absolute left-4 top-4 rounded-full bg-red-500 px-4 py-1.5 text-sm font-bold text-white shadow-lg">
-              {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
-            </span>
+        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+          {/* Main Image */}
+          <div className="relative overflow-hidden rounded-3xl bg-brand-50">
+            {!imgLoaded && <div className="absolute inset-0 shimmer rounded-3xl" />}
+            <img
+              src={currentImage}
+              alt={product.name}
+              onLoad={() => setImgLoaded(true)}
+              className="h-[500px] w-full object-cover transition-transform duration-700 hover:scale-105 md:h-[600px]"
+            />
+            {product.oldPrice && (
+              <span className="absolute left-4 top-4 rounded-full bg-red-500 px-4 py-1.5 text-sm font-bold text-white shadow-lg">
+                {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
+              </span>
+            )}
+            <button className="absolute right-4 top-4 rounded-full bg-white/90 p-3 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white">
+              <Heart size={20} />
+            </button>
+          </div>
+
+          {/* Thumbnail Images */}
+          {displayImages.length > 1 && (
+            <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+              {displayImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => { setCurrentImageIdx(idx); setImgLoaded(false); }}
+                  className={`relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 transition ${currentImageIdx === idx ? "border-brand-500 ring-2 ring-brand-500/20" : "border-brand-100 hover:border-brand-300"}`}
+                >
+                  <img src={img} alt="" className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
           )}
-          <button className="absolute right-4 top-4 rounded-full bg-white/90 p-3 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white">
-            <Heart size={20} />
-          </button>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.1 }} className="flex flex-col">
@@ -70,8 +114,36 @@ export default function ProductPageClient({ product, related }: { product: Catal
             <span className="text-3xl font-bold text-brand-900">&#8377;{product.price.toLocaleString("en-IN")}</span>
             {product.oldPrice && <span className="text-lg text-brand-400 line-through">&#8377;{product.oldPrice.toLocaleString("en-IN")}</span>}
           </div>
-          <p className="mt-2 text-brand-700">Color: <span className="font-semibold text-brand-900">{product.color}</span></p>
-          <p className={`mt-2 inline-flex items-center gap-1.5 text-sm font-semibold ${product.stock === "In Stock" ? "text-green-600" : "text-red-600"}`}>
+
+          {/* Color Swatches */}
+          {hasColorOptions ? (
+            <div className="mt-6">
+              <p className="text-sm font-semibold text-brand-800">
+                Color: <span className="text-brand-900">{currentColorName}</span>
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {product.colorOptions!.map((color, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleColorChange(idx)}
+                    title={color.colorName}
+                    className={`relative h-10 w-10 rounded-full border-2 transition ${selectedColorIdx === idx ? "border-brand-900 ring-2 ring-brand-500/30" : "border-brand-200 hover:border-brand-400"}`}
+                    style={{ backgroundColor: color.colorCode }}
+                  >
+                    {selectedColorIdx === idx && (
+                      <span className="absolute inset-0 flex items-center justify-center">
+                        <Check size={16} className={`${isLightColor(color.colorCode) ? "text-brand-900" : "text-white"}`} />
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="mt-4 text-brand-700">Color: <span className="font-semibold text-brand-900">{product.color}</span></p>
+          )}
+
+          <p className={`mt-4 inline-flex items-center gap-1.5 text-sm font-semibold ${product.stock === "In Stock" ? "text-green-600" : "text-red-600"}`}>
             <span className={`h-2 w-2 rounded-full ${product.stock === "In Stock" ? "bg-green-500" : "bg-red-500"}`} />
             {product.stock}
           </p>
@@ -118,4 +190,14 @@ export default function ProductPageClient({ product, related }: { product: Catal
       )}
     </div>
   );
+}
+
+// Helper function to determine if a color is light
+function isLightColor(hexColor: string): boolean {
+  const hex = hexColor.replace("#", "");
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.5;
 }

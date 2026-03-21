@@ -1,5 +1,5 @@
 import "server-only";
-import type { CatalogItem } from "./catalog";
+import type { CatalogItem, ColorOption } from "./catalog";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -15,6 +15,7 @@ type ApiProduct = {
   stockStatus: string;
   variants: { _id: string; sku: string; size: string; color: string; price: number; salePrice: number | null; stockQuantity: number }[];
   images: { _id: string; imageUrl: string; altText: string | null; displayRank: number }[];
+  colorOptions?: { colorName: string; colorCode: string; images: { imageUrl: string }[] }[];
 };
 
 function toCatalogItem(p: ApiProduct): CatalogItem {
@@ -28,6 +29,12 @@ function toCatalogItem(p: ApiProduct): CatalogItem {
     sizes: [...new Set(p.variants.map((v) => v.size))],
     color: firstVariant?.color ?? "",
     image: p.images[0]?.imageUrl ?? "",
+    images: p.images.map((i) => i.imageUrl),
+    colorOptions: p.colorOptions?.map(c => ({
+      colorName: c.colorName,
+      colorCode: c.colorCode,
+      images: c.images.map(i => i.imageUrl),
+    })),
     stock: p.stockStatus === "IN_STOCK" ? "In Stock" : "Out of Stock",
     featured: p.featured,
   };
@@ -55,6 +62,11 @@ export async function getProductBySlug(slug: string) {
     color: firstVariant?.color ?? "",
     image: p.images[0]?.imageUrl ?? "",
     images: p.images.map((i) => i.imageUrl),
+    colorOptions: p.colorOptions?.map(c => ({
+      colorName: c.colorName,
+      colorCode: c.colorCode,
+      images: c.images.map(i => i.imageUrl),
+    })),
     stock: (p.stockStatus === "IN_STOCK" ? "In Stock" : "Out of Stock") as "In Stock" | "Out of Stock",
     featured: p.featured,
   };

@@ -1,3 +1,9 @@
+export type ColorOption = {
+  colorName: string;
+  colorCode: string;
+  images: string[];
+};
+
 export type CatalogItem = {
   slug: string;
   name: string;
@@ -7,6 +13,8 @@ export type CatalogItem = {
   sizes: string[];
   color: string;
   image: string;
+  images?: string[];
+  colorOptions?: ColorOption[];
   stock: "In Stock" | "Out of Stock";
   featured?: boolean;
 };

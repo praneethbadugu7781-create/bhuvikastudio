@@ -1,16 +1,18 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2 } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palette } from "lucide-react";
 
 type Variant = { sku: string; size: string; color: string; price: string; salePrice?: string; stockQuantity: number };
+type ColorOption = { colorName: string; colorCode: string; images: string[] };
 type Product = {
   id: string; slug: string; name: string; description: string; category: string;
   featured: boolean; isNewArrival: boolean; isBestSeller: boolean; stockStatus: string;
-  variants: Variant[]; images: { imageUrl: string }[];
+  variants: Variant[]; images: { imageUrl: string }[]; colorOptions?: ColorOption[];
 };
 
 const emptyVariant: Variant = { sku: "", size: "", color: "", price: "", stockQuantity: 0 };
+const emptyColor: ColorOption = { colorName: "", colorCode: "#000000", images: [] };
 const cats = ["Western Wear", "Kids Wear", "Lehengas", "Fusion Wear", "Sarees", "Co-ords"];
 
 export default function AdminProductsPage() {
@@ -30,8 +32,11 @@ export default function AdminProductsPage() {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [vars, setVars] = useState<Variant[]>([{ ...emptyVariant }]);
+  const [colorOptions, setColorOptions] = useState<ColorOption[]>([]);
   const [saving, setSaving] = useState(false);
+  const [activeColorIdx, setActiveColorIdx] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const colorFileInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -44,7 +49,8 @@ export default function AdminProductsPage() {
 
   const reset = () => {
     setName(""); setDesc(""); setCat(cats[0]); setFeat(false); setNewArr(false);
-    setBest(false); setStock("IN_STOCK"); setImageUrls([]); setVars([{ ...emptyVariant }]); setEditing(null);
+    setBest(false); setStock("IN_STOCK"); setImageUrls([]); setVars([{ ...emptyVariant }]);
+    setColorOptions([]); setActiveColorIdx(null); setEditing(null);
   };
 
   const openAdd = () => { reset(); setShowModal(true); };
@@ -53,6 +59,8 @@ export default function AdminProductsPage() {
     setFeat(p.featured); setNewArr(p.isNewArrival); setBest(p.isBestSeller);
     setStock(p.stockStatus); setImageUrls(p.images.map(i => i.imageUrl));
     setVars(p.variants.length ? p.variants.map(v => ({ sku: v.sku, size: v.size, color: v.color, price: String(v.price), salePrice: v.salePrice ? String(v.salePrice) : "", stockQuantity: v.stockQuantity })) : [{ ...emptyVariant }]);
+    setColorOptions(p.colorOptions?.map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images || [] })) || []);
+    setActiveColorIdx(null);
     setShowModal(true);
   };
 
@@ -83,18 +91,64 @@ export default function AdminProductsPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleColorImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, colorIdx: number) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      for (let i = 0; i < files.length; i++) {
+        formData.append("images", files[i]);
+      }
+
+      const res = await fetch("/api/upload/multiple", { method: "POST", body: formData });
+      if (!res.ok) {
+        setUploading(false);
+        return;
+      }
+      const data = await res.json();
+      setColorOptions(prev => prev.map((c, i) => i === colorIdx ? { ...c, images: [...c.images, ...data.urls] } : c));
+    } catch {
+      alert("Image upload failed.");
+    }
+    setUploading(false);
+    if (colorFileInputRef.current) colorFileInputRef.current.value = "";
+  };
+
   const removeImage = (idx: number) => {
     setImageUrls(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const removeColorImage = (colorIdx: number, imgIdx: number) => {
+    setColorOptions(prev => prev.map((c, i) => i === colorIdx ? { ...c, images: c.images.filter((_, j) => j !== imgIdx) } : c));
+  };
+
+  const addColor = () => {
+    setColorOptions(prev => [...prev, { ...emptyColor }]);
+    setActiveColorIdx(colorOptions.length);
+  };
+
+  const updateColor = (idx: number, field: keyof ColorOption, value: string) => {
+    setColorOptions(prev => prev.map((c, i) => i === idx ? { ...c, [field]: value } : c));
+  };
+
+  const removeColor = (idx: number) => {
+    setColorOptions(prev => prev.filter((_, i) => i !== idx));
+    if (activeColorIdx === idx) setActiveColorIdx(null);
   };
 
   const save = async () => {
     if (!name.trim()) return;
     setSaving(true);
-    const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const slug = editing?.slug || name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const good = vars.filter(v => v.size && v.price);
-    const body = { name, slug, description: desc, category: cat, featured: feat, isNewArrival: newArr, isBestSeller: best, stockStatus: stock,
+    const body = {
+      name, slug, description: desc, category: cat, featured: feat, isNewArrival: newArr, isBestSeller: best, stockStatus: stock,
       variants: good.map(v => ({ ...v, sku: v.sku || `${slug}-${v.size}-${Date.now()}`, stockQuantity: Number(v.stockQuantity) })),
-      images: imageUrls };
+      images: imageUrls,
+      colorOptions: colorOptions.filter(c => c.colorName.trim()).map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images }))
+    };
     if (editing) {
       await fetch(`/api/products/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     } else {
@@ -121,7 +175,7 @@ export default function AdminProductsPage() {
       {loading ? <div className="py-12 text-center text-brand-700">Loading...</div> : (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
           <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-brand-100 text-left text-xs font-semibold uppercase tracking-wider text-brand-500">
-            <th className="px-6 py-4">Product</th><th className="px-6 py-4">Category</th><th className="px-6 py-4">Price</th><th className="px-6 py-4">Stock</th><th className="px-6 py-4">Sizes</th><th className="px-6 py-4 text-right">Actions</th>
+            <th className="px-6 py-4">Product</th><th className="px-6 py-4">Category</th><th className="px-6 py-4">Price</th><th className="px-6 py-4">Colors</th><th className="px-6 py-4">Sizes</th><th className="px-6 py-4 text-right">Actions</th>
           </tr></thead><tbody>
             {filtered.map(p => (
               <tr key={p.id} className="border-b border-brand-50 hover:bg-brand-50/50">
@@ -131,7 +185,16 @@ export default function AdminProductsPage() {
                 </div></td>
                 <td className="px-6 py-4"><span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-800">{p.category}</span></td>
                 <td className="px-6 py-4 font-semibold text-brand-900">{p.variants[0] ? `₹${Number(p.variants[0].price).toLocaleString("en-IN")}` : "—"}</td>
-                <td className="px-6 py-4"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${p.stockStatus === "IN_STOCK" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>{p.stockStatus === "IN_STOCK" ? "In Stock" : "Out of Stock"}</span></td>
+                <td className="px-6 py-4">
+                  {p.colorOptions && p.colorOptions.length > 0 ? (
+                    <div className="flex gap-1">
+                      {p.colorOptions.slice(0, 4).map((c, i) => (
+                        <div key={i} className="h-5 w-5 rounded-full border border-brand-200" style={{ backgroundColor: c.colorCode }} title={c.colorName} />
+                      ))}
+                      {p.colorOptions.length > 4 && <span className="text-xs text-brand-500">+{p.colorOptions.length - 4}</span>}
+                    </div>
+                  ) : <span className="text-brand-400">—</span>}
+                </td>
                 <td className="px-6 py-4 text-sm text-brand-700">{[...new Set(p.variants.map(v => v.size))].join(", ") || "—"}</td>
                 <td className="px-6 py-4"><div className="flex justify-end gap-1">
                   <button onClick={() => openEdit(p)} className="rounded-lg p-2 text-brand-400 hover:bg-blue-50 hover:text-blue-600"><Edit2 size={16} /></button>
@@ -156,9 +219,9 @@ export default function AdminProductsPage() {
               </div>
               <div><label className="text-sm font-semibold text-brand-800">Description</label><textarea value={desc} onChange={e => setDesc(e.target.value)} rows={2} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none focus:border-brand-500" /></div>
 
-              {/* Image Upload Section */}
+              {/* Default Images */}
               <div>
-                <label className="text-sm font-semibold text-brand-800">Product Images</label>
+                <label className="text-sm font-semibold text-brand-800">Default Images</label>
                 <div className="mt-2 flex flex-wrap gap-3">
                   {imageUrls.map((url, idx) => (
                     <div key={idx} className="group relative">
@@ -175,17 +238,79 @@ export default function AdminProductsPage() {
                     className="flex h-20 w-20 flex-col items-center justify-center rounded-xl border-2 border-dashed border-brand-300 text-brand-400 transition hover:border-brand-500 hover:text-brand-600 disabled:opacity-50"
                   >
                     {uploading ? <Loader2 size={20} className="animate-spin" /> : <Upload size={20} />}
-                    <span className="mt-1 text-[10px] font-semibold">{uploading ? "Uploading" : "Add"}</span>
+                    <span className="mt-1 text-[10px] font-semibold">{uploading ? "..." : "Add"}</span>
                   </button>
                 </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
+                <input ref={fileInputRef} type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
+              </div>
+
+              {/* Color Options */}
+              <div className="rounded-xl border-2 border-dashed border-purple-200 bg-purple-50/50 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Palette size={18} className="text-purple-600" />
+                    <label className="text-sm font-semibold text-purple-900">Color Options</label>
+                  </div>
+                  <button onClick={addColor} className="flex items-center gap-1 rounded-full bg-purple-600 px-3 py-1 text-xs font-semibold text-white hover:bg-purple-700">
+                    <Plus size={14} /> Add Color
+                  </button>
+                </div>
+
+                {colorOptions.length > 0 && (
+                  <div className="mt-3 space-y-3">
+                    {colorOptions.map((color, idx) => (
+                      <div key={idx} className="rounded-lg bg-white p-3 border border-purple-200">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="color"
+                            value={color.colorCode}
+                            onChange={e => updateColor(idx, "colorCode", e.target.value)}
+                            className="h-8 w-8 cursor-pointer rounded border-0"
+                          />
+                          <input
+                            value={color.colorName}
+                            onChange={e => updateColor(idx, "colorName", e.target.value)}
+                            placeholder="Color name (e.g., Red, Blue)"
+                            className="flex-1 rounded-lg border border-purple-200 px-3 py-1.5 text-sm outline-none focus:border-purple-500"
+                          />
+                          <button onClick={() => setActiveColorIdx(activeColorIdx === idx ? null : idx)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${activeColorIdx === idx ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-700"}`}>
+                            {color.images.length} Images
+                          </button>
+                          <button onClick={() => removeColor(idx)} className="text-red-400 hover:text-red-600">
+                            <X size={16} />
+                          </button>
+                        </div>
+
+                        {activeColorIdx === idx && (
+                          <div className="mt-3 border-t border-purple-100 pt-3">
+                            <div className="flex flex-wrap gap-2">
+                              {color.images.map((url, imgIdx) => (
+                                <div key={imgIdx} className="group relative">
+                                  <img src={url} alt="" className="h-16 w-16 rounded-lg object-cover border" />
+                                  <button onClick={() => removeColorImage(idx, imgIdx)} className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition group-hover:opacity-100">
+                                    <X size={10} />
+                                  </button>
+                                </div>
+                              ))}
+                              <button
+                                onClick={() => colorFileInputRef.current?.click()}
+                                disabled={uploading}
+                                className="flex h-16 w-16 flex-col items-center justify-center rounded-lg border-2 border-dashed border-purple-300 text-purple-400"
+                              >
+                                {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+                              </button>
+                            </div>
+                            <input ref={colorFileInputRef} type="file" accept="image/*" multiple onChange={e => handleColorImageUpload(e, idx)} className="hidden" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {colorOptions.length === 0 && (
+                  <p className="mt-2 text-xs text-purple-600">Add colors to show color swatches on product page (like Flipkart)</p>
+                )}
               </div>
 
               <div className="flex flex-wrap gap-4">
@@ -195,12 +320,12 @@ export default function AdminProductsPage() {
                 <select value={stock} onChange={e => setStock(e.target.value)} className="rounded-xl border border-brand-200 px-3 py-1.5 text-sm"><option value="IN_STOCK">In Stock</option><option value="OUT_OF_STOCK">Out of Stock</option></select>
               </div>
               <div>
-                <div className="flex items-center justify-between"><label className="text-sm font-semibold text-brand-800">Variants</label><button onClick={() => setVars([...vars, { ...emptyVariant }])} className="text-sm font-semibold text-brand-500">+ Add</button></div>
+                <div className="flex items-center justify-between"><label className="text-sm font-semibold text-brand-800">Size & Price Variants</label><button onClick={() => setVars([...vars, { ...emptyVariant }])} className="text-sm font-semibold text-brand-500">+ Add</button></div>
                 <div className="mt-2 space-y-2">{vars.map((v, i) => (
                   <div key={i} className="flex items-center gap-2 rounded-xl bg-brand-50/50 p-2">
                     <input value={v.size} onChange={e => upVar(i, "size", e.target.value)} placeholder="Size" className="w-16 rounded-lg border px-2 py-1.5 text-sm" />
-                    <input value={v.color} onChange={e => upVar(i, "color", e.target.value)} placeholder="Color" className="w-24 rounded-lg border px-2 py-1.5 text-sm" />
-                    <input value={v.price} onChange={e => upVar(i, "price", e.target.value)} placeholder="Price" className="w-20 rounded-lg border px-2 py-1.5 text-sm" />
+                    <input value={v.price} onChange={e => upVar(i, "price", e.target.value)} placeholder="Price" className="w-24 rounded-lg border px-2 py-1.5 text-sm" />
+                    <input value={v.salePrice || ""} onChange={e => upVar(i, "salePrice", e.target.value)} placeholder="Sale ₹" className="w-20 rounded-lg border px-2 py-1.5 text-sm" />
                     <input value={v.stockQuantity} onChange={e => upVar(i, "stockQuantity", Number(e.target.value))} type="number" placeholder="Qty" className="w-16 rounded-lg border px-2 py-1.5 text-sm" />
                     {vars.length > 1 && <button onClick={() => setVars(vars.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600"><X size={16} /></button>}
                   </div>
