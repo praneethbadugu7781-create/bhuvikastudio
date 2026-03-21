@@ -96,9 +96,9 @@ export default function AdminProductsPage() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleColorImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, colorIdx: number) => {
+  const handleColorImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0 || activeColorIdx === null) return;
 
     setUploading(true);
     try {
@@ -109,10 +109,13 @@ export default function AdminProductsPage() {
 
       const res = await fetch("/api/upload/multiple", { method: "POST", body: formData });
       if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Upload failed");
         setUploading(false);
         return;
       }
       const data = await res.json();
+      const colorIdx = activeColorIdx;
       setColorOptions(prev => prev.map((c, i) => i === colorIdx ? { ...c, images: [...c.images, ...data.urls] } : c));
     } catch {
       alert("Image upload failed.");
@@ -313,7 +316,6 @@ export default function AdminProductsPage() {
                                 {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
                               </button>
                             </div>
-                            <input ref={colorFileInputRef} type="file" accept="image/*" multiple onChange={e => handleColorImageUpload(e, idx)} className="hidden" />
                           </div>
                         )}
                       </div>
@@ -324,6 +326,9 @@ export default function AdminProductsPage() {
                 {colorOptions.length === 0 && (
                   <p className="mt-2 text-xs text-purple-600">Add colors to show color swatches on product page (like Flipkart)</p>
                 )}
+
+                {/* Hidden file input for color images - outside the loop */}
+                <input ref={colorFileInputRef} type="file" accept="image/*" multiple onChange={handleColorImageUpload} className="hidden" />
               </div>
 
               <div className="flex flex-wrap gap-4">
