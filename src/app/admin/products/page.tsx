@@ -153,7 +153,14 @@ export default function AdminProductsPage() {
     const good = vars.filter(v => v.size && v.price);
     const body = {
       name, slug, description: desc, category: cat, featured: feat, isNewArrival: newArr, isBestSeller: best, stockStatus: stock,
-      variants: good.map(v => ({ ...v, sku: v.sku || `${slug}-${v.size}-${Date.now()}`, stockQuantity: Number(v.stockQuantity) })),
+      variants: good.map(v => ({
+        sku: v.sku || `${slug}-${v.size}-${Date.now()}`,
+        size: v.size,
+        color: v.color,
+        price: Number(v.price),
+        salePrice: v.salePrice ? Number(v.salePrice) : null,
+        stockQuantity: Number(v.stockQuantity)
+      })),
       images: imageUrls,
       colorOptions: colorOptions.filter(c => c.colorName.trim()).map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images }))
     };
