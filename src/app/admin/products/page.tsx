@@ -5,10 +5,11 @@ import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palet
 
 type Variant = { sku: string; size: string; color: string; price: string; salePrice?: string; stockQuantity: number };
 type ColorOption = { colorName: string; colorCode: string; images: string[] };
+type ApiColorOption = { colorName: string; colorCode: string; images: { imageUrl: string }[] };
 type Product = {
   id: string; slug: string; name: string; description: string; category: string;
   featured: boolean; isNewArrival: boolean; isBestSeller: boolean; stockStatus: string;
-  variants: Variant[]; images: { imageUrl: string }[]; colorOptions?: ColorOption[];
+  variants: Variant[]; images: { imageUrl: string }[]; colorOptions?: ApiColorOption[];
 };
 
 const emptyVariant: Variant = { sku: "", size: "", color: "", price: "", stockQuantity: 0 };
@@ -59,7 +60,11 @@ export default function AdminProductsPage() {
     setFeat(p.featured); setNewArr(p.isNewArrival); setBest(p.isBestSeller);
     setStock(p.stockStatus); setImageUrls(p.images.map(i => i.imageUrl));
     setVars(p.variants.length ? p.variants.map(v => ({ sku: v.sku, size: v.size, color: v.color, price: String(v.price), salePrice: v.salePrice ? String(v.salePrice) : "", stockQuantity: v.stockQuantity })) : [{ ...emptyVariant }]);
-    setColorOptions(p.colorOptions?.map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images || [] })) || []);
+    setColorOptions(p.colorOptions?.map(c => ({
+      colorName: c.colorName,
+      colorCode: c.colorCode,
+      images: c.images?.map((img: any) => typeof img === 'string' ? img : img.imageUrl) || []
+    })) || []);
     setActiveColorIdx(null);
     setShowModal(true);
   };
@@ -149,11 +154,19 @@ export default function AdminProductsPage() {
       images: imageUrls,
       colorOptions: colorOptions.filter(c => c.colorName.trim()).map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images }))
     };
+    console.log('=== SAVE DEBUG ===');
+    console.log('colorOptions state:', colorOptions);
+    console.log('colorOptions in body:', body.colorOptions);
+    console.log('Full body:', JSON.stringify(body, null, 2));
+    let response;
     if (editing) {
-      await fetch(`/api/products/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      response = await fetch(`/api/products/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     } else {
-      await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      response = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     }
+    const result = await response.json();
+    console.log('Response:', result);
+    console.log('=== END SAVE DEBUG ===');
     setSaving(false); setShowModal(false); reset(); load();
   };
 
