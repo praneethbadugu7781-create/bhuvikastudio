@@ -75,7 +75,7 @@ export default function ProductPageClient({ product, related }: { product: Catal
               src={currentImage}
               alt={product.name}
               onLoad={() => setImgLoaded(true)}
-              className="h-[500px] w-full object-cover transition-transform duration-700 hover:scale-105 md:h-[600px]"
+              className="h-[500px] w-full object-contain transition-transform duration-700 hover:scale-105 md:h-[600px]"
             />
             {product.oldPrice && (
               <span className="absolute left-4 top-4 rounded-full bg-red-500 px-4 py-1.5 text-sm font-bold text-white shadow-lg">
@@ -114,6 +114,11 @@ export default function ProductPageClient({ product, related }: { product: Catal
             <span className="text-3xl font-bold text-brand-900">&#8377;{product.price.toLocaleString("en-IN")}</span>
             {product.oldPrice && <span className="text-lg text-brand-400 line-through">&#8377;{product.oldPrice.toLocaleString("en-IN")}</span>}
           </div>
+
+          {/* Description */}
+          {product.description && (
+            <p className="mt-4 text-brand-700 leading-relaxed">{product.description}</p>
+          )}
 
           {/* Color Swatches */}
           {hasColorOptions ? (

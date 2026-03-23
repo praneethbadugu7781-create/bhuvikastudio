@@ -7,6 +7,7 @@ export type ColorOption = {
 export type CatalogItem = {
   slug: string;
   name: string;
+  description?: string;
   category: string;
   price: number;
   oldPrice?: number;
