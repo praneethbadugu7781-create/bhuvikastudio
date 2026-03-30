@@ -97,11 +97,11 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="mt-3 md:mt-4 font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight"
+              className="mt-3 md:mt-4 leading-tight"
             >
-              <span className="gradient-text">Style Stories</span>
+              <span className="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-brand-600">Style Stories</span>
               <br />
-              for Every Celebration
+              <span className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-brand-950">for Every Celebration</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -258,7 +258,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
           <div className="flex items-end justify-between">
             <div>
               <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">Handpicked for you</p>
-              <h2 className="mt-1 font-display text-2xl md:text-4xl text-brand-950">Featured Products</h2>
+              <h2 className="mt-1 font-script text-3xl md:text-5xl text-brand-950">Featured Products</h2>
             </div>
             <Link href="/shop" className="hidden items-center gap-1 font-semibold text-brand-700 transition hover:text-brand-500 sm:flex text-sm md:text-base">
               View All <ArrowRight size={16} />
@@ -280,7 +280,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         <div className="mx-auto w-full max-w-6xl px-4 md:px-5">
           <AnimatedSection>
             <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">Browse Collections</p>
-            <h2 className="mt-1 font-display text-2xl md:text-4xl text-brand-950">Shop by Category</h2>
+            <h2 className="mt-1 font-script text-3xl md:text-5xl text-brand-950">Shop by Category</h2>
           </AnimatedSection>
           <div className="mt-6 md:mt-8 grid grid-cols-2 gap-3 md:gap-4 md:grid-cols-3">
             {categories.map((cat, i) => (
@@ -312,7 +312,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
       <section className="mx-auto w-full max-w-6xl px-4 md:px-5 py-10 md:py-16">
         <AnimatedSection>
           <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">Just Dropped</p>
-          <h2 className="mt-1 font-display text-2xl md:text-4xl text-brand-950">New Arrivals</h2>
+          <h2 className="mt-1 font-script text-3xl md:text-5xl text-brand-950">New Arrivals</h2>
         </AnimatedSection>
         <div className="mt-6 md:mt-8 grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-3">
           {newArrivals.map((item, i) => (
@@ -326,7 +326,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         <div className="mx-auto w-full max-w-6xl px-4 md:px-5">
           <AnimatedSection>
             <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">Happy Customers</p>
-            <h2 className="mt-1 font-display text-2xl md:text-4xl text-white">What They Say</h2>
+            <h2 className="mt-1 font-script text-3xl md:text-5xl text-white">What They Say</h2>
           </AnimatedSection>
           <div className="mt-6 md:mt-8 grid gap-4 md:gap-6 md:grid-cols-3">
             {testimonials.map((t, i) => (
@@ -364,7 +364,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         />
         <div className="relative mx-auto w-full max-w-3xl px-4 md:px-5 text-center">
           <AnimatedSection>
-            <h2 className="font-display text-2xl md:text-4xl text-white">Ready to Find Your Look?</h2>
+            <h2 className="font-script text-3xl md:text-5xl text-white">Ready to Find Your Look?</h2>
             <p className="mt-2 md:mt-3 text-sm md:text-lg text-white/80">
               Explore 100+ styles curated for every celebration. Free delivery on orders above &#8377;2,000.
             </p>

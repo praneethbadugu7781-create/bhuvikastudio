@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { User, LogOut, Home, ArrowLeft } from "lucide-react";
 import CartBadge from "./CartBadge";
@@ -27,7 +26,7 @@ export default function Header() {
             </button>
           )}
           <Link href="/" className="transition hover:opacity-80">
-            <Image src="/logo-header.svg" alt="Bhuvika Studio" width={200} height={50} className="h-[38px] w-auto md:h-[52px]" priority />
+            <span className="font-script text-3xl text-brand-900 md:text-4xl">Bhuvika Studio</span>
           </Link>
         </div>
 

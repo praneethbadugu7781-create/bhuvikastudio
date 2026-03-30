@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
 
@@ -20,7 +19,7 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <Link href="/">
-            <Image src="/logo-white.svg" alt="Bhuvika Studio" width={180} height={45} className="h-11 w-auto" />
+            <span className="font-script text-3xl text-white">Bhuvika Studio</span>
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-brand-300">
             Curated fashion for every celebration. Western Wear, Lehengas, Sarees, and more from Vijayawada.

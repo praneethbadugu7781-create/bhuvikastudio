@@ -1,29 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fff8f5;
-  --foreground: #3d1e21;
-  --brand-50: #fff2ef;
-  --brand-100: #ffd8d1;
-  --brand-300: #f89ca5;
-  --brand-400: #d9828e;
-  --brand-500: #e35f74;
-  --brand-700: #bb3f57;
-  --brand-800: #7f3042;
-  --brand-900: #4a1d27;
-  --brand-950: #2f1117;
+  --background: #fffafa;
+  --foreground: #1a1a1a;
+  --brand-50: #fff0f3;
+  --brand-100: #ffe0e6;
+  --brand-200: #ffc2d1;
+  --brand-300: #ff94ad;
+  --brand-400: #ff5c84;
+  --brand-500: #ff2d6a;
+  --brand-600: #ed1158;
+  --brand-700: #c80d4a;
+  --brand-800: #a60f42;
+  --brand-900: #8a113d;
+  --brand-950: #4d0520;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-manrope);
-  --font-display: var(--font-playfair);
+  --font-display: var(--font-display);
+  --font-script: var(--font-script);
   --color-brand-50: var(--brand-50);
   --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
   --color-brand-300: var(--brand-300);
   --color-brand-400: var(--brand-400);
   --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
   --color-brand-700: var(--brand-700);
   --color-brand-800: var(--brand-800);
   --color-brand-900: var(--brand-900);
@@ -41,15 +46,19 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-playfair), serif;
+  font-family: var(--font-display), serif;
+}
+
+.font-script {
+  font-family: var(--font-script), cursive;
 }
 
 /* Hero Background */
 .hero-bg {
   background-image:
-    radial-gradient(circle at 10% 10%, rgba(227, 95, 116, 0.3) 0, rgba(227, 95, 116, 0) 32%),
-    radial-gradient(circle at 90% 70%, rgba(248, 156, 165, 0.35) 0, rgba(248, 156, 165, 0) 40%),
-    linear-gradient(120deg, #fff8f5, #ffe4de 55%, #ffd8d1);
+    radial-gradient(circle at 10% 10%, rgba(255, 45, 106, 0.15) 0, rgba(255, 45, 106, 0) 32%),
+    radial-gradient(circle at 90% 70%, rgba(255, 148, 173, 0.2) 0, rgba(255, 148, 173, 0) 40%),
+    linear-gradient(120deg, #fffafa, #fff0f3 55%, #ffe0e6);
 }
 
 /* Shimmer effect for loading / hover */
@@ -80,13 +89,13 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(227, 95, 116, 0.4); }
-  50% { box-shadow: 0 0 20px 8px rgba(227, 95, 116, 0.2); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 45, 106, 0.4); }
+  50% { box-shadow: 0 0 20px 8px rgba(255, 45, 106, 0.2); }
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #4a1d27 0%, #e35f74 50%, #bb3f57 100%);
+  background: linear-gradient(135deg, #1a1a1a 0%, #ff2d6a 50%, #c80d4a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
