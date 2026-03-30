@@ -3,6 +3,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
 
+const LOGO_URL = "https://res.cloudinary.com/dfdin5phc/image/upload/v1774887280/Screenshot_2026-03-30_214006_qclwnc.png";
+
 const footerLinks = [
   { label: "Shop All", href: "/shop" },
   { label: "Categories", href: "/categories" },
@@ -19,7 +21,7 @@ export default function Footer() {
         {/* Brand */}
         <div>
           <Link href="/">
-            <span className="font-script text-3xl text-white">Bhuvika Studio</span>
+            <img src={LOGO_URL} alt="Bhuvika Studio" className="h-16 w-auto brightness-0 invert" />
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-brand-300">
             Curated fashion for every celebration. Western Wear, Lehengas, Sarees, and more from Vijayawada.
