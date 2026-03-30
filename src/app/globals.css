@@ -50,9 +50,7 @@ body {
 }
 
 .font-script {
-  font-family: var(--font-script), serif;
-  font-style: italic;
-  font-weight: 500;
+  font-family: var(--font-script), cursive;
 }
 
 /* Hero Background */
