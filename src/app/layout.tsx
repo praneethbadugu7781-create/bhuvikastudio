@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Manrope, Pinyon_Script, Cormorant_Garamond } from "next/font/google";
+import { Manrope, Bodoni_Moda, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"] });
-const pinyonScript = Pinyon_Script({ variable: "--font-script", weight: "400", subsets: ["latin"] });
+const bodoni = Bodoni_Moda({ variable: "--font-script", weight: ["400", "500", "600", "700"], subsets: ["latin"], style: ["normal", "italic"] });
 const cormorant = Cormorant_Garamond({ variable: "--font-display", weight: ["400", "500", "600", "700"], subsets: ["latin"] });
 
 const SITE_URL = "https://bhuvikastudio.com";
@@ -79,7 +79,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${manrope.variable} ${pinyonScript.variable} ${cormorant.variable} antialiased`}>
+      <body className={`${manrope.variable} ${bodoni.variable} ${cormorant.variable} antialiased`}>
         {children}
       </body>
     </html>
