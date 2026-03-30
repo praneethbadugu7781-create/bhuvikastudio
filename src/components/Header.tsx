@@ -1,12 +1,9 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { User, LogOut, Home, ArrowLeft } from "lucide-react";
 import CartBadge from "./CartBadge";
 import { useAuth } from "@/context/AuthContext";
-
-const LOGO_URL = "https://res.cloudinary.com/dfdin5phc/image/upload/v1774887280/Screenshot_2026-03-30_214006_qclwnc.png";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -29,7 +26,18 @@ export default function Header() {
             </button>
           )}
           <Link href="/" className="transition hover:opacity-80">
-            <img src={LOGO_URL} alt="Bhuvika Studio" className="h-12 w-auto md:h-14" />
+            <div className="flex items-center gap-2">
+              {/* BS Monogram */}
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-lg bg-brand-50 md:h-14 md:w-14">
+                <span className="font-script text-2xl text-brand-900 md:text-3xl">B</span>
+                <span className="absolute right-1.5 top-1/2 -translate-y-1/2 font-script text-xl text-brand-500 md:text-2xl">S</span>
+              </div>
+              {/* Text */}
+              <div className="hidden flex-col sm:flex">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-900">Bhuvika</span>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-900">Studio</span>
+              </div>
+            </div>
           </Link>
         </div>
 

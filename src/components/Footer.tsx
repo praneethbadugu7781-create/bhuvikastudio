@@ -3,8 +3,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
 
-const LOGO_URL = "https://res.cloudinary.com/dfdin5phc/image/upload/v1774887280/Screenshot_2026-03-30_214006_qclwnc.png";
-
 const footerLinks = [
   { label: "Shop All", href: "/shop" },
   { label: "Categories", href: "/categories" },
@@ -20,8 +18,19 @@ export default function Footer() {
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-5 py-14 md:grid-cols-4">
         {/* Brand */}
         <div>
-          <Link href="/">
-            <img src={LOGO_URL} alt="Bhuvika Studio" className="h-16 w-auto brightness-0 invert" />
+          <Link href="/" className="inline-block">
+            <div className="flex items-center gap-3">
+              {/* BS Monogram */}
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-lg bg-brand-800">
+                <span className="font-script text-2xl text-white">B</span>
+                <span className="absolute right-1.5 top-1/2 -translate-y-1/2 font-script text-xl text-brand-300">S</span>
+              </div>
+              {/* Text */}
+              <div className="flex flex-col">
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">Bhuvika</span>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">Studio</span>
+              </div>
+            </div>
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-brand-300">
             Curated fashion for every celebration. Western Wear, Lehengas, Sarees, and more from Vijayawada.
