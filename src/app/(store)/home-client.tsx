@@ -16,14 +16,17 @@ type Banner = {
 };
 
 const categoryImages: Record<string, string> = {
-  "Western Wear": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
-  "Kids Wear": "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=600&q=80",
-  "Lehengas": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
-  "Fusion Wear": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80",
-  "Sarees": "https://images.unsplash.com/photo-1616161560417-66d4db5892ec?auto=format&fit=crop&w=600&q=80",
-  "Co-ords": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80",
+  "Kurta sets": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043986/bhuvika-categories/kurta-sets.jpg",
+  "Sarees": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043988/bhuvika-categories/sarees.jpg",
+  "Lehengas": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043989/bhuvika-categories/lehengas.jpg",
+  "Indo western": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043990/bhuvika-categories/indo-western.jpg",
+  "Kids wear": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775044014/bhuvika-categories/kids-wear.jpg",
+  "Western wear": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043991/bhuvika-categories/western-wear.jpg",
+  "Co-ords sets": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043992/bhuvika-categories/co-ords-sets.jpg",
+  "Anarkali": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043993/bhuvika-categories/anarkali.jpg",
+  "Gowns": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043994/bhuvika-categories/gowns.jpg",
 };
-const categories = ["Western Wear", "Kids Wear", "Lehengas", "Fusion Wear", "Sarees", "Co-ords"];
+const categories = ["Kurta sets", "Sarees", "Lehengas", "Indo western", "Kids wear", "Western wear", "Co-ords sets", "Anarkali", "Gowns"];
 
 const testimonials = [
   { name: "Priya S.", rating: 5, text: "Absolutely loved the lehenga! The quality is amazing and it arrived quickly. Will definitely order again." },

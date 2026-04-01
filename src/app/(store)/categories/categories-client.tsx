@@ -5,25 +5,31 @@ import { ArrowRight } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 
 const categoryImages: Record<string, string> = {
-  "Western Wear": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
-  "Kids Wear": "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80",
-  "Lehengas": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80",
-  "Fusion Wear": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=800&q=80",
-  "Sarees": "https://images.unsplash.com/photo-1616161560417-66d4db5892ec?auto=format&fit=crop&w=800&q=80",
-  "Co-ords": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=800&q=80",
+  "Kurta sets": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043986/bhuvika-categories/kurta-sets.jpg",
+  "Sarees": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043988/bhuvika-categories/sarees.jpg",
+  "Lehengas": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043989/bhuvika-categories/lehengas.jpg",
+  "Indo western": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043990/bhuvika-categories/indo-western.jpg",
+  "Kids wear": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775044014/bhuvika-categories/kids-wear.jpg",
+  "Western wear": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043991/bhuvika-categories/western-wear.jpg",
+  "Co-ords sets": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043992/bhuvika-categories/co-ords-sets.jpg",
+  "Anarkali": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043993/bhuvika-categories/anarkali.jpg",
+  "Gowns": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043994/bhuvika-categories/gowns.jpg",
 };
 
 const categoryDescriptions: Record<string, string> = {
-  "Western Wear": "Trendy dresses, tops, and midi styles for the modern woman.",
-  "Kids Wear": "Adorable party frocks and festive outfits for little stars.",
-  "Lehengas": "Stunning bridal and festive lehengas that steal the show.",
-  "Fusion Wear": "Where tradition meets trend. Anarkalis, Indo-Western & more.",
+  "Kurta sets": "Comfortable and stylish kurta sets perfect for everyday wear and casual gatherings.",
   "Sarees": "Handloom elegance and designer drapes for every occasion.",
-  "Co-ords": "Matching sets that make styling effortless and chic.",
+  "Lehengas": "Stunning bridal and festive lehengas that steal the show.",
+  "Indo western": "Where tradition meets trend. Anarkalis, Indo-Western & more.",
+  "Kids wear": "Adorable party frocks and festive outfits for little stars.",
+  "Western wear": "Trendy dresses, tops, and midi styles for the modern woman.",
+  "Co-ords sets": "Matching sets that make styling effortless and chic.",
+  "Anarkali": "Elegant Anarkali suits combining tradition with contemporary style.",
+  "Gowns": "Elegant gowns for parties, weddings, and special occasions.",
 };
 
 export default function CategoriesClient({ categoryCounts }: { categoryCounts: { name: string; count: number }[] }) {
-  const allCategories = ["Western Wear", "Kids Wear", "Lehengas", "Fusion Wear", "Sarees", "Co-ords"];
+  const allCategories = ["Kurta sets", "Sarees", "Lehengas", "Indo western", "Kids wear", "Western wear", "Co-ords sets", "Anarkali", "Gowns"];
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12">
       <AnimatedSection>
