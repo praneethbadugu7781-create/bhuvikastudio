@@ -53,9 +53,9 @@ export default function CategoriesClient({ categoryCounts }: { categoryCounts: {
                 href="/shop"
                 className="group flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition-all hover:shadow-xl hover:-translate-y-1 md:flex-row"
               >
-                <div className="relative h-48 overflow-hidden md:h-auto md:w-80">
-                  <img src={categoryImages[cat]} alt={cat} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
+                <div className="relative h-48 overflow-hidden bg-brand-50 md:h-auto md:w-80">
+                  <img src={categoryImages[cat]} alt={cat} className="h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent" />
                 </div>
                 <div className="flex flex-1 items-center justify-between p-6">
                   <div>

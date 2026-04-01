@@ -36,7 +36,7 @@ export const catalog: CatalogItem[] = [
   {
     slug: "rose-drape-coord",
     name: "Rose Drape Co-ord Set",
-    category: "Co-ords",
+    category: "Co-ords sets",
     price: 2699,
     oldPrice: 3199,
     sizes: ["S", "M", "L", "XL"],
@@ -59,7 +59,7 @@ export const catalog: CatalogItem[] = [
   {
     slug: "lilac-kids-party-frock",
     name: "Lilac Kids Party Frock",
-    category: "Kids Wear",
+    category: "Kids wear",
     price: 1499,
     sizes: ["S", "M", "L"],
     color: "Lilac",
@@ -69,7 +69,7 @@ export const catalog: CatalogItem[] = [
   {
     slug: "sunset-fusion-anarkali",
     name: "Sunset Fusion Anarkali",
-    category: "Fusion Wear",
+    category: "Anarkali",
     price: 3499,
     sizes: ["S", "M", "L", "XL"],
     color: "Coral",
@@ -89,7 +89,7 @@ export const catalog: CatalogItem[] = [
   {
     slug: "urban-western-midi",
     name: "Urban Western Midi Dress",
-    category: "Western Wear",
+    category: "Western wear",
     price: 2199,
     sizes: ["S", "M", "L"],
     color: "Crimson",
