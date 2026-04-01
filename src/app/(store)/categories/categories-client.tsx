@@ -55,7 +55,7 @@ export default function CategoriesClient({ categoryCounts }: { categoryCounts: {
               >
                 <div className="relative h-48 overflow-hidden md:h-auto md:w-80">
                   <img src={categoryImages[cat]} alt={cat} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand-950/40 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
                 </div>
                 <div className="flex flex-1 items-center justify-between p-6">
                   <div>

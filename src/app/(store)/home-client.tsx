@@ -300,7 +300,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                     alt={cat}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-brand-950/80 via-brand-950/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   <div className="absolute bottom-0 left-0 p-3 md:p-4">
                     <h3 className="font-display text-sm sm:text-base md:text-xl lg:text-2xl text-white drop-shadow-lg">{cat}</h3>
                   </div>
