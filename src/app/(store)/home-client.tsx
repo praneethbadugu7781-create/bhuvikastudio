@@ -294,11 +294,11 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
               >
-                <Link href="/categories" className="group relative block h-32 sm:h-40 md:h-52 overflow-hidden rounded-xl md:rounded-2xl">
+                <Link href="/categories" className="group relative block h-auto overflow-visible rounded-xl md:rounded-2xl bg-brand-50/50">
                   <img
                     src={categoryImages[cat]}
                     alt={cat}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="h-auto w-full object-contain transition-transform duration-700 group-hover:scale-110 p-4 md:p-6"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   <div className="absolute bottom-0 left-0 p-3 md:p-4">

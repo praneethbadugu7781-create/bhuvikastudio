@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Manrope, Great_Vibes, Cormorant_Garamond } from "next/font/google";
+import { Montserrat, Great_Vibes, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"] });
+const montserrat = Montserrat({ variable: "--font-manrope", subsets: ["latin"] });
 const greatVibes = Great_Vibes({ variable: "--font-script", weight: "400", subsets: ["latin"] });
-const cormorant = Cormorant_Garamond({ variable: "--font-display", weight: ["400", "500", "600", "700"], subsets: ["latin"] });
+const playfair = Playfair_Display({ variable: "--font-display", weight: ["400", "500", "600", "700"], subsets: ["latin"] });
 
 const SITE_URL = "https://bhuvikastudio.com";
 
@@ -79,7 +79,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${manrope.variable} ${greatVibes.variable} ${cormorant.variable} antialiased`}>
+      <body className={`${montserrat.variable} ${greatVibes.variable} ${playfair.variable} antialiased`}>
         {children}
       </body>
     </html>
