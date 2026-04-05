@@ -72,8 +72,8 @@ export default function TermsAndConditionsPage() {
           <p>For questions regarding these terms, contact us at:</p>
           <p className="mt-2">
             <strong>Bhuvika Studio</strong><br />
-            Email: owner@bhuvikastudio.com<br />
-            Phone: +91 93917 81748
+            Email: bhuvikastudio@gmail.com<br />
+            Phone: +91 9618 111520
           </p>
         </section>
       </div>

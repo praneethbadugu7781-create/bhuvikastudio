@@ -22,7 +22,7 @@ export default function ContactPage() {
             </div>
             <div>
               <h3 className="font-semibold text-brand-800">Phone</h3>
-              <p className="text-brand-600">+91 93917 81748</p>
+              <p className="text-brand-600">+91 9618 111520</p>
               <p className="text-sm text-brand-500">Mon - Sat, 10 AM - 7 PM</p>
             </div>
           </div>
@@ -33,7 +33,7 @@ export default function ContactPage() {
             </div>
             <div>
               <h3 className="font-semibold text-brand-800">Email</h3>
-              <p className="text-brand-600">owner@bhuvikastudio.com</p>
+              <p className="text-brand-600">bhuvikastudio@gmail.com</p>
               <p className="text-sm text-brand-500">We respond within 24 hours</p>
             </div>
           </div>
@@ -77,7 +77,7 @@ export default function ContactPage() {
             </p>
             <p>
               <strong>WhatsApp:</strong><br />
-              Message us on WhatsApp at +91 93917 81748 for quick responses.
+              Message us on WhatsApp at +91 9618 111520 for quick responses.
             </p>
           </div>
         </div>

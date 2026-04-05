@@ -17,7 +17,7 @@ export default function RefundPolicyPage() {
           <ul className="ml-5 list-disc space-y-1">
             <li>Orders can be cancelled within 24 hours of placing the order</li>
             <li>Once the order is shipped, cancellation is not possible</li>
-            <li>To cancel an order, contact us at owner@bhuvikastudio.com or call +91 93917 81748</li>
+            <li>To cancel an order, contact us at bhuvikastudio@gmail.com or call +91 9618 111520</li>
             <li>Full refund will be processed for successfully cancelled orders</li>
           </ul>
         </section>
@@ -75,8 +75,8 @@ export default function RefundPolicyPage() {
           <p>For return or refund requests, contact us at:</p>
           <p className="mt-2">
             <strong>Bhuvika Studio</strong><br />
-            Email: owner@bhuvikastudio.com<br />
-            Phone: +91 93917 81748<br />
+            Email: bhuvikastudio@gmail.com<br />
+            Phone: +91 9618 111520<br />
             Address: Vijayawada, Andhra Pradesh, India
           </p>
         </section>

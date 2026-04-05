@@ -56,7 +56,7 @@ export default function PrivacyPolicyPage() {
 
         <section>
           <h2 className="mb-3 text-xl font-semibold text-brand-800">6. Your Rights</h2>
-          <p>You have the right to access, update, or delete your personal information. Contact us at owner@bhuvikastudio.com for any privacy-related requests.</p>
+          <p>You have the right to access, update, or delete your personal information. Contact us at bhuvikastudio@gmail.com for any privacy-related requests.</p>
         </section>
 
         <section>
@@ -65,8 +65,8 @@ export default function PrivacyPolicyPage() {
           <p className="mt-2">
             <strong>Bhuvika Studio</strong><br />
             Vijayawada, Andhra Pradesh, India<br />
-            Email: owner@bhuvikastudio.com<br />
-            Phone: +91 93917 81748
+            Email: bhuvikastudio@gmail.com<br />
+            Phone: +91 9618 111520
           </p>
         </section>
       </div>

@@ -74,8 +74,8 @@ export default function ShippingPolicyPage() {
           <p>For shipping queries, contact us at:</p>
           <p className="mt-2">
             <strong>Bhuvika Studio</strong><br />
-            Email: owner@bhuvikastudio.com<br />
-            Phone: +91 93917 81748
+            Email: bhuvikastudio@gmail.com<br />
+            Phone: +91 9618 111520
           </p>
         </section>
       </div>
