@@ -72,21 +72,36 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border border-brand-200 bg-brand-50 p-6">
-          <h2 className="mb-4 text-xl font-semibold text-brand-800">Quick Support</h2>
-          <div className="space-y-4 text-brand-700">
-            <p>
-              <strong>Order Related:</strong><br />
-              For order status, tracking, or delivery queries, please have your order number ready.
-            </p>
-            <p>
-              <strong>Returns & Refunds:</strong><br />
-              Initiate returns within 7 days of delivery. See our <a href="/refund-policy" className="text-brand-600 underline hover:text-brand-800">Refund Policy</a>.
-            </p>
-            <p>
-              <strong>WhatsApp:</strong><br />
-              Message us on WhatsApp at +91 9618 111520 for quick responses.
-            </p>
+        <div className="space-y-6">
+          <div className="overflow-hidden rounded-lg border border-brand-200">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.2!2d80.6625704!3d16.493436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a35fb4e758889a9%3A0x4740f1f3ea7d3b11!2sBhuvika%20studio!5e0!3m2!1sen!2sin!4v1712300000000!5m2!1sen!2sin"
+              width="100%"
+              height="250"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Bhuvika Studio Location"
+            ></iframe>
+          </div>
+
+          <div className="rounded-lg border border-brand-200 bg-brand-50 p-6">
+            <h2 className="mb-4 text-xl font-semibold text-brand-800">Quick Support</h2>
+            <div className="space-y-4 text-brand-700">
+              <p>
+                <strong>Order Related:</strong><br />
+                For order status, tracking, or delivery queries, please have your order number ready.
+              </p>
+              <p>
+                <strong>Returns & Refunds:</strong><br />
+                Initiate returns within 7 days of delivery. See our <a href="/refund-policy" className="text-brand-600 underline hover:text-brand-800">Refund Policy</a>.
+              </p>
+              <p>
+                <strong>WhatsApp:</strong><br />
+                Message us on WhatsApp at +91 9618 111520 for quick responses.
+              </p>
+            </div>
           </div>
         </div>
       </div>
