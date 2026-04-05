@@ -73,18 +73,19 @@ export default function ContactPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="overflow-hidden rounded-lg border border-brand-200">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3825.2!2d80.6625704!3d16.493436!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a35fb4e758889a9%3A0x4740f1f3ea7d3b11!2sBhuvika%20studio!5e0!3m2!1sen!2sin!4v1712300000000!5m2!1sen!2sin"
-              width="100%"
-              height="250"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Bhuvika Studio Location"
-            ></iframe>
-          </div>
+          <a 
+            href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6651453,17z"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block overflow-hidden rounded-lg border border-brand-200 bg-brand-100 transition hover:bg-brand-200"
+          >
+            <div className="flex h-[200px] flex-col items-center justify-center text-center text-brand-700">
+              <MapPin className="mb-3 h-10 w-10 text-brand-600" />
+              <p className="font-semibold">Bhuvika Studio</p>
+              <p className="text-sm text-brand-500">Vijayawada, Andhra Pradesh</p>
+              <p className="mt-3 text-sm text-brand-600 underline">Click to open in Google Maps →</p>
+            </div>
+          </a>
 
           <div className="rounded-lg border border-brand-200 bg-brand-50 p-6">
             <h2 className="mb-4 text-xl font-semibold text-brand-800">Quick Support</h2>
