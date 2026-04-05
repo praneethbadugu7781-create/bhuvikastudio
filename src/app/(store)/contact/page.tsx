@@ -50,7 +50,7 @@ export default function ContactPage() {
                 India - 520001
               </p>
               <a 
-                href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6651453,17z/data=!3m1!4b1!4m6!3m5!1s0x3a35fb4e758889a9:0x4740f1f3ea7d3b11!8m2!3d16.493436!4d80.6651453" 
+                href="https://www.google.com/maps/search/?api=1&query=Bhuvika+studio&query_place_id=ChIJqYmIdU77NToRETN96vPxQEc" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="mt-2 inline-block text-sm text-brand-600 underline hover:text-brand-800"
@@ -73,19 +73,18 @@ export default function ContactPage() {
         </div>
 
         <div className="space-y-6">
-          <a 
-            href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6651453,17z/data=!3m1!4b1!4m6!3m5!1s0x3a35fb4e758889a9:0x4740f1f3ea7d3b11!8m2!3d16.493436!4d80.6651453"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block overflow-hidden rounded-lg border border-brand-200 bg-brand-100 transition hover:bg-brand-200"
-          >
-            <div className="flex h-[200px] flex-col items-center justify-center text-center text-brand-700">
-              <MapPin className="mb-3 h-10 w-10 text-brand-600" />
-              <p className="font-semibold">Bhuvika Studio</p>
-              <p className="text-sm text-brand-500">Vijayawada, Andhra Pradesh</p>
-              <p className="mt-3 text-sm text-brand-600 underline">Click to open in Google Maps →</p>
-            </div>
-          </a>
+          <div className="overflow-hidden rounded-lg border border-brand-200">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3825.646338757664!2d80.6651453!3d16.493436!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a35fb4e758889a9%3A0x4740f1f3ea7d3b11!2sBhuvika_studio!5e0!3m2!1sen!2sin!4v1775375933660!5m2!1sen!2sin" 
+              width="100%" 
+              height="200" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Bhuvika Studio Location"
+            ></iframe>
+          </div>
 
           <div className="rounded-lg border border-brand-200 bg-brand-50 p-6">
             <h2 className="mb-4 text-xl font-semibold text-brand-800">Quick Support</h2>
