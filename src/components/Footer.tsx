@@ -82,7 +82,7 @@ export default function Footer() {
             <li className="flex items-start gap-2">
               <MapPin size={16} className="mt-0.5 shrink-0 text-brand-500" />
               <a 
-                href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6625704,17z" 
+                href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6651453,17z/data=!3m1!4b1!4m6!3m5!1s0x3a35fb4e758889a9:0x4740f1f3ea7d3b11!8m2!3d16.493436!4d80.6651453" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:text-white hover:underline"

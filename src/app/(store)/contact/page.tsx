@@ -50,7 +50,7 @@ export default function ContactPage() {
                 India - 520001
               </p>
               <a 
-                href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6625704,17z" 
+                href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6651453,17z/data=!3m1!4b1!4m6!3m5!1s0x3a35fb4e758889a9:0x4740f1f3ea7d3b11!8m2!3d16.493436!4d80.6651453" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="mt-2 inline-block text-sm text-brand-600 underline hover:text-brand-800"
@@ -74,7 +74,7 @@ export default function ContactPage() {
 
         <div className="space-y-6">
           <a 
-            href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6651453,17z"
+            href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6651453,17z/data=!3m1!4b1!4m6!3m5!1s0x3a35fb4e758889a9:0x4740f1f3ea7d3b11!8m2!3d16.493436!4d80.6651453"
             target="_blank"
             rel="noopener noreferrer"
             className="block overflow-hidden rounded-lg border border-brand-200 bg-brand-100 transition hover:bg-brand-200"
