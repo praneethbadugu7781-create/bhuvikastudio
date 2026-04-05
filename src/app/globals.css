@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fffafa;
-  --foreground: #1a1a1a;
-  --brand-50: #fff0f3;
-  --brand-100: #ffe0e6;
-  --brand-200: #ffc2d1;
-  --brand-300: #ff94ad;
-  --brand-400: #ff5c84;
-  --brand-500: #ff2d6a;
-  --brand-600: #ed1158;
-  --brand-700: #c80d4a;
-  --brand-800: #a60f42;
-  --brand-900: #8a113d;
-  --brand-950: #4d0520;
+  --background: #faf7f2;
+  --foreground: #2d2d2d;
+  --brand-50: #faf7f2;
+  --brand-100: #f0ebe5;
+  --brand-200: #e8dcd5;
+  --brand-300: #d4bfb9;
+  --brand-400: #c8a2a2;
+  --brand-500: #b8848a;
+  --brand-600: #a86e72;
+  --brand-700: #9b5d63;
+  --brand-800: #8d4d54;
+  --brand-900: #7f3e47;
+  --brand-950: #4d3a3f;
 }
 
 @theme inline {
@@ -56,9 +56,9 @@ body {
 /* Hero Background */
 .hero-bg {
   background-image:
-    radial-gradient(circle at 10% 10%, rgba(255, 45, 106, 0.15) 0, rgba(255, 45, 106, 0) 32%),
-    radial-gradient(circle at 90% 70%, rgba(255, 148, 173, 0.2) 0, rgba(255, 148, 173, 0) 40%),
-    linear-gradient(120deg, #fffafa, #fff0f3 55%, #ffe0e6);
+    radial-gradient(circle at 10% 10%, rgba(200, 162, 162, 0.12) 0, rgba(200, 162, 162, 0) 32%),
+    radial-gradient(circle at 90% 70%, rgba(212, 191, 185, 0.15) 0, rgba(212, 191, 185, 0) 40%),
+    linear-gradient(120deg, #faf7f2, #f0ebe5 55%, #e8dcd5);
 }
 
 /* Shimmer effect for loading / hover */
@@ -89,13 +89,13 @@ body {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 45, 106, 0.4); }
-  50% { box-shadow: 0 0 20px 8px rgba(255, 45, 106, 0.2); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 162, 162, 0.3); }
+  50% { box-shadow: 0 0 20px 8px rgba(200, 162, 162, 0.1); }
 }
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #1a1a1a 0%, #ff2d6a 50%, #c80d4a 100%);
+  background: linear-gradient(135deg, #2d2d2d 0%, #b8848a 50%, #9b5d63 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

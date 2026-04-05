@@ -7,10 +7,15 @@ const footerLinks = [
   { label: "Shop All", href: "/shop" },
   { label: "Categories", href: "/categories" },
   { label: "Cart", href: "/cart" },
-  { label: "Checkout", href: "/checkout" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
-const categories = ["Western Wear", "Kids Wear", "Lehengas", "Fusion Wear", "Sarees", "Co-ords"];
+const policyLinks = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Terms & Conditions", href: "/terms-and-conditions" },
+  { label: "Refund & Cancellation", href: "/refund-policy" },
+  { label: "Shipping Policy", href: "/shipping-policy" },
+];
 
 export default function Footer() {
   return (
@@ -57,14 +62,14 @@ export default function Footer() {
             ))}
           </ul>
         </div>
-        {/* Categories */}
+        {/* Policies */}
         <div>
-          <h4 className="font-semibold uppercase tracking-wider text-brand-300">Categories</h4>
+          <h4 className="font-semibold uppercase tracking-wider text-brand-300">Policies</h4>
           <ul className="mt-3 space-y-2">
-            {categories.map((c) => (
-              <li key={c}>
-                <Link href="/categories" className="text-sm text-brand-100 transition hover:text-white hover:underline">
-                  {c}
+            {policyLinks.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="text-sm text-brand-100 transition hover:text-white hover:underline">
+                  {l.label}
                 </Link>
               </li>
             ))}
@@ -90,7 +95,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-brand-800 px-5 py-5">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-2 text-center">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center">
+          <p className="text-xs text-brand-300">
+            We accept secure online payments via UPI, debit/credit cards and net banking.
+          </p>
           <Link href="/admin" className="text-xs text-brand-600 transition hover:text-brand-400">
             Admin
           </Link>
