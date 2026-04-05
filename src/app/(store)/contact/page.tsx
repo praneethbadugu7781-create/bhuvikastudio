@@ -49,6 +49,14 @@ export default function ContactPage() {
                 Vijayawada, Andhra Pradesh<br />
                 India - 520001
               </p>
+              <a 
+                href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6625704,17z" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-sm text-brand-600 underline hover:text-brand-800"
+              >
+                View on Google Maps →
+              </a>
             </div>
           </div>
 

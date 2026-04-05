@@ -81,7 +81,14 @@ export default function Footer() {
           <ul className="mt-3 space-y-3 text-sm">
             <li className="flex items-start gap-2">
               <MapPin size={16} className="mt-0.5 shrink-0 text-brand-500" />
-              <span>Vijayawada, Andhra Pradesh</span>
+              <a 
+                href="https://www.google.com/maps/place/Bhuvika_studio/@16.493436,80.6625704,17z" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-white hover:underline"
+              >
+                Vijayawada, Andhra Pradesh
+              </a>
             </li>
             <li className="flex items-center gap-2">
               <Phone size={16} className="shrink-0 text-brand-500" />
