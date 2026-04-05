@@ -523,6 +523,12 @@ export default function CheckoutPage() {
                 <div className="flex justify-between text-sm text-brand-700"><span>Shipping</span><span>{delivery === 0 ? "FREE" : `₹${delivery}`}</span></div>
                 <hr className="border-brand-100" />
                 <div className="flex justify-between text-xl font-bold text-brand-950"><span>Total</span><span>&#8377;{grandTotal.toLocaleString("en-IN")}</span></div>
+                <p className="mt-3 text-xs text-brand-500">
+                  By placing this order, you agree to our{" "}
+                  <Link href="/terms-and-conditions" className="underline hover:text-brand-700">Terms & Conditions</Link>,{" "}
+                  <Link href="/privacy-policy" className="underline hover:text-brand-700">Privacy Policy</Link>, and{" "}
+                  <Link href="/refund-policy" className="underline hover:text-brand-700">Refund Policy</Link>.
+                </p>
               </div>
             ) : (
               <p className="mt-4 text-sm text-brand-700">Your cart is empty. <Link href="/shop" className="text-brand-500 underline">Add items</Link> to proceed.</p>
