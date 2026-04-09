@@ -40,7 +40,7 @@ export default function TermsAndConditionsPage() {
         <section>
           <h2 className="mb-3 text-xl font-semibold text-brand-800">4. Payment Terms</h2>
           <ul className="ml-5 list-disc space-y-1">
-            <li>We accept payments via UPI, credit/debit cards, and net banking through Razorpay</li>
+            <li>We accept payments via UPI, credit/debit cards, and net banking through Cashfree</li>
             <li>Payment must be completed before order processing</li>
             <li>All transactions are secure and encrypted</li>
             <li>In case of payment failure, please retry or contact support</li>

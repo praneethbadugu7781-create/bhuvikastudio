@@ -11,7 +11,9 @@ import AnimatedSection from "@/components/AnimatedSection";
 
 declare global {
   interface Window {
-    Razorpay: new (options: Record<string, unknown>) => { open: () => void };
+    Cashfree: {
+      checkout: (config: Record<string, unknown>) => Promise<void>;
+    };
   }
 }
 
@@ -103,12 +105,12 @@ export default function CheckoutPage() {
   const delivery = total > shipping.freeThreshold ? 0 : shipping.defaultCharge;
   const discount = appliedCoupon?.discount || 0;
   const grandTotal = total + delivery - discount;
-  const razorpayEnabled = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-  const [payment, setPayment] = useState<"RAZORPAY" | "COD">(razorpayEnabled ? "RAZORPAY" : "COD");
+  const cashfreeEnabled = !!process.env.NEXT_PUBLIC_CASHFREE_APP_ID;
+  const [payment, setPayment] = useState<"CASHFREE" | "COD">(cashfreeEnabled ? "CASHFREE" : "COD");
   const [placed, setPlaced] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
-  const [razorpayReady, setRazorpayReady] = useState(false);
+  const [cashfreeReady, setCashfreeReady] = useState(false);
 
   // Address fields for new address
   const [fullName, setFullName] = useState("");
@@ -223,24 +225,30 @@ export default function CheckoutPage() {
     return null;
   };
 
-  const openRazorpay = (razorpayOrderId: string, orderId: string, amount: number) => {
+  const openCashfree = (cashfreeOrderId: string, orderId: string, amount: number) => {
     const addr = getSelectedAddress();
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: amount * 100,
+    const sessionId = Math.random().toString(36).substring(7);
+
+    const config = {
+      sessionId: sessionId,
+      orderId: cashfreeOrderId,
+      amount: amount,
       currency: "INR",
-      name: "Bhuvika Studio",
-      description: `Order #${orderId.slice(0, 8)}`,
-      order_id: razorpayOrderId,
-      handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+      customer: {
+        customerId: orderId,
+        customerName: addr?.fullName || fullName,
+        customerEmail: addressEmail || user?.email,
+        customerPhone: addr?.phone || phone,
+      },
+      paymentSessionId: sessionId,
+      onSuccess: async (response: { transactionId?: string }) => {
         try {
           const verifyRes = await fetch("/api/payments/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
+              orderId: cashfreeOrderId,
+              paymentSessionId: sessionId,
             }),
           });
           if (!verifyRes.ok) {
@@ -256,21 +264,19 @@ export default function CheckoutPage() {
         }
         setPlacing(false);
       },
-      prefill: {
-        name: addr?.fullName || fullName,
-        email: addressEmail || user?.email,
-        contact: addr?.phone || phone,
+      onFailure: (response: unknown) => {
+        setError("Payment failed. Please try again.");
+        setPlacing(false);
       },
-      theme: { color: "#7c3aed" },
-      modal: {
-        ondismiss: () => {
-          setPlacing(false);
-          setError("Payment cancelled. Your order is saved — you can retry payment.");
-        },
+      onClose: () => {
+        setPlacing(false);
+        setError("Payment cancelled. Your order is saved — you can retry payment.");
       },
     };
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+
+    if (window.Cashfree && window.Cashfree.checkout) {
+      window.Cashfree.checkout(config);
+    }
   };
 
   const handlePlaceOrder = async () => {
@@ -294,7 +300,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (payment === "RAZORPAY" && razorpayEnabled && !razorpayReady) {
+    if (payment === "CASHFREE" && cashfreeEnabled && !cashfreeReady) {
       setError("Payment system loading. Please wait a moment.");
       return;
     }
@@ -330,13 +336,13 @@ export default function CheckoutPage() {
       }
       const order = await res.json();
 
-      // If Razorpay, open payment modal
-      if (payment === "RAZORPAY" && order.razorpayOrderId) {
-        openRazorpay(order.razorpayOrderId, order.id || order._id, order.totalAmount);
+      // If Cashfree, open payment modal
+      if (payment === "CASHFREE" && order.cashfreeOrderId) {
+        openCashfree(order.cashfreeOrderId, order.id || order._id, order.totalAmount);
         return;
       }
 
-      // COD or Razorpay not configured — order placed directly
+      // COD or Cashfree not configured — order placed directly
       setPlaced(true);
       clear();
     } catch {
@@ -379,10 +385,10 @@ export default function CheckoutPage() {
 
   return (
     <>
-      {razorpayEnabled && (
+      {cashfreeEnabled && (
         <Script
-          src="https://checkout.razorpay.com/v1/checkout.js"
-          onLoad={() => setRazorpayReady(true)}
+          src="https://sdk.cashfree.com/js/v3/cashfree.js"
+          onLoad={() => setCashfreeReady(true)}
         />
       )}
       <div className="mx-auto w-full max-w-5xl px-5 py-12">
@@ -477,9 +483,9 @@ export default function CheckoutPage() {
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-bold text-brand-950">Payment Method</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {razorpayEnabled && (
-                <button onClick={() => setPayment("RAZORPAY")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "RAZORPAY" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
-                  <CreditCard size={24} className={payment === "RAZORPAY" ? "text-brand-500" : "text-brand-400"} />
+                {cashfreeEnabled && (
+                <button onClick={() => setPayment("CASHFREE")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "CASHFREE" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
+                  <CreditCard size={24} className={payment === "CASHFREE" ? "text-brand-500" : "text-brand-400"} />
                   <div className="text-left"><p className="font-semibold text-brand-900">Pay Online</p><p className="text-xs text-brand-700">UPI, Cards, Net Banking</p></div>
                 </button>
                 )}
@@ -489,11 +495,11 @@ export default function CheckoutPage() {
                 </button>
               </div>
               <AnimatePresence>
-                {payment === "RAZORPAY" && (
+                {payment === "CASHFREE" && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-4 overflow-hidden rounded-xl bg-brand-50 p-4">
                     <div className="flex items-center gap-2">
                       <Shield size={16} className="text-green-600" />
-                      <p className="text-sm text-brand-800">Secure payment powered by <strong>Razorpay</strong>. Your card details are never stored with us.</p>
+                      <p className="text-sm text-brand-800">Secure payment powered by <strong>Cashfree</strong>. Your card details are never stored with us.</p>
                     </div>
                   </motion.div>
                 )}
@@ -535,7 +541,7 @@ export default function CheckoutPage() {
             )}
             {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
             <motion.button whileTap={{ scale: 0.97 }} onClick={handlePlaceOrder} disabled={items.length === 0 || placing} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-brand-900 px-6 py-3.5 font-semibold text-white transition hover:bg-brand-950 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">
-              {placing ? "Processing..." : payment === "RAZORPAY" ? "Pay Now" : "Place Order"} <ArrowRight size={18} />
+              {placing ? "Processing..." : payment === "CASHFREE" ? "Pay Now" : "Place Order"} <ArrowRight size={18} />
             </motion.button>
           </motion.aside>
         </div>

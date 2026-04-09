@@ -17,7 +17,7 @@ export default function PrivacyPolicyPage() {
           <p className="mb-2">We collect information you provide directly to us, including:</p>
           <ul className="ml-5 list-disc space-y-1">
             <li>Name, email address, phone number, and shipping address when you place an order</li>
-            <li>Payment information (processed securely through Razorpay)</li>
+            <li>Payment information (processed securely through Cashfree)</li>
             <li>Account information when you create an account</li>
             <li>Communication data when you contact us</li>
           </ul>
@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
 
         <section>
           <h2 className="mb-3 text-xl font-semibold text-brand-800">4. Data Protection</h2>
-          <p>We implement appropriate security measures to protect your personal information. Payment transactions are encrypted and processed through Razorpay&apos;s secure payment gateway. We do not store your credit/debit card details on our servers.</p>
+          <p>We implement appropriate security measures to protect your personal information. Payment transactions are encrypted and processed through Cashfree&apos;s secure payment gateway. We do not store your credit/debit card details on our servers.</p>
         </section>
 
         <section>

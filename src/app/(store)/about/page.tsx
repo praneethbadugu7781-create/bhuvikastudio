@@ -64,7 +64,7 @@ export default function AboutPage() {
           <div className="rounded-lg border border-brand-200 bg-brand-50 p-6">
             <Shield className="mb-3 h-8 w-8 text-brand-600" />
             <h3 className="mb-2 font-semibold text-brand-800">Secure Payments</h3>
-            <p className="text-sm">Shop with confidence using our secure payment gateway powered by Razorpay.</p>
+            <p className="text-sm">Shop with confidence using our secure payment gateway powered by Cashfree.</p>
           </div>
         </div>
 
