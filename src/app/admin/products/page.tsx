@@ -164,10 +164,6 @@ export default function AdminProductsPage() {
       images: imageUrls,
       colorOptions: colorOptions.filter(c => c.colorName.trim()).map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images }))
     };
-    console.log('=== SAVE DEBUG ===');
-    console.log('colorOptions state:', colorOptions);
-    console.log('colorOptions in body:', body.colorOptions);
-    console.log('Full body:', JSON.stringify(body, null, 2));
     let response;
     if (editing) {
       response = await fetch(`/api/products/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -175,8 +171,6 @@ export default function AdminProductsPage() {
       response = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     }
     const result = await response.json();
-    console.log('Response:', result);
-    console.log('=== END SAVE DEBUG ===');
     setSaving(false); setShowModal(false); reset(); load();
   };
 

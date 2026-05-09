@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Hardcode the backend URL to rule out env variable issues
-const API_URL = "https://bhuvika-api.onrender.com";
+// Use environment variable with fallback to production
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "https://bhuvika-api.onrender.com";
+if (!API_URL) {
+  throw new Error("API_URL is not configured in environment variables");
+}
 const BUILD_TIME = new Date().toISOString();
 
 export async function GET(request: NextRequest) {
@@ -40,10 +43,6 @@ export async function POST(request: NextRequest) {
     };
 
     const bodyString = JSON.stringify(orderPayload);
-
-    // Log for debugging
-    console.log(`[${BUILD_TIME}] API Route - Sending to backend:`, bodyString);
-    console.log(`[${BUILD_TIME}] API Route - Content-Length:`, bodyString.length);
 
     const response = await fetch(`${API_URL}/api/orders`, {
       method: "POST",
