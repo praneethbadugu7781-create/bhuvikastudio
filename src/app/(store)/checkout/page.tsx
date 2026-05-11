@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import Script from "next/script";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,9 +10,6 @@ import AnimatedSection from "@/components/AnimatedSection";
 
 declare global {
   interface Window {
-    Cashfree: {
-      checkout: (config: Record<string, unknown>) => Promise<void>;
-    };
     Razorpay: new (config: Record<string, unknown>) => {
       open: () => void;
       close: () => void;
@@ -109,13 +105,10 @@ export default function CheckoutPage() {
   const delivery = total > shipping.freeThreshold ? 0 : shipping.defaultCharge;
   const discount = appliedCoupon?.discount || 0;
   const grandTotal = total + delivery - discount;
-  const cashfreeEnabled = !!process.env.NEXT_PUBLIC_CASHFREE_APP_ID;
-  const razorpayEnabled = !!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-  const [payment, setPayment] = useState<"CASHFREE" | "RAZORPAY" | "COD">(cashfreeEnabled ? "CASHFREE" : razorpayEnabled ? "RAZORPAY" : "COD");
+  const [payment, setPayment] = useState<"RAZORPAY" | "COD">("RAZORPAY");
   const [placed, setPlaced] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
-  const [cashfreeReady, setCashfreeReady] = useState(false);
 
   // Address fields for new address
   const [fullName, setFullName] = useState("");
@@ -228,60 +221,6 @@ export default function CheckoutPage() {
       return { fullName, phone, line1, city, postalCode };
     }
     return null;
-  };
-
-  const openCashfree = (cashfreeOrderId: string, orderId: string, amount: number) => {
-    const addr = getSelectedAddress();
-    const sessionId = Math.random().toString(36).substring(7);
-
-    const config = {
-      sessionId: sessionId,
-      orderId: cashfreeOrderId,
-      amount: amount,
-      currency: "INR",
-      customer: {
-        customerId: orderId,
-        customerName: addr?.fullName || fullName,
-        customerEmail: addressEmail || user?.email,
-        customerPhone: addr?.phone || phone,
-      },
-      paymentSessionId: sessionId,
-      onSuccess: async (response: { transactionId?: string }) => {
-        try {
-          const verifyRes = await fetch("/api/payments/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              orderId: cashfreeOrderId,
-              paymentSessionId: sessionId,
-            }),
-          });
-          if (!verifyRes.ok) {
-            const err = await verifyRes.json();
-            setError(err.error || "Payment verification failed");
-            setPlacing(false);
-            return;
-          }
-          setPlaced(true);
-          clear();
-        } catch {
-          setError("Payment verification failed. Contact support.");
-        }
-        setPlacing(false);
-      },
-      onFailure: (response: unknown) => {
-        setError("Payment failed. Please try again.");
-        setPlacing(false);
-      },
-      onClose: () => {
-        setPlacing(false);
-        setError("Payment cancelled. Your order is saved — you can retry payment.");
-      },
-    };
-
-    if (window.Cashfree && window.Cashfree.checkout) {
-      window.Cashfree.checkout(config);
-    }
   };
 
   const openRazorpay = async (orderId: string, amount: number) => {
@@ -404,12 +343,13 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (payment === "CASHFREE" && cashfreeEnabled && !cashfreeReady) {
-      setError("Payment system loading. Please wait a moment.");
-      return;
+    if (payment === "RAZORPAY") {
+      setError("");
+      setPlacing(true);
+    } else {
+      setError("");
+      setPlacing(true);
     }
-    setError("");
-    setPlacing(true);
 
     // Use appliedCoupon from subscription, fallback to ref, fallback to store
     const coupon = appliedCoupon || couponRef.current || useCart.getState().appliedCoupon;
@@ -440,21 +380,14 @@ export default function CheckoutPage() {
       }
       const order = await res.json();
 
-      // If Cashfree, open payment modal
-      if (payment === "CASHFREE" && order.cashfreeOrderId) {
-        openCashfree(order.cashfreeOrderId, order.id || order._id, order.totalAmount);
-        return;
-      }
+    if (payment === "RAZORPAY") {
+      await openRazorpay(order.id || order._id, order.totalAmount);
+      return;
+    }
 
-      // If Razorpay, open payment modal
-      if (payment === "RAZORPAY") {
-        await openRazorpay(order.id || order._id, order.totalAmount);
-        return;
-      }
-
-      // COD or payment not configured — order placed directly
-      setPlaced(true);
-      clear();
+    // COD — order placed directly
+    setPlaced(true);
+    clear();
     } catch {
       setError("Network error. Please try again.");
     }
@@ -494,14 +427,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <>
-      {cashfreeEnabled && (
-        <Script
-          src="https://sdk.cashfree.com/js/v3/cashfree.js"
-          onLoad={() => setCashfreeReady(true)}
-        />
-      )}
-      <div className="mx-auto w-full max-w-5xl px-5 py-12">
+    <div className="mx-auto w-full max-w-5xl px-5 py-12">
         <AnimatedSection>
           <Link href="/cart" className="inline-flex items-center gap-1 text-sm font-semibold text-brand-700 transition hover:text-brand-500"><ArrowLeft size={16} /> Back to Cart</Link>
           <h1 className="mt-3 font-display text-4xl text-brand-950">Checkout</h1>
@@ -592,33 +518,17 @@ export default function CheckoutPage() {
 
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-bold text-brand-950">Payment Method</h2>
-              <div className="mt-4 grid gap-3 md:grid-cols-3">
-                {cashfreeEnabled && (
-                <button onClick={() => setPayment("CASHFREE")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "CASHFREE" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
-                  <CreditCard size={24} className={payment === "CASHFREE" ? "text-brand-500" : "text-brand-400"} />
-                  <div className="text-left"><p className="font-semibold text-brand-900">Cashfree</p><p className="text-xs text-brand-700">UPI, Cards, Net Banking</p></div>
-                </button>
-                )}
-                {razorpayEnabled && (
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
                 <button onClick={() => setPayment("RAZORPAY")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "RAZORPAY" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
                   <CreditCard size={24} className={payment === "RAZORPAY" ? "text-brand-500" : "text-brand-400"} />
-                  <div className="text-left"><p className="font-semibold text-brand-900">Razorpay</p><p className="text-xs text-brand-700">UPI, Cards, Wallets</p></div>
+                  <div className="text-left"><p className="font-semibold text-brand-900">Pay Online</p><p className="text-xs text-brand-700">UPI, Cards, Wallets</p></div>
                 </button>
-                )}
                 <button onClick={() => setPayment("COD")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "COD" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
                   <Banknote size={24} className={payment === "COD" ? "text-brand-500" : "text-brand-400"} />
                   <div className="text-left"><p className="font-semibold text-brand-900">Cash on Delivery</p><p className="text-xs text-brand-700">Pay when you receive</p></div>
                 </button>
               </div>
               <AnimatePresence>
-                {payment === "CASHFREE" && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-4 overflow-hidden rounded-xl bg-brand-50 p-4">
-                    <div className="flex items-center gap-2">
-                      <Shield size={16} className="text-green-600" />
-                      <p className="text-sm text-brand-800">Secure payment powered by <strong>Cashfree</strong>. Your card details are never stored with us.</p>
-                    </div>
-                  </motion.div>
-                )}
                 {payment === "RAZORPAY" && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-4 overflow-hidden rounded-xl bg-brand-50 p-4">
                     <div className="flex items-center gap-2">
@@ -670,6 +580,6 @@ export default function CheckoutPage() {
           </motion.aside>
         </div>
       </div>
-    </>
+    </div>
   );
 }
