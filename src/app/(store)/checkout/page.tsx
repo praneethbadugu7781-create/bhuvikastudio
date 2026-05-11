@@ -580,6 +580,5 @@ export default function CheckoutPage() {
           </motion.aside>
         </div>
       </div>
-    </div>
   );
 }
