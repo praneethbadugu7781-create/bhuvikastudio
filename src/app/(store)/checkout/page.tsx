@@ -105,7 +105,7 @@ export default function CheckoutPage() {
   const delivery = total > shipping.freeThreshold ? 0 : shipping.defaultCharge;
   const discount = appliedCoupon?.discount || 0;
   const grandTotal = total + delivery - discount;
-  const [payment, setPayment] = useState<"RAZORPAY" | "COD">("RAZORPAY");
+  const [payment, setPayment] = useState<"UPI" | "COD">("UPI");
   const [placed, setPlaced] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
@@ -343,7 +343,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (payment === "RAZORPAY") {
+    if (payment === "UPI") {
       setError("");
       setPlacing(true);
     } else {
@@ -380,7 +380,7 @@ export default function CheckoutPage() {
       }
       const order = await res.json();
 
-      if (payment === "RAZORPAY") {
+      if (payment === "UPI") {
         await openRazorpay(order.id || order._id, order.totalAmount);
         return;
       }
@@ -519,8 +519,8 @@ export default function CheckoutPage() {
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-bold text-brand-950">Payment Method</h2>
               <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <button onClick={() => setPayment("RAZORPAY")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "RAZORPAY" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
-                  <CreditCard size={24} className={payment === "RAZORPAY" ? "text-brand-500" : "text-brand-400"} />
+                <button onClick={() => setPayment("UPI")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "UPI" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
+                  <CreditCard size={24} className={payment === "UPI" ? "text-brand-500" : "text-brand-400"} />
                   <div className="text-left"><p className="font-semibold text-brand-900">Pay Online</p><p className="text-xs text-brand-700">UPI, Cards, Wallets</p></div>
                 </button>
                 <button onClick={() => setPayment("COD")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "COD" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
@@ -529,7 +529,7 @@ export default function CheckoutPage() {
                 </button>
               </div>
               <AnimatePresence>
-                {payment === "RAZORPAY" && (
+                {payment === "UPI" && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-4 overflow-hidden rounded-xl bg-brand-50 p-4">
                     <div className="flex items-center gap-2">
                       <Shield size={16} className="text-green-600" />
