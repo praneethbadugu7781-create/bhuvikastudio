@@ -380,14 +380,14 @@ export default function CheckoutPage() {
       }
       const order = await res.json();
 
-    if (payment === "RAZORPAY") {
-      await openRazorpay(order.id || order._id, order.totalAmount);
-      return;
-    }
+      if (payment === "RAZORPAY") {
+        await openRazorpay(order.id || order._id, order.totalAmount);
+        return;
+      }
 
-    // COD — order placed directly
-    setPlaced(true);
-    clear();
+      // COD — order placed directly
+      setPlaced(true);
+      clear();
     } catch {
       setError("Network error. Please try again.");
     }
