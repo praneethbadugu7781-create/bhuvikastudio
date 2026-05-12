@@ -10,9 +10,15 @@ export default function AdminDashboard() {
   const [products, setProducts] = useState<Product[]>([]);
   const [stats, setStats] = useState({ productCount: 0, orderCount: 0, userCount: 0, revenue: 0 });
 
+  const loadData = () => {
+    fetch("/api/products").then((r) => r.json()).then(setProducts).catch(() => {});
+    fetch("/api/stats").then((r) => r.json()).then(setStats).catch(() => {});
+  };
+
   useEffect(() => {
-    fetch("/api/products").then((r) => r.json()).then(setProducts);
-    fetch("/api/stats").then((r) => r.json()).then(setStats);
+    loadData();
+    const interval = setInterval(loadData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   const statCards = [

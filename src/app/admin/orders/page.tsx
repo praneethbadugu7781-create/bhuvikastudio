@@ -50,17 +50,25 @@ export default function AdminOrdersPage() {
   const [trackingUrl, setTrackingUrl] = useState("");
   const [showShippingForm, setShowShippingForm] = useState(false);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const res = await fetch("/api/orders");
       if (res.ok) setOrders(await res.json());
       else setOrders([]);
     } catch { setOrders([]); }
-    setLoading(false);
+    if (showLoading) setLoading(false);
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  // Auto-polling every 30 seconds for live updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      load(false); // Poll in background without showing loading spinner
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [load]);
 
   useEffect(() => {
     if (detail) {

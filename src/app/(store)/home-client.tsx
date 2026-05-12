@@ -60,12 +60,12 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
             className="absolute right-1/4 top-1/3 h-24 w-24 md:h-48 md:w-48 rounded-full bg-brand-400/10"
           />
         </div>
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col-reverse md:flex-row md:items-center gap-6 md:gap-8 px-4 md:px-5 py-10 md:py-24">
-          {/* Left - Text Content */}
-          <div className="flex-1 text-center md:text-left">
+        <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-4 md:px-5 py-16 md:py-32 text-center">
+          {/* Text Content Only */}
+          <div className="w-full">
             <motion.p
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="text-xs md:text-sm font-bold uppercase tracking-[0.2em] md:tracking-[0.25em] text-brand-700"
             >
@@ -75,17 +75,17 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="mt-3 md:mt-4 leading-tight"
+              className="mt-4 leading-tight"
             >
-              <span className="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-brand-600">Style Stories</span>
+              <span className="font-script text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-brand-600">Style Stories</span>
               <br />
-              <span className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-brand-950">for Every Celebration</span>
+              <span className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-brand-950">for Every Celebration</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-3 md:mt-4 mx-auto md:mx-0 max-w-lg text-sm md:text-lg text-brand-800"
+              className="mt-6 mx-auto max-w-2xl text-base md:text-xl text-brand-800"
             >
               Discover Western Wear, Lehengas, Sarees, Kids Wear, and festive edits curated for women and families.
             </motion.p>
@@ -93,39 +93,23 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="mt-5 md:mt-6 flex flex-col sm:flex-row gap-3 justify-center md:justify-start"
+              className="mt-8 flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link
                 href="/shop"
-                className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-900 px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base font-semibold text-white transition-all hover:bg-brand-950 hover:shadow-lg hover:shadow-brand-900/25"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-900 px-8 md:px-10 py-3.5 md:py-4 text-base md:text-lg font-semibold text-white transition-all hover:bg-brand-950 hover:shadow-xl hover:shadow-brand-900/25"
               >
                 Start Shopping
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/categories"
-                className="inline-flex items-center justify-center rounded-full border-2 border-brand-900 px-6 md:px-8 py-3 md:py-3.5 text-sm md:text-base font-semibold text-brand-900 transition-all hover:bg-brand-900 hover:text-white"
+                href="/shop"
+                className="inline-flex items-center justify-center rounded-full border-2 border-brand-900 px-8 md:px-10 py-3.5 md:py-4 text-base md:text-lg font-semibold text-brand-900 transition-all hover:bg-brand-900 hover:text-white"
               >
-                Browse Categories
+                Browse Collections
               </Link>
             </motion.div>
           </div>
-
-          {/* Right - Decorative Image or Space (Banners Removed) */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="flex-1 hidden md:flex flex-col items-center"
-          >
-            <div className="relative w-full max-w-[380px] lg:max-w-[420px] aspect-square rounded-2xl overflow-hidden shadow-2xl bg-brand-100/50 flex items-center justify-center border-4 border-white">
-              <img 
-                src="https://res.cloudinary.com/dfdin5phc/image/upload/v1775043989/bhuvika-categories/lehengas.jpg" 
-                alt="Bhuvika Studio" 
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </motion.div>
         </div>
       </section>
 
@@ -148,8 +132,6 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
           ))}
         </div>
       </section>
-
-      {/* Promo Banners Removed */}
 
       {/* Featured Products */}
       <section className="mx-auto w-full max-w-6xl px-4 md:px-5 py-10 md:py-16">
