@@ -106,7 +106,9 @@ export default function Footer() {
             We accept secure online payments via UPI, debit/credit cards and net banking.
           </p>
           <p className="text-xs text-brand-400">
-            &copy; 2026 Bhuvika Studio. All rights reserved.
+            &copy; 2026 Bhuvika Studio. All rights reserved. 
+            <span className="mx-2">|</span>
+            Built by <a href="https://uxitech.in" target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline transition">UXI Tech</a>
           </p>
         </div>
       </div>
