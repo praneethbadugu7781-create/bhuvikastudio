@@ -16,7 +16,7 @@ export default function ShopPage({ products }: { products: CatalogItem[] }) {
 
   useEffect(() => {
     const cat = searchParams.get("category");
-    if (cat && categories.includes(cat)) {
+    if (cat && (categories as readonly string[]).includes(cat)) {
       setActiveCategory(cat);
     }
   }, [searchParams]);
