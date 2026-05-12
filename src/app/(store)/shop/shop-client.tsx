@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlidersHorizontal, X } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
@@ -8,9 +9,17 @@ import ProductCard from "@/components/ProductCard";
 import AnimatedSection from "@/components/AnimatedSection";
 
 export default function ShopPage({ products }: { products: CatalogItem[] }) {
+  const searchParams = useSearchParams();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"default" | "low" | "high">("default");
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat && categories.includes(cat)) {
+      setActiveCategory(cat);
+    }
+  }, [searchParams]);
 
   let filtered = activeCategory ? products.filter((i) => i.category === activeCategory) : products;
   if (sortBy === "low") filtered = [...filtered].sort((a, b) => a.price - b.price);

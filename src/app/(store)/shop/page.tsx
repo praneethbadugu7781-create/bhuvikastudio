@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import { getProducts } from "@/lib/db";
+import { Suspense } from "react";
 import ShopPage from "./shop-client";
 
 export const metadata: Metadata = {
@@ -30,7 +31,9 @@ export default async function Shop() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <ShopPage products={products} />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading store...</div>}>
+        <ShopPage products={products} />
+      </Suspense>
     </>
   );
 }

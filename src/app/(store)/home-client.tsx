@@ -294,7 +294,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
               >
-                <Link href="/categories" className="group relative block h-auto overflow-visible rounded-xl md:rounded-2xl bg-brand-50/50">
+                <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="group relative block h-auto overflow-visible rounded-xl md:rounded-2xl bg-brand-50/50">
                   <img
                     src={categoryImages[cat]}
                     alt={cat}
