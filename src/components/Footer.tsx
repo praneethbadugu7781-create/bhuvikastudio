@@ -25,20 +25,19 @@ export default function Footer() {
         <div>
           <Link href="/" className="inline-block">
             <div className="flex items-center gap-3">
-              {/* BS Monogram */}
-              <div className="relative flex h-14 w-14 items-center justify-center rounded-lg bg-brand-800">
-                <span className="font-script text-2xl text-white">B</span>
-                <span className="absolute right-1.5 top-1/2 -translate-y-1/2 font-script text-xl text-brand-300">S</span>
+              {/* Brand Logo */}
+              <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-brand-800">
+                <img src="/logo-icon.svg" alt="Bhuvika Studio" className="h-full w-full object-contain p-2" />
               </div>
               {/* Text */}
               <div className="flex flex-col">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">Bhuvika</span>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-white">Studio</span>
+                <span className="text-[14px] font-bold uppercase tracking-[0.2em] text-white leading-tight">Bhuvika</span>
+                <span className="text-[14px] font-bold uppercase tracking-[0.2em] text-white leading-tight">Studio</span>
               </div>
             </div>
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-brand-300">
-            Curated fashion for every celebration. Western Wear, Lehengas, Sarees, and more from Vijayawada.
+            Premium boutique in Vijayawada offering curated Designer Sarees, Bridal Lehengas, Western Wear, and Kids Wear. Curated fashion for every celebration.
           </p>
           <div className="mt-4 flex gap-3">
             <motion.a whileHover={{ scale: 1.15 }} href="#" className="rounded-full bg-brand-800 p-2 transition hover:bg-brand-700">

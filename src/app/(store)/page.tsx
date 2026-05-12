@@ -4,9 +4,9 @@ import { getProducts, getFeaturedProducts } from "@/lib/db";
 import HomeClient from "./home-client";
 
 export const metadata: Metadata = {
-  title: "Bhuvika Studio | Sarees, Lehengas, Western & Kids Wear Online",
+  title: "Bhuvika Studio | Best Designer Sarees, Lehengas & Western Wear in Vijayawada",
   description:
-    "Shop premium Sarees, Lehengas, Western Wear, Fusion Wear, Co-ords & Kids Wear online at Bhuvika Studio. Curated ethnic & modern fashion for every celebration. Based in Vijayawada.",
+    "Shop the latest collection of Designer Sarees, Bridal Lehengas, Western Wear, and Kids Wear at Bhuvika Studio. The best boutique in Vijayawada for premium ethnic and modern fashion. Explore 500+ styles for weddings and celebrations.",
   alternates: { canonical: "https://bhuvikastudio.com" },
 };
 

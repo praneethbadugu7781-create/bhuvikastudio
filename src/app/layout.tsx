@@ -11,18 +11,17 @@ const SITE_URL = "https://bhuvikastudio.com";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Bhuvika Studio | Sarees, Lehengas, Western & Kids Wear Online",
+    default: "Bhuvika Studio | Best Designer Sarees, Lehengas & Kids Wear in Vijayawada",
     template: "%s | Bhuvika Studio",
   },
   description:
-    "Shop premium Sarees, Lehengas, Western Wear, Fusion Wear, Co-ords & Kids Wear online at Bhuvika Studio. Curated ethnic & modern fashion for every celebration. Based in Vijayawada, India.",
+    "Bhuvika Studio offers the best collection of Designer Sarees, Bridal Lehengas, Western Wear, and Kids Wear online. Shop premium ethnic & modern fashion for weddings, parties and daily wear. Fast delivery across Vijayawada & Pan-India.",
   keywords: [
-    "sarees online", "buy sarees", "lehengas online", "buy lehengas",
-    "western wear women", "dresses online", "kids wear online",
-    "ethnic wear", "fusion wear", "co-ord sets", "indian fashion",
-    "women clothing online", "festive wear", "party wear",
-    "Bhuvika Studio", "Vijayawada fashion", "boutique online",
-    "designer sarees", "bridal lehengas", "women dresses India",
+    "best designer sarees Vijayawada", "buy lehengas online India", "wedding sarees online", 
+    "kids ethnic wear", "designer bridal lehenga", "western dresses for women",
+    "boutique in Vijayawada", "online saree shopping", "party wear gowns",
+    "Bhuvika Studio online", "latest saree collections 2026", "women fashion boutique",
+    "ready to wear sarees", "traditional indian wear", "luxury ethnic wear",
   ],
   authors: [{ name: "Bhuvika Studio" }],
   creator: "Bhuvika Studio",
@@ -33,24 +32,24 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: SITE_URL,
     siteName: "Bhuvika Studio",
-    title: "Bhuvika Studio | Sarees, Lehengas, Western & Kids Wear Online",
+    title: "Bhuvika Studio | Premium Sarees, Lehengas & Kids Wear Online",
     description:
-      "Shop premium Sarees, Lehengas, Western Wear, Fusion Wear & Kids Wear at Bhuvika Studio. Curated fashion for every celebration.",
+      "Discover curated ethnic and modern fashion for every celebration. Shop premium Designer Sarees, Lehengas, and Western Wear at Bhuvika Studio.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/logo.svg",
         width: 1200,
         height: 630,
-        alt: "Bhuvika Studio - Curated Fashion for Every Celebration",
+        alt: "Bhuvika Studio - Premium Fashion for Every Celebration",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bhuvika Studio | Sarees, Lehengas, Western & Kids Wear Online",
+    title: "Bhuvika Studio | Designer Sarees & Lehengas Online",
     description:
-      "Shop premium Sarees, Lehengas, Western Wear & Kids Wear at Bhuvika Studio. Curated fashion for every celebration.",
-    images: ["/og-image.png"],
+      "Shop the latest collection of Designer Sarees, Lehengas, and Kids Wear at Bhuvika Studio. Fast shipping across India.",
+    images: ["/logo.svg"],
   },
   robots: {
     index: true,
@@ -65,9 +64,6 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: SITE_URL,
-  },
-  verification: {
-    google: "PASTE_YOUR_GOOGLE_VERIFICATION_CODE_HERE",
   },
 };
 
