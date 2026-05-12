@@ -142,7 +142,7 @@ export default function ProductPageClient({ product, related }: { product: Catal
                     onClick={() => handleColorChange(idx)}
                     title={color.colorName}
                     className={`relative h-10 w-10 rounded-full border-2 transition ${selectedColorIdx === idx ? "border-brand-900 ring-2 ring-brand-500/30" : "border-brand-200 hover:border-brand-400"}`}
-                    style={{ backgroundColor: color.colorCode }}
+                    style={{ backgroundColor: color.colorCode === "#000000" && color.colorName.toLowerCase() !== "black" ? color.colorName : color.colorCode }}
                   >
                     {selectedColorIdx === idx && (
                       <span className="absolute inset-0 flex items-center justify-center">
@@ -207,8 +207,14 @@ export default function ProductPageClient({ product, related }: { product: Catal
 }
 
 // Helper function to determine if a color is light
-function isLightColor(hexColor: string): boolean {
-  const hex = hexColor.replace("#", "");
+function isLightColor(color: string): boolean {
+  if (!color) return true;
+  if (!color.startsWith("#")) {
+    // Basic approximation for common color names
+    const lights = ["white", "yellow", "ivory", "cream", "beige", "pink", "silver"];
+    return lights.some(l => color.toLowerCase().includes(l));
+  }
+  const hex = color.replace("#", "");
   const r = parseInt(hex.substr(0, 2), 16);
   const g = parseInt(hex.substr(2, 2), 16);
   const b = parseInt(hex.substr(4, 2), 16);
