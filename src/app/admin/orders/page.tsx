@@ -264,13 +264,6 @@ export default function AdminOrdersPage() {
                   </div>
                 </motion.div>
               )}
-                  {detail.trackingNumber && (
-                    <a href={detail.trackingUrl || "#"} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-800">
-                      <ExternalLink size={14} /> Open Tracking Page
-                    </a>
-                  )}
-                </motion.div>
-              )}
 
               <div><p className="text-sm font-semibold text-brand-800">Payment Status</p>
                 <select value={detail.paymentStatus} onChange={e => { updateOrder(detail.id, { paymentStatus: e.target.value }); setDetail({ ...detail, paymentStatus: e.target.value }); }} disabled={updating} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-2.5 outline-none">
