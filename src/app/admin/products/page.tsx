@@ -289,12 +289,27 @@ export default function AdminProductsPage() {
                     {colorOptions.map((color, idx) => (
                       <div key={idx} className="rounded-lg bg-white p-3 border border-purple-200">
                         <div className="flex items-center gap-3">
-                          <input
-                            type="color"
-                            value={color.colorCode}
-                            onChange={e => updateColor(idx, "colorCode", e.target.value)}
-                            className="h-8 w-8 cursor-pointer rounded border-0"
-                          />
+                          <div className="relative h-8 w-8 flex-shrink-0">
+                            <div 
+                              className="absolute inset-0 rounded border shadow-sm" 
+                              style={{ backgroundColor: color.colorCode === "#000000" && color.colorName.toLowerCase() !== "black" ? color.colorName : color.colorCode }}
+                            />
+                            <input
+                              type="color"
+                              value={color.colorCode}
+                              onChange={e => updateColor(idx, "colorCode", e.target.value)}
+                              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                            />
+                          </div>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              value={color.colorCode}
+                              onChange={e => updateColor(idx, "colorCode", e.target.value)}
+                              placeholder="#000000"
+                              className="w-28 rounded-lg border px-2 py-1.5 text-xs font-mono"
+                            />
+                          </div>
                           <input
                             value={color.colorName}
                             onChange={e => updateColor(idx, "colorName", e.target.value)}
