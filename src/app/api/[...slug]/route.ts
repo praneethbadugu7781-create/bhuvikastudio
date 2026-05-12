@@ -38,8 +38,8 @@ async function proxyRequest(request: NextRequest, slug: string[]) {
     });
 
     const headers = new Headers(request.headers);
-    headers.delete("host"); // Let fetch set the host
-    headers.set("Origin", API_URL);
+    headers.delete("host");
+    headers.delete("connection");
 
     const body = ["GET", "HEAD"].includes(request.method) ? undefined : await request.blob();
 
@@ -52,11 +52,14 @@ async function proxyRequest(request: NextRequest, slug: string[]) {
     });
 
     const data = await response.blob();
-    const responseHeaders = new Headers(response.headers);
+    const responseHeaders = new Headers();
     
-    // Don't leak certain headers
-    responseHeaders.delete("content-encoding");
-    responseHeaders.delete("content-length");
+    // Explicitly copy headers to avoid issues, especially with set-cookie
+    response.headers.forEach((value, key) => {
+      if (key.toLowerCase() !== "content-encoding" && key.toLowerCase() !== "content-length") {
+        responseHeaders.append(key, value);
+      }
+    });
 
     return new NextResponse(data, {
       status: response.status,
