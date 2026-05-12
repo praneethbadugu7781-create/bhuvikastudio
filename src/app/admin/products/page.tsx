@@ -201,7 +201,18 @@ export default function AdminProductsPage() {
                   <div><p className="font-semibold text-brand-900">{p.name}</p><p className="text-xs text-brand-500">{p.slug}</p></div>
                 </div></td>
                 <td className="px-6 py-4"><span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-800">{p.category}</span></td>
-                <td className="px-6 py-4 font-semibold text-brand-900">{p.variants[0] ? `₹${Number(p.variants[0].price).toLocaleString("en-IN")}` : "—"}</td>
+                <td className="px-6 py-4 font-semibold text-brand-900">
+                  {p.variants[0] ? (
+                    p.variants[0].salePrice ? (
+                      <div className="flex flex-col">
+                        <span className="text-brand-900">₹{Number(p.variants[0].salePrice).toLocaleString("en-IN")}</span>
+                        <span className="text-[10px] text-brand-400 line-through">₹{Number(p.variants[0].price).toLocaleString("en-IN")}</span>
+                      </div>
+                    ) : (
+                      `₹${Number(p.variants[0].price).toLocaleString("en-IN")}`
+                    )
+                  ) : "—"}
+                </td>
                 <td className="px-6 py-4">
                   {p.colorOptions && p.colorOptions.length > 0 ? (
                     <div className="flex gap-1">
@@ -342,10 +353,10 @@ export default function AdminProductsPage() {
                 <div className="flex items-center justify-between"><label className="text-sm font-semibold text-brand-800">Size & Price Variants</label><button onClick={() => setVars([...vars, { ...emptyVariant }])} className="text-sm font-semibold text-brand-500">+ Add</button></div>
                 <div className="mt-2 space-y-2">{vars.map((v, i) => (
                   <div key={i} className="flex items-center gap-2 rounded-xl bg-brand-50/50 p-2">
-                    <input value={v.size} onChange={e => upVar(i, "size", e.target.value)} placeholder="Size" className="w-16 rounded-lg border px-2 py-1.5 text-sm" />
-                    <input value={v.price} onChange={e => upVar(i, "price", e.target.value)} placeholder="Price" className="w-24 rounded-lg border px-2 py-1.5 text-sm" />
-                    <input value={v.salePrice || ""} onChange={e => upVar(i, "salePrice", e.target.value)} placeholder="Sale ₹" className="w-20 rounded-lg border px-2 py-1.5 text-sm" />
-                    <input value={v.stockQuantity} onChange={e => upVar(i, "stockQuantity", Number(e.target.value))} type="number" placeholder="Qty" className="w-16 rounded-lg border px-2 py-1.5 text-sm" />
+                    <div className="flex-1"><input value={v.size} onChange={e => upVar(i, "size", e.target.value)} placeholder="Size" className="w-full rounded-lg border px-2 py-1.5 text-sm" /></div>
+                    <div className="flex-1"><input value={v.price} onChange={e => upVar(i, "price", e.target.value)} placeholder="MRP (Old Price)" className="w-full rounded-lg border px-2 py-1.5 text-sm" /></div>
+                    <div className="flex-1"><input value={v.salePrice || ""} onChange={e => upVar(i, "salePrice", e.target.value)} placeholder="Discount Price" className="w-full rounded-lg border px-2 py-1.5 text-sm bg-green-50" /></div>
+                    <div className="flex-1"><input value={v.stockQuantity} onChange={e => upVar(i, "stockQuantity", Number(e.target.value))} type="number" placeholder="Qty" className="w-full rounded-lg border px-2 py-1.5 text-sm" /></div>
                     {vars.length > 1 && <button onClick={() => setVars(vars.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600"><X size={16} /></button>}
                   </div>
                 ))}</div>
