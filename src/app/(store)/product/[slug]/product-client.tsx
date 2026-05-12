@@ -34,11 +34,14 @@ export default function ProductPageClient({ product, related }: { product: Catal
   const selectedColor = hasColorOptions ? product.colorOptions![selectedColorIdx] : null;
 
   // Get images based on selected color
-  const displayImages = selectedColor && selectedColor.images.length > 0
-    ? selectedColor.images
-    : product.images && product.images.length > 0
-      ? product.images
-      : [product.image];
+  // Get images: Combine color-specific images with main product images
+  const displayImages = (() => {
+    const mainImages = product.images && product.images.length > 0 ? product.images : [product.image];
+    const colorImages = selectedColor && selectedColor.images.length > 0 ? selectedColor.images : [];
+    
+    // Combine and remove duplicates while keeping order (color images first)
+    return Array.from(new Set([...colorImages, ...mainImages]));
+  })();
 
   const currentImage = displayImages[currentImageIdx] || displayImages[0];
   const currentColorName = selectedColor?.colorName || product.color;
@@ -78,7 +81,7 @@ export default function ProductPageClient({ product, related }: { product: Catal
       <div className="mt-8 grid gap-10 md:grid-cols-2">
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
           {/* Main Image */}
-          <div className="relative overflow-hidden rounded-3xl bg-brand-50">
+          <div className="relative group overflow-hidden rounded-3xl bg-brand-50">
             {!imgLoaded && <div className="absolute inset-0 shimmer rounded-3xl" />}
             <img
               src={currentImage}
@@ -86,6 +89,32 @@ export default function ProductPageClient({ product, related }: { product: Catal
               onLoad={() => setImgLoaded(true)}
               className="h-[500px] w-full object-contain transition-transform duration-700 hover:scale-105 md:h-[600px]"
             />
+            
+            {/* Navigation Arrows */}
+            {displayImages.length > 1 && (
+              <>
+                <button 
+                  onClick={() => { setCurrentImageIdx((prev) => (prev === 0 ? displayImages.length - 1 : prev - 1)); setImgLoaded(false); }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white opacity-0 group-hover:opacity-100 hidden md:block"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                <button 
+                  onClick={() => { setCurrentImageIdx((prev) => (prev === displayImages.length - 1 ? 0 : prev + 1)); setImgLoaded(false); }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-2 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white opacity-0 group-hover:opacity-100 hidden md:block"
+                >
+                  <ChevronLeft size={24} className="rotate-180" />
+                </button>
+                
+                {/* Dots indicator */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {displayImages.map((_, i) => (
+                    <div key={i} className={`h-1.5 w-1.5 rounded-full transition-all ${currentImageIdx === i ? "bg-brand-900 w-4" : "bg-brand-900/30"}`} />
+                  ))}
+                </div>
+              </>
+            )}
+
             {product.oldPrice && (
               <span className="absolute left-4 top-4 rounded-full bg-red-500 px-4 py-1.5 text-sm font-bold text-white shadow-lg">
                 {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
