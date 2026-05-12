@@ -167,7 +167,31 @@ function TrackOrderContent() {
           {/* Progress Tracker */}
           {tracking.status !== "CANCELLED" && (
             <div className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
-              <h2 className="mb-6 text-lg font-bold text-brand-950">Order Progress</h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-bold text-brand-950">Order Progress</h2>
+                {tracking.status === "SHIPPED" && (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={async () => {
+                      if (!confirm("Have you received this order?")) return;
+                      try {
+                        const res = await fetch(`/api/orders/track/${tracking.orderId}/confirm`, { method: "POST" });
+                        if (res.ok) {
+                          const data = await res.json();
+                          setTracking({ ...tracking, status: data.status, deliveredAt: new Date().toISOString() });
+                          alert("Thank you! Order marked as delivered.");
+                        }
+                      } catch {
+                        alert("Something went wrong. Please try again.");
+                      }
+                    }}
+                    className="rounded-full bg-green-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-green-600/20 hover:bg-green-700"
+                  >
+                    Confirm Delivery
+                  </motion.button>
+                )}
+              </div>
               <div className="relative">
                 <div className="absolute left-5 top-5 h-[calc(100%-40px)] w-0.5 bg-brand-100" />
                 <div

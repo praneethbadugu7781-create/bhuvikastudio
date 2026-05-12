@@ -226,28 +226,44 @@ export default function AdminOrdersPage() {
 
               {/* Shipping Details Section */}
               {showShippingForm && (
-                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl border-2 border-purple-200 bg-purple-50 p-4 space-y-3">
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-xl border-2 border-brand-200 bg-brand-50 p-4 space-y-3">
                   <div className="flex items-center gap-2">
-                    <Truck size={18} className="text-purple-600" />
-                    <p className="text-sm font-bold text-purple-900">Shipping Details</p>
+                    <Truck size={18} className="text-brand-600" />
+                    <p className="text-sm font-bold text-brand-900">Courier Tracking</p>
                   </div>
-                  <div>
-                    <label className="text-xs font-semibold text-purple-700">Courier Company</label>
-                    <select value={courierCompany} onChange={e => handleCourierChange(e.target.value)} className="mt-1 w-full rounded-lg border border-purple-200 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500">
-                      {courierOptions.map(c => <option key={c.value} value={c.value}>{c.name}</option>)}
-                    </select>
+                  <p className="text-[10px] uppercase font-bold text-brand-500 tracking-wider">Step 1: Enter Courier Info</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-semibold text-brand-700">Courier Company</label>
+                      <select value={courierCompany} onChange={e => handleCourierChange(e.target.value)} className="mt-1 w-full rounded-lg border border-brand-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500">
+                        {courierOptions.map(c => <option key={c.value} value={c.value}>{c.name}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-brand-700">AWB / Tracking Number</label>
+                      <input value={trackingNumber} onChange={e => handleTrackingNumberChange(e.target.value)} placeholder="e.g. 123456789" className="mt-1 w-full rounded-lg border border-brand-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500" />
+                    </div>
                   </div>
-                  <div>
-                    <label className="text-xs font-semibold text-purple-700">Tracking Number / AWB</label>
-                    <input value={trackingNumber} onChange={e => handleTrackingNumberChange(e.target.value)} placeholder="Enter tracking number" className="mt-1 w-full rounded-lg border border-purple-200 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-purple-700">Tracking URL (auto-generated)</label>
-                    <input value={trackingUrl} onChange={e => setTrackingUrl(e.target.value)} placeholder="https://..." className="mt-1 w-full rounded-lg border border-purple-200 bg-white px-3 py-2 text-sm outline-none focus:border-purple-500" />
-                  </div>
-                  <button onClick={handleSaveShipping} disabled={updating} className="w-full rounded-lg bg-purple-600 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50">
-                    {updating ? "Saving..." : "Save & Send Email to Customer"}
+
+                  {trackingUrl && (
+                    <div className="rounded-lg bg-white p-2 border border-brand-100">
+                      <p className="text-[10px] text-brand-500 font-bold uppercase">Auto-Generated Tracking URL</p>
+                      <a href={trackingUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-600 underline truncate block mt-0.5">{trackingUrl}</a>
+                    </div>
+                  )}
+
+                  <button onClick={handleSaveShipping} disabled={updating} className="w-full rounded-lg bg-brand-900 py-2.5 text-sm font-semibold text-white hover:bg-brand-950 disabled:opacity-50">
+                    {updating ? "Saving..." : "Save & Update Customer"}
                   </button>
+
+                  <div className="pt-2 border-t border-brand-200">
+                    <p className="text-[10px] text-brand-600 italic">
+                      Note: Once shipped, the customer will see a <b>"Confirm Delivery"</b> button on their tracking page. 
+                      The status will automatically update to <b>DELIVERED</b> when they receive it.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
                   {detail.trackingNumber && (
                     <a href={detail.trackingUrl || "#"} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 text-sm font-semibold text-purple-600 hover:text-purple-800">
                       <ExternalLink size={14} /> Open Tracking Page
