@@ -106,9 +106,6 @@ export default function Footer() {
           <p className="text-xs text-brand-300">
             We accept secure online payments via UPI, debit/credit cards and net banking.
           </p>
-          <Link href="/admin" className="text-xs text-brand-600 transition hover:text-brand-400">
-            Admin
-          </Link>
           <p className="text-xs text-brand-400">
             &copy; 2026 Bhuvika Studio. All rights reserved.
           </p>
