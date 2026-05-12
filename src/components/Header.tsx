@@ -27,15 +27,14 @@ export default function Header() {
           )}
           <Link href="/" className="transition hover:opacity-80">
             <div className="flex items-center gap-2">
-              {/* BS Monogram */}
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-lg bg-brand-50 md:h-14 md:w-14">
-                <span className="font-script text-2xl text-brand-900 md:text-3xl">B</span>
-                <span className="absolute right-1.5 top-1/2 -translate-y-1/2 font-script text-xl text-brand-500 md:text-2xl">S</span>
+              {/* Brand Logo */}
+              <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-brand-50 md:h-14 md:w-14">
+                <img src="/logo-icon.svg" alt="Bhuvika Studio" className="h-full w-full object-contain p-1.5" />
               </div>
               {/* Text */}
               <div className="hidden flex-col sm:flex">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-900">Bhuvika</span>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-900">Studio</span>
+                <span className="text-[14px] font-bold uppercase tracking-[0.2em] text-brand-900 leading-tight">Bhuvika</span>
+                <span className="text-[14px] font-bold uppercase tracking-[0.2em] text-brand-900 leading-tight">Studio</span>
               </div>
             </div>
           </Link>
