@@ -217,7 +217,12 @@ export default function AdminProductsPage() {
                   {p.colorOptions && p.colorOptions.length > 0 ? (
                     <div className="flex gap-1">
                       {p.colorOptions.slice(0, 4).map((c, i) => (
-                        <div key={i} className="h-5 w-5 rounded-full border border-brand-200" style={{ backgroundColor: c.colorCode }} title={c.colorName} />
+                        <div 
+                          key={i} 
+                          className="h-5 w-5 rounded-full border border-brand-200" 
+                          style={{ backgroundColor: c.colorCode === "#000000" && c.colorName.toLowerCase() !== "black" ? c.colorName : c.colorCode }} 
+                          title={c.colorName} 
+                        />
                       ))}
                       {p.colorOptions.length > 4 && <span className="text-xs text-brand-500">+{p.colorOptions.length - 4}</span>}
                     </div>

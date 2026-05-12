@@ -74,13 +74,14 @@ export function RazorpayPaymentButton({
         handler: async (response: any) => {
           try {
             // Verify payment signature
-            const verifyResponse = await fetch("/api/payments/verify-payment", {
+            const verifyResponse = await fetch("/api/payments/verify", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
+                orderId, // Crucial for updating the correct order
               }),
             });
 
