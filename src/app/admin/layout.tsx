@@ -17,7 +17,6 @@ const sidebarLinks = [
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
-  { href: "/admin/banners", label: "Banners", icon: ImageIcon },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/shipping", label: "Shipping", icon: Truck },
 ];

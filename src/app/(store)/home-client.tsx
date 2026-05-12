@@ -7,13 +7,7 @@ import type { CatalogItem } from "@/lib/catalog";
 import ProductCard from "@/components/ProductCard";
 import AnimatedSection from "@/components/AnimatedSection";
 
-type Banner = {
-  id: string;
-  title: string;
-  subtitle: string;
-  imageUrl: string;
-  position: string;
-};
+// Removed Banner type
 
 const categoryImages: Record<string, string> = {
   "Kurta sets": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043986/bhuvika-categories/kurta-sets.jpg",
@@ -42,27 +36,8 @@ const features = [
 
 export default function HomeClient({ products, featured }: { products: CatalogItem[]; featured: CatalogItem[] }) {
   const newArrivals = products.slice(0, 3);
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [currentSlide, setCurrentSlide] = useState(0);
 
-  useEffect(() => {
-    fetch("/api/banners")
-      .then(res => res.ok ? res.json() : [])
-      .then(data => setBanners(data))
-      .catch(() => {});
-  }, []);
-
-  const heroBanners = banners.filter(b => b.position === "HERO" && b.imageUrl);
-  const promoBanners = banners.filter(b => b.position === "PROMO");
-
-  // Auto-slide for hero banners
-  useEffect(() => {
-    if (heroBanners.length <= 1) return;
-    const interval = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % heroBanners.length);
-    }, 4000); // Change slide every 4 seconds
-    return () => clearInterval(interval);
-  }, [heroBanners.length]);
+  // Banners removed as requested
 
   return (
     <div className="overflow-hidden">
@@ -136,64 +111,21 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
             </motion.div>
           </div>
 
-          {/* Right - Banner Slider */}
-          {heroBanners.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="flex-1 flex flex-col items-center"
-            >
-              <Link href="/shop" className="group relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[420px]">
-                <div className="relative overflow-hidden rounded-2xl shadow-2xl aspect-square">
-                  {heroBanners.map((banner, index) => (
-                    <motion.div
-                      key={banner.id}
-                      initial={{ opacity: 0 }}
-                      animate={{
-                        opacity: index === currentSlide ? 1 : 0,
-                        scale: index === currentSlide ? 1 : 1.1
-                      }}
-                      transition={{ duration: 0.7 }}
-                      className="absolute inset-0"
-                    >
-                      <img
-                        src={banner.imageUrl}
-                        alt={banner.title || "Featured"}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      {/* Overlay with title */}
-                      {banner.title && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end">
-                          <div className="p-4 md:p-5">
-                            <h3 className="text-lg md:text-2xl font-bold text-white">{banner.title}</h3>
-                            {banner.subtitle && <p className="text-xs md:text-sm text-white/80 mt-1">{banner.subtitle}</p>}
-                          </div>
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
-                {/* Decorative border - hidden on mobile */}
-                <div className="hidden md:block absolute -inset-4 -z-10 rounded-2xl border-2 border-brand-300/30" />
-              </Link>
-
-              {/* Slide indicators */}
-              {heroBanners.length > 1 && (
-                <div className="flex gap-2 mt-3 md:mt-4">
-                  {heroBanners.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`h-2 rounded-full transition-all ${
-                        index === currentSlide ? "w-6 bg-brand-600" : "w-2 bg-brand-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          )}
+          {/* Right - Decorative Image or Space (Banners Removed) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="flex-1 hidden md:flex flex-col items-center"
+          >
+            <div className="relative w-full max-w-[380px] lg:max-w-[420px] aspect-square rounded-2xl overflow-hidden shadow-2xl bg-brand-100/50 flex items-center justify-center border-4 border-white">
+              <img 
+                src="https://res.cloudinary.com/dfdin5phc/image/upload/v1775043989/bhuvika-categories/lehengas.jpg" 
+                alt="Bhuvika Studio" 
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -217,43 +149,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         </div>
       </section>
 
-      {/* Promo Banners - Simple Image Grid */}
-      {promoBanners.length > 0 && (
-        <section className="mx-auto w-full max-w-6xl px-4 md:px-5 py-6 md:py-8">
-          <div className={`grid gap-3 md:gap-4 ${promoBanners.length === 1 ? "" : "grid-cols-1 sm:grid-cols-2"} ${promoBanners.length >= 3 ? "lg:grid-cols-3" : ""}`}>
-            {promoBanners.map((banner, i) => (
-              <motion.div
-                key={banner.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              >
-                <Link href="/shop" className="group block overflow-hidden rounded-xl md:rounded-2xl">
-                  {banner.imageUrl ? (
-                    <div className="relative aspect-[2/1]">
-                      <img src={banner.imageUrl} alt={banner.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                      {(banner.title || banner.subtitle) && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
-                          <div className="p-3 md:p-4">
-                            {banner.title && <h3 className="text-base md:text-xl font-bold text-white">{banner.title}</h3>}
-                            {banner.subtitle && <p className="mt-0.5 md:mt-1 text-xs md:text-sm text-white/80">{banner.subtitle}</p>}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="aspect-[2/1] bg-brand-100 p-4 md:p-6 flex flex-col justify-center">
-                      <h3 className="text-base md:text-xl font-bold text-brand-900">{banner.title}</h3>
-                      {banner.subtitle && <p className="mt-1 text-xs md:text-sm text-brand-600">{banner.subtitle}</p>}
-                    </div>
-                  )}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Promo Banners Removed */}
 
       {/* Featured Products */}
       <section className="mx-auto w-full max-w-6xl px-4 md:px-5 py-10 md:py-16">
