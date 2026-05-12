@@ -72,7 +72,11 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     if (detail) {
-      setTrackingNumber(detail.trackingNumber || "");
+      // Ensure trackingNumber is actually a number/string, not a URL
+      const dbTracking = detail.trackingNumber || "";
+      const isUrl = dbTracking.startsWith("http");
+      
+      setTrackingNumber(isUrl ? "" : dbTracking);
       setCourierCompany(detail.courierCompany || "");
       setTrackingUrl(detail.trackingUrl || "");
       setShowShippingForm(detail.status === "SHIPPED" || detail.status === "DELIVERED");
@@ -241,7 +245,12 @@ export default function AdminOrdersPage() {
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-brand-700">AWB / Tracking Number</label>
-                      <input value={trackingNumber} onChange={e => handleTrackingNumberChange(e.target.value)} placeholder="e.g. 123456789" className="mt-1 w-full rounded-lg border border-brand-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500" />
+                      <input 
+                        value={trackingNumber} 
+                        onChange={e => handleTrackingNumberChange(e.target.value)} 
+                        placeholder="Enter AWB Number (e.g. 123456)" 
+                        className="mt-1 w-full rounded-lg border border-brand-200 bg-white px-3 py-2 text-sm outline-none focus:border-brand-500" 
+                      />
                     </div>
                   </div>
 
