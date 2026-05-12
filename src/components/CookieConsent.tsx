@@ -25,12 +25,12 @@ export default function CookieConsent() {
       script.src = `https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`;
       document.head.appendChild(script);
 
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function() {
-        window.dataLayer.push(arguments);
+      (window as any).dataLayer = (window as any).dataLayer || [];
+      (window as any).gtag = function() {
+        (window as any).dataLayer.push(arguments);
       };
-      window.gtag('js', new Date());
-      window.gtag('config', process.env.NEXT_PUBLIC_GA_ID);
+      (window as any).gtag('js', new Date());
+      (window as any).gtag('config', process.env.NEXT_PUBLIC_GA_ID);
     }
   };
 
