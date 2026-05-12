@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
@@ -9,6 +10,7 @@ import ProductCard from "@/components/ProductCard";
 import AnimatedSection from "@/components/AnimatedSection";
 
 export default function ProductPageClient({ product, related }: { product: CatalogItem | null; related: CatalogItem[] }) {
+  const router = useRouter();
   const addToCart = useCart((s) => s.add);
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColorIdx, setSelectedColorIdx] = useState<number>(0);
@@ -54,6 +56,13 @@ export default function ProductPageClient({ product, related }: { product: Catal
     addToCart(product, size);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    if (!product) return;
+    const size = selectedSize || product.sizes[0];
+    addToCart(product, size);
+    router.push("/checkout");
   };
 
   return (
@@ -169,9 +178,9 @@ export default function ProductPageClient({ product, related }: { product: Catal
               <ShoppingBag size={18} />
               {added ? "Added!" : "Add to Cart"}
             </motion.button>
-            <Link href="/checkout" className="flex items-center justify-center rounded-full border-2 border-brand-900 px-8 py-3.5 font-semibold text-brand-900 transition hover:bg-brand-900 hover:text-white">
+            <button onClick={handleBuyNow} disabled={product.stock === "Out of Stock"} className="flex items-center justify-center rounded-full border-2 border-brand-900 px-8 py-3.5 font-semibold text-brand-900 transition hover:bg-brand-900 hover:text-white disabled:opacity-50">
               Buy Now
-            </Link>
+            </button>
           </div>
 
           <div className="mt-8 grid grid-cols-3 gap-3">

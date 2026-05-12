@@ -40,6 +40,8 @@ async function proxyRequest(request: NextRequest, slug: string[]) {
     const headers = new Headers(request.headers);
     headers.delete("host");
     headers.delete("connection");
+    // Ensure the Origin is set correctly for the backend
+    headers.set("Origin", url.origin);
 
     const body = ["GET", "HEAD"].includes(request.method) ? undefined : await request.blob();
 
@@ -54,9 +56,10 @@ async function proxyRequest(request: NextRequest, slug: string[]) {
     const data = await response.blob();
     const responseHeaders = new Headers();
     
-    // Explicitly copy headers to avoid issues, especially with set-cookie
+    // Explicitly copy all headers to the client response
     response.headers.forEach((value, key) => {
-      if (key.toLowerCase() !== "content-encoding" && key.toLowerCase() !== "content-length") {
+      // Skip headers that should be controlled by Next.js
+      if (!["content-encoding", "content-length", "transfer-encoding"].includes(key.toLowerCase())) {
         responseHeaders.append(key, value);
       }
     });

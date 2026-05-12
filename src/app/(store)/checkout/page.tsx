@@ -410,6 +410,14 @@ export default function CheckoutPage() {
     );
   }
 
+  if (!hasHydrated) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-900 border-t-transparent" />
+      </div>
+    );
+  }
+
   if (!authLoading && !user) {
     return (
       <div className="mx-auto flex w-full max-w-md flex-col items-center px-5 py-24 text-center">
