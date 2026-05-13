@@ -40,22 +40,47 @@ export default function AccountPage() {
     }
   }, [user, authLoading, router]);
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     if (mobileNumber.length === 10) {
-      setShowOtpInput(true);
+      try {
+        const res = await fetch("/api/auth/otp/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mobile: mobileNumber }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setShowOtpInput(true);
+        } else {
+          alert(data.error || "Failed to send OTP");
+        }
+      } catch {
+        alert("Network error. Please try again.");
+      }
     } else {
       alert("Please enter a valid 10-digit mobile number");
     }
   };
 
-  const handleVerifyOtp = () => {
-    if (otp === "1234") {
-      setIsVerified(true);
-      setIsAddingMobile(false);
-      setShowOtpInput(false);
-      alert("Mobile number verified successfully!");
-    } else {
-      alert("Invalid OTP. Try 1234");
+  const handleVerifyOtp = async () => {
+    try {
+      const res = await fetch("/api/auth/otp/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile: mobileNumber, otp }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIsVerified(true);
+        setIsAddingMobile(false);
+        setShowOtpInput(false);
+        alert("Mobile number verified and saved successfully!");
+        window.location.reload(); // Refresh to show the new mobile number
+      } else {
+        alert(data.error || "Invalid OTP");
+      }
+    } catch {
+      alert("Network error. Please try again.");
     }
   };
 
