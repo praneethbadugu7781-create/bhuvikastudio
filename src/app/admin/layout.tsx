@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, BarChart3,
   Menu, X, ChevronLeft, LogIn, Lock, LogOut, Loader2,
-  Truck, Ticket, Image as ImageIcon, Star, Settings,
+  Truck, Ticket, Image as ImageIcon, Star, Settings, Megaphone
 } from "lucide-react";
 
 const sidebarLinks = [
@@ -15,6 +15,7 @@ const sidebarLinks = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/customers", label: "Customers", icon: Users },
+  { href: "/admin/marketing", label: "Marketing Hub", icon: Megaphone },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
