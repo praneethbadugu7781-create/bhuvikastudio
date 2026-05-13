@@ -1,88 +1,29 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { 
   User, 
   MapPin, 
   Package, 
   ChevronRight, 
   LogOut, 
-  Phone, 
-  Mail, 
   Heart, 
   Ticket, 
   Headset, 
-  CreditCard,
-  Smartphone,
-  Wallet,
-  Settings,
-  ShieldCheck,
-  Bell
+  ShieldCheck, 
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
-import AnimatedSection from "@/components/AnimatedSection";
 
 export default function AccountPage() {
   const { user, loading: authLoading, logout } = useAuth();
   const router = useRouter();
-
-  const [isAddingMobile, setIsAddingMobile] = useState(false);
-  const [mobileNumber, setMobileNumber] = useState("");
-  const [showOtpInput, setShowOtpInput] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login?redirect=/account");
     }
   }, [user, authLoading, router]);
-
-  const handleSendOtp = async () => {
-    if (mobileNumber.length === 10) {
-      try {
-        const res = await fetch("/api/auth/otp/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile: mobileNumber }),
-        });
-        const data = await res.json();
-        if (res.ok) {
-          setShowOtpInput(true);
-        } else {
-          alert(data.error || "Failed to send OTP");
-        }
-      } catch {
-        alert("Network error. Please try again.");
-      }
-    } else {
-      alert("Please enter a valid 10-digit mobile number");
-    }
-  };
-
-  const handleVerifyOtp = async () => {
-    try {
-      const res = await fetch("/api/auth/otp/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobile: mobileNumber, otp }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setIsVerified(true);
-        setIsAddingMobile(false);
-        setShowOtpInput(false);
-        alert("Mobile number verified and saved successfully!");
-        window.location.reload(); // Refresh to show the new mobile number
-      } else {
-        alert(data.error || "Invalid OTP");
-      }
-    } catch {
-      alert("Network error. Please try again.");
-    }
-  };
 
   if (authLoading) {
     return (
@@ -101,86 +42,12 @@ export default function AccountPage() {
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <h1 className="text-2xl font-bold text-brand-950">{user.name || "Customer"}</h1>
-            <div className="mt-1 flex flex-col gap-2">
-              {!isVerified ? (
-                <button 
-                  onClick={() => setIsAddingMobile(true)}
-                  className="flex items-center gap-1.5 text-brand-500 hover:underline"
-                >
-                  <Smartphone size={14} />
-                  <span className="text-sm font-bold">Add mobile number</span>
-                </button>
-              ) : (
-                <div className="flex items-center gap-1.5 text-green-600">
-                  <Smartphone size={14} />
-                  <span className="text-sm font-bold">{mobileNumber} (Verified)</span>
-                </div>
-              )}
-            </div>
+            <p className="mt-1 text-sm text-brand-600">{user.email}</p>
           </div>
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-brand-600">
             <User size={32} />
           </div>
         </div>
-
-        {/* Mobile Number Modal Simulation */}
-        {isAddingMobile && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm">
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-2xl">
-              <h3 className="text-xl font-bold text-brand-950">{showOtpInput ? "Verify OTP" : "Add Mobile Number"}</h3>
-              <p className="mt-2 text-sm text-gray-500">
-                {showOtpInput ? `Enter the 4-digit code sent to +91 ${mobileNumber}` : "We will send a verification code to your number."}
-              </p>
-              
-              {!showOtpInput ? (
-                <div className="mt-6">
-                  <div className="flex items-center gap-3 rounded-2xl border-2 border-gray-100 bg-gray-50 px-4 py-3 focus-within:border-brand-500">
-                    <span className="font-bold text-gray-400">+91</span>
-                    <input 
-                      type="tel" 
-                      maxLength={10}
-                      value={mobileNumber}
-                      onChange={(e) => setMobileNumber(e.target.value)}
-                      placeholder="Enter mobile number" 
-                      className="w-full bg-transparent font-bold outline-none"
-                    />
-                  </div>
-                  <button 
-                    onClick={handleSendOtp}
-                    className="mt-6 w-full rounded-2xl bg-brand-900 py-4 font-bold text-white shadow-lg transition hover:bg-brand-950"
-                  >
-                    Get OTP
-                  </button>
-                </div>
-              ) : (
-                <div className="mt-6">
-                  <div className="flex justify-center gap-3">
-                    <input 
-                      type="text" 
-                      maxLength={4}
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      placeholder="1234" 
-                      className="w-32 rounded-2xl border-2 border-gray-100 bg-gray-50 py-3 text-center text-2xl font-bold tracking-[0.5em] outline-none focus:border-brand-500"
-                    />
-                  </div>
-                  <button 
-                    onClick={handleVerifyOtp}
-                    className="mt-6 w-full rounded-2xl bg-brand-900 py-4 font-bold text-white shadow-lg transition hover:bg-brand-950"
-                  >
-                    Verify & Save
-                  </button>
-                </div>
-              )}
-              <button 
-                onClick={() => { setIsAddingMobile(false); setShowOtpInput(false); }}
-                className="mt-4 w-full py-2 text-sm font-bold text-gray-400 hover:text-gray-600"
-              >
-                Cancel
-              </button>
-            </motion.div>
-          </div>
-        )}
       </div>
 
       {/* Main Grid Buttons */}
