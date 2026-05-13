@@ -217,11 +217,11 @@ model RestockRequest {
 }
 
 model Otp {
-  id         String   @id @default(cuid())
-  identifier String
-  code       String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 
-  @@index([identifier, code])
+  @@index([email, code])
 }
