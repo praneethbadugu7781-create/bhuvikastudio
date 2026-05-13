@@ -209,7 +209,7 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
             <AnimatedSection>
               <div className="relative aspect-square overflow-hidden rounded-3xl bg-brand-50 shadow-2xl md:aspect-[4/5]">
                 <img 
-                  src="https://previews.jumpshare.com/thumb/4ea2c443a4623ad282087187a00fc4266512bea40dec6ee205662571cc80836d329b78966b606fb5cf2b414d2f9f6d0a824c8b765fa98d903af17655bd1c742c6d3fe3927b57f454fc5842200dc23da5" 
+                  src="https://drive.google.com/uc?export=view&id=1rqLYv0DBrklVuXm7mINoi58uhCHmxmwS" 
                   alt="Bhuvika Studio Store Front" 
                   className="h-full w-full object-cover"
                 />
