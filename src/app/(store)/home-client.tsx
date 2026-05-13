@@ -203,13 +203,13 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
       </section>
 
       {/* Our Story / About Section */}
-      <section className="bg-white py-16 md:py-24">
+      <section id="our-store" className="bg-white py-16 md:py-24">
         <div className="mx-auto w-full max-w-6xl px-4 md:px-5">
           <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <AnimatedSection>
               <div className="relative aspect-square overflow-hidden rounded-3xl bg-brand-50 shadow-2xl md:aspect-[4/5]">
                 <img 
-                  src="https://lh3.googleusercontent.com/p/AF1QipN-PqJj_lK_p_o-x_o-x_o-x_o-x_o-x_o-x_o=s1360-w1360-h1020" 
+                  src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=800&q=80" 
                   alt="Bhuvika Studio Store Front" 
                   className="h-full w-full object-cover"
                 />

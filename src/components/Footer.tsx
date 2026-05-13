@@ -6,6 +6,7 @@ import { MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
 const footerLinks = [
   { label: "Shop All", href: "/shop" },
   { label: "Categories", href: "/categories" },
+  { label: "Our Store", href: "/#our-store" },
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
 ];
@@ -86,8 +87,8 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-white hover:underline"
               >
-                Bhuvika Studio, Beside Union Bank,<br />
-                MG Road, Vijayawada, AP - 520010
+                High School Rd, Patamata,<br />
+                Vijayawada, Andhra Pradesh 520010
               </a>
             </li>
             <li className="flex items-center gap-2">
