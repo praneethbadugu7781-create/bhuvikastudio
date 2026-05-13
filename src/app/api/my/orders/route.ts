@@ -15,7 +15,11 @@ export async function GET(req: NextRequest) {
       include: {
         items: {
           include: {
-            product: true,
+            product: {
+              include: {
+                images: true
+              }
+            },
             variant: true,
           }
         }
@@ -33,7 +37,7 @@ export async function GET(req: NextRequest) {
       items: order.items.map(item => ({
         id: item.id,
         name: item.product.name,
-        image: item.product.images?.[0] || "", // Assuming images is an array or handled by include
+        image: item.product.images?.[0]?.imageUrl || "", 
         price: Number(item.price),
         quantity: item.quantity,
         size: item.variant?.size,
