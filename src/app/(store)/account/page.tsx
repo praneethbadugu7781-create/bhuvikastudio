@@ -61,7 +61,7 @@ export default function AccountPage() {
                 Bhuvika Plus
               </div>
               <Link href="#" className="text-xs font-bold text-brand-500 hover:underline">
-                Valid till Feb 15, 2027 >
+                Valid till Feb 15, 2027 &gt;
               </Link>
             </div>
           </div>
