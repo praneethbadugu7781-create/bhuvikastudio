@@ -26,17 +26,33 @@ export default function MarketingPage() {
       .catch(() => {});
   }, []);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!message) return alert("Please enter a message!");
+    if (channel === "email" && !subject) return alert("Please enter a subject!");
+    
     setSending(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/admin/marketing/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ channel, subject, message, target }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSent(true);
+        setTimeout(() => setSent(false), 5000);
+        setSubject("");
+        setMessage("");
+      } else {
+        alert(data.error || "Failed to send broadcast");
+      }
+    } catch (err) {
+      alert("Network error. Please try again.");
+    } finally {
       setSending(false);
-      setSent(true);
-      setTimeout(() => setSent(false), 5000);
-      setSubject("");
-      setMessage("");
-    }, 2000);
+    }
   };
 
   return (
