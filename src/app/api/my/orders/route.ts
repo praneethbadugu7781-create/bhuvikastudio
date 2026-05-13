@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
         id: item.id,
         name: item.product.name,
         image: item.product.images?.[0]?.imageUrl || "", 
-        price: Number(item.price),
+        price: Number(item.unitPrice),
         quantity: item.quantity,
         size: item.variant?.size,
         color: item.variant?.color,
