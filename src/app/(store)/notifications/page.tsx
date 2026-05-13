@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MessageSquare, Mail, Smartphone, ShieldCheck } from "lucide-react";
+import { ArrowLeft, MessageSquare, Mail, Smartphone, ShieldCheck, Bell } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
 interface PreferenceToggleProps {
