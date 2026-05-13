@@ -26,11 +26,18 @@ export default function CouponsPage() {
 
   const fetchCoupons = async () => {
     try {
-      const res = await fetch("/api/coupons");
+      const res = await fetch("/api/coupons/active");
       if (res.ok) {
         const data = await res.json();
-        // Filter active coupons only
-        setCoupons(data.filter((c: any) => c.isActive !== false));
+        // The backend returns { type: 'FLAT'|'PERCENT', value: number }
+        const formatted = data.map((c: any) => ({
+          ...c,
+          discountType: c.type === 'PERCENT' ? 'PERCENTAGE' : 'FLAT',
+          discountValue: c.value,
+          minOrderAmount: c.minCartValue,
+          expiryDate: c.validUntil
+        }));
+        setCoupons(formatted);
       }
     } catch (err) {
       console.error("Failed to fetch coupons:", err);
