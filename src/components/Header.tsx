@@ -1,12 +1,14 @@
 "use client";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { User, LogOut, Home, ArrowLeft } from "lucide-react";
+import { User, LogOut, Home, ArrowLeft, Heart } from "lucide-react";
 import CartBadge from "./CartBadge";
 import { useAuth } from "@/context/AuthContext";
+import { useWishlist } from "@/store/wishlist";
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const wishlistItems = useWishlist((s) => s.items);
   const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === "/";

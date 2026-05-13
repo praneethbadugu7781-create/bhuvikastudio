@@ -25,6 +25,8 @@ export default function ProductPageClient({ product, related }: { product: Catal
   const router = useRouter();
   const addToCart = useCart((s) => s.add);
   const { toggle, isInWishlist } = useWishlist();
+  const active = product ? isInWishlist(product.slug) : false;
+  
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColorIdx, setSelectedColorIdx] = useState<number>(0);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
@@ -249,20 +251,4 @@ export default function ProductPageClient({ product, related }: { product: Catal
       )}
     </div>
   );
-}
-
-// Helper function to determine if a color is light
-function isLightColor(color: string): boolean {
-  if (!color) return true;
-  if (!color.startsWith("#")) {
-    // Basic approximation for common color names
-    const lights = ["white", "yellow", "ivory", "cream", "beige", "pink", "silver"];
-    return lights.some(l => color.toLowerCase().includes(l));
-  }
-  const hex = color.replace("#", "");
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
-  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return luminance > 0.5;
 }
