@@ -120,7 +120,9 @@ export default function ProductPageClient({ product, related }: { product: Catal
                 >
                   <ChevronLeft size={24} className="rotate-180" />
                 </button>
-                
+              </>
+            )}
+
             {/* Image Counter Badge */}
             {displayImages.length > 1 && (
               <div className="absolute bottom-4 right-4 rounded-full bg-black/50 px-3 py-1 text-[10px] font-bold text-white backdrop-blur-md md:hidden">

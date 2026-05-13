@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Grid, Heart, ShoppingBag, User, Tag } from "lucide-react";
+import { motion } from "framer-motion";
 import { useCart } from "@/store/cart";
 import { useAuth } from "@/context/AuthContext";
 import { useWishlist } from "@/store/wishlist";
@@ -58,5 +59,3 @@ export default function BottomTabBar() {
     </nav>
   );
 }
-
-import { motion } from "framer-motion";
