@@ -53,7 +53,7 @@ export default function EditProfilePage() {
             <label className="text-sm font-bold text-brand-900">Full Name</label>
             <div className="flex items-center gap-3 rounded-2xl border-2 border-gray-100 bg-gray-50 px-4 py-3.5 focus-within:border-brand-500 transition">
               <User size={18} className="text-gray-400" />
-              <input type="text" defaultValue={user.name} className="w-full bg-transparent font-medium outline-none" />
+              <input type="text" defaultValue={user.name || ""} className="w-full bg-transparent font-medium outline-none" />
             </div>
           </div>
 
@@ -61,7 +61,7 @@ export default function EditProfilePage() {
             <label className="text-sm font-bold text-brand-900">Email Address</label>
             <div className="flex items-center gap-3 rounded-2xl border-2 border-gray-100 bg-gray-50 px-4 py-3.5 focus-within:border-brand-500 transition">
               <Mail size={18} className="text-gray-400" />
-              <input type="email" defaultValue={user.email} className="w-full bg-transparent font-medium outline-none" />
+              <input type="email" defaultValue={user.email || ""} className="w-full bg-transparent font-medium outline-none" />
             </div>
           </div>
 
