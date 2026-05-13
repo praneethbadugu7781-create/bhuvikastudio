@@ -47,12 +47,13 @@ export default function MyOrdersPage() {
   const fetchOrders = async () => {
     try {
       const res = await fetch("/api/orders");
+      const data = await res.json();
+      
       if (res.ok) {
-        const data = await res.json();
         // The API returns an array of orders directly or inside a property
         setOrders(Array.isArray(data) ? data : data.orders || []);
       } else {
-        setError("Could not load your orders. Please try again.");
+        setError(`Error ${res.status}: ${data.error || data.message || "Could not load your orders."}`);
       }
     } catch (err) {
       setError("Network error. Please check your connection.");
