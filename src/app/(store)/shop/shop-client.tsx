@@ -100,7 +100,7 @@ export default function ShopPage({ products }: { products: CatalogItem[] }) {
         </div>
       )}
 
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
         {filtered.map((item, i) => (
           <ProductCard key={item.slug} item={item} index={i} />
         ))}

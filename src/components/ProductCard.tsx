@@ -19,7 +19,7 @@ export default function ProductCard({ item, index = 0 }: { item: CatalogItem; in
       transition={{ duration: 0.5, delay: index * 0.08 }}
       className="group relative overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
     >
-      <div className="relative h-72 overflow-hidden bg-brand-50">
+      <div className="relative h-48 md:h-72 overflow-hidden bg-brand-50">
         <Link href={`/product/${item.slug}`} className="block h-full w-full">
           <img
             src={item.image}
@@ -30,39 +30,39 @@ export default function ProductCard({ item, index = 0 }: { item: CatalogItem; in
         </Link>
         
         {item.oldPrice && (
-          <span className="absolute left-3 top-3 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
+          <span className="absolute left-2 top-2 rounded-full bg-red-500 px-2 py-0.5 text-[10px] md:text-xs font-bold text-white">
             {Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100)}% OFF
           </span>
         )}
         {item.stock === "Out of Stock" && (
-          <span className="absolute right-3 top-3 rounded-full bg-gray-900/80 px-3 py-1 text-xs font-bold text-white">
+          <span className="absolute right-2 top-2 rounded-full bg-gray-900/80 px-2 py-0.5 text-[10px] md:text-xs font-bold text-white">
             Sold Out
           </span>
         )}
-        <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 transition-all duration-300 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+        <div className="absolute bottom-2 right-2 flex gap-1.5 opacity-0 transition-all duration-300 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 md:bottom-3 md:right-3 md:gap-2">
           <button 
             onClick={() => toggle(item)}
-            className={`rounded-full p-2.5 shadow-lg backdrop-blur transition ${active ? "bg-red-500 text-white" : "bg-white/90 hover:bg-brand-500 hover:text-white"}`}
+            className={`rounded-full p-2 shadow-lg backdrop-blur transition md:p-2.5 ${active ? "bg-red-500 text-white" : "bg-white/90 hover:bg-brand-500 hover:text-white"}`}
           >
-            <Heart size={18} fill={active ? "currentColor" : "none"} />
+            <Heart size={16} className="md:w-[18px] md:h-[18px]" fill={active ? "currentColor" : "none"} />
           </button>
           <button 
             onClick={() => addToCart(item, item.sizes[0])}
-            className="rounded-full bg-white/90 p-2.5 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white"
+            className="rounded-full bg-white/90 p-2 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white md:p-2.5"
           >
-            <ShoppingBag size={18} />
+            <ShoppingBag size={16} className="md:w-[18px] md:h-[18px]" />
           </button>
         </div>
       </div>
-      <div className="p-4">
-        <p className="text-xs font-semibold uppercase tracking-widest text-brand-500">{item.category}</p>
+      <div className="p-3 md:p-4">
+        <p className="text-[10px] md:text-xs font-semibold uppercase tracking-widest text-brand-500">{item.category}</p>
         <Link href={`/product/${item.slug}`}>
-          <h3 className="mt-1 text-lg font-bold text-brand-950 transition-colors hover:text-brand-700">{item.name}</h3>
+          <h3 className="mt-1 text-sm md:text-lg font-bold text-brand-950 transition-colors hover:text-brand-700 line-clamp-1">{item.name}</h3>
         </Link>
         <div className="mt-2 flex items-center gap-2">
-          <span className="text-xl font-bold text-brand-900">&#8377;{item.price.toLocaleString("en-IN")}</span>
+          <span className="text-base md:text-xl font-bold text-brand-900">&#8377;{item.price.toLocaleString("en-IN")}</span>
           {item.oldPrice && (
-            <span className="text-sm text-brand-400 line-through">&#8377;{item.oldPrice.toLocaleString("en-IN")}</span>
+            <span className="text-[10px] md:text-sm text-brand-400 line-through">&#8377;{item.oldPrice.toLocaleString("en-IN")}</span>
           )}
         </div>
       </div>
