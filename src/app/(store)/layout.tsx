@@ -8,10 +8,7 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
     <AuthProvider>
       <Header />
       <main className="min-h-screen">{children}</main>
-      <div className="pb-20 md:pb-0">
-        <Footer />
-      </div>
-      <BottomTabBar />
+      <Footer />
     </AuthProvider>
   );
 }

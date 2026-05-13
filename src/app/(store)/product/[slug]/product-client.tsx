@@ -121,36 +121,34 @@ export default function ProductPageClient({ product, related }: { product: Catal
                   <ChevronLeft size={24} className="rotate-180" />
                 </button>
                 
-                {/* Dots indicator */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 md:hidden">
-                  {displayImages.map((_, i) => (
-                    <div key={i} className={`h-1.5 w-1.5 rounded-full transition-all ${currentImageIdx === i ? "bg-brand-900 w-4" : "bg-brand-900/30"}`} />
-                  ))}
-                </div>
-              </>
+            {/* Image Counter Badge */}
+            {displayImages.length > 1 && (
+              <div className="absolute bottom-4 right-4 rounded-full bg-black/50 px-3 py-1 text-[10px] font-bold text-white backdrop-blur-md md:hidden">
+                {currentImageIdx + 1} / {displayImages.length}
+              </div>
             )}
 
             {product.oldPrice && (
-              <span className="absolute left-4 top-4 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-lg sm:px-4 sm:py-1.5 sm:text-sm">
+              <span className="absolute left-3 top-3 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white shadow-lg">
                 {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
               </span>
             )}
             <button 
               onClick={() => toggle(product)}
-              className={`absolute right-4 top-4 rounded-full p-2.5 shadow-lg backdrop-blur transition sm:p-3 ${active ? "bg-red-500 text-white" : "bg-white/90 hover:bg-brand-500 hover:text-white"}`}
+              className={`absolute right-3 top-3 rounded-full p-2 shadow-sm backdrop-blur transition ${active ? "bg-red-500 text-white" : "bg-white/90 text-brand-700 hover:bg-brand-500 hover:text-white"}`}
             >
-              <Heart size={20} fill={active ? "currentColor" : "none"} />
+              <Heart size={18} fill={active ? "currentColor" : "none"} />
             </button>
           </div>
 
           {/* Thumbnail Images */}
           {displayImages.length > 1 && (
-            <div className="mt-4 flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {displayImages.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => { setCurrentImageIdx(idx); setImgLoaded(false); }}
-                  className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 transition sm:h-20 sm:w-20 ${currentImageIdx === idx ? "border-brand-500 ring-2 ring-brand-500/20" : "border-brand-100 hover:border-brand-300"}`}
+                  className={`relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border-2 transition sm:h-20 sm:w-20 ${currentImageIdx === idx ? "border-brand-500 ring-2 ring-brand-500/10" : "border-brand-100"}`}
                 >
                   <img src={img} alt="" className="h-full w-full object-cover" />
                 </button>

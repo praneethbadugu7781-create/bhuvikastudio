@@ -72,8 +72,20 @@ export default function Header() {
           <CartBadge />
         </nav>
 
-        {/* Mobile: Logo + Cart Only */}
-        <div className="flex items-center gap-4 md:hidden">
+        {/* Mobile Nav Icons */}
+        <div className="flex items-center gap-1 md:hidden">
+          <Link href="/" className="flex h-8 w-8 items-center justify-center rounded-full text-brand-700 transition hover:bg-brand-50" aria-label="Home">
+            <Home size={18} />
+          </Link>
+          <Link href="/wishlist" className="relative flex h-8 w-8 items-center justify-center rounded-full text-brand-700 transition hover:bg-brand-50" aria-label="Wishlist">
+            <Heart size={18} className={wishlistItems.length > 0 ? "fill-red-500 text-red-500" : ""} />
+            {wishlistItems.length > 0 && (
+              <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" />
+            )}
+          </Link>
+          <Link href={user ? "/account" : "/login"} className="flex h-8 w-8 items-center justify-center rounded-full text-brand-700 transition hover:bg-brand-50" aria-label="Account">
+            <User size={18} />
+          </Link>
           <CartBadge />
         </div>
       </div>
