@@ -2,90 +2,37 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { User, MapPin, Package, Plus, Edit2, Trash2, ChevronRight, LogOut, Phone, Mail } from "lucide-react";
+import { 
+  User, 
+  MapPin, 
+  Package, 
+  ChevronRight, 
+  LogOut, 
+  Phone, 
+  Mail, 
+  Heart, 
+  Ticket, 
+  Headset, 
+  CreditCard,
+  Smartphone,
+  Wallet,
+  Settings,
+  ShieldCheck,
+  Bell
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import AnimatedSection from "@/components/AnimatedSection";
 
-type SavedAddress = {
-  _id: string;
-  fullName: string;
-  phone: string;
-  line1: string;
-  line2?: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  isDefault: boolean;
-};
-
-type OrderSummary = {
-  _id: string;
-  status: string;
-  totalAmount: number;
-  createdAt: string;
-  items: { productName: string }[];
-};
-
 export default function AccountPage() {
   const { user, loading: authLoading, logout } = useAuth();
   const router = useRouter();
-  const [addresses, setAddresses] = useState<SavedAddress[]>([]);
-  const [orders, setOrders] = useState<OrderSummary[]>([]);
-  const [loadingAddresses, setLoadingAddresses] = useState(true);
-  const [loadingOrders, setLoadingOrders] = useState(true);
-  const [activeTab, setActiveTab] = useState<"profile" | "addresses" | "orders">("profile");
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login?redirect=/account");
     }
   }, [user, authLoading, router]);
-
-  useEffect(() => {
-    if (user) {
-      // Fetch addresses
-      fetch("/api/addresses", { credentials: "include" })
-        .then(res => res.ok ? res.json() : [])
-        .then(data => {
-          setAddresses(data);
-          setLoadingAddresses(false);
-        })
-        .catch(() => setLoadingAddresses(false));
-
-      // Fetch recent orders (we'll create this endpoint)
-      fetch("/api/orders/my-orders", { credentials: "include" })
-        .then(res => res.ok ? res.json() : [])
-        .then(data => {
-          setOrders(data);
-          setLoadingOrders(false);
-        })
-        .catch(() => setLoadingOrders(false));
-    }
-  }, [user]);
-
-  const handleDeleteAddress = async (id: string) => {
-    const res = await fetch(`/api/addresses/${id}`, { method: "DELETE", credentials: "include" });
-    if (res.ok) {
-      setAddresses(prev => prev.filter(a => a._id !== id));
-    }
-  };
-
-  const handleSetDefault = async (id: string) => {
-    const res = await fetch(`/api/addresses/${id}/default`, { method: "PUT", credentials: "include" });
-    if (res.ok) {
-      setAddresses(prev => prev.map(a => ({ ...a, isDefault: a._id === id })));
-    }
-  };
-
-  const statusColors: Record<string, string> = {
-    PENDING: "bg-yellow-100 text-yellow-700",
-    CONFIRMED: "bg-blue-100 text-blue-700",
-    PACKED: "bg-indigo-100 text-indigo-700",
-    SHIPPED: "bg-purple-100 text-purple-700",
-    DELIVERED: "bg-green-100 text-green-700",
-    CANCELLED: "bg-red-100 text-red-700",
-  };
 
   if (authLoading) {
     return (
@@ -98,164 +45,139 @@ export default function AccountPage() {
   if (!user) return null;
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-5 py-8">
-      <AnimatedSection>
-        <h1 className="font-display text-3xl text-brand-950">My Account</h1>
-      </AnimatedSection>
-
-      {/* Tabs */}
-      <div className="mt-6 flex gap-2 border-b border-brand-100">
-        {[
-          { id: "profile", label: "Profile", icon: User },
-          { id: "addresses", label: "Addresses", icon: MapPin },
-          { id: "orders", label: "Orders", icon: Package },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as typeof activeTab)}
-            className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold transition ${activeTab === tab.id ? "border-b-2 border-brand-500 text-brand-900" : "text-brand-500 hover:text-brand-700"}`}
-          >
-            <tab.icon size={16} /> {tab.label}
-          </button>
-        ))}
+    <div className="mx-auto min-h-screen w-full max-w-4xl bg-gray-50 pb-20 md:py-8">
+      {/* Top Profile Card */}
+      <div className="bg-white px-5 py-8 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold text-brand-950">{user.name || "Customer"}</h1>
+            <div className="mt-1 flex items-center gap-1.5 text-brand-600">
+              <Smartphone size={14} />
+              <span className="text-sm font-medium">{user.mobile || "Add phone number"}</span>
+            </div>
+            <div className="mt-4 flex items-center gap-2">
+              <div className="flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">
+                <span className="flex h-4 w-4 items-center justify-center rounded-full bg-yellow-400 text-[10px] text-white">✨</span>
+                Bhuvika Plus
+              </div>
+              <Link href="#" className="text-xs font-bold text-brand-500 hover:underline">
+                Valid till Feb 15, 2027 >
+              </Link>
+            </div>
+          </div>
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+            <User size={32} />
+          </div>
+        </div>
       </div>
 
-      {/* Profile Tab */}
-      {activeTab === "profile" && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-6">
-          <div className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-brand-600">
-                <User size={32} />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-brand-950">{user.name || "Customer"}</h2>
-                <div className="mt-2 space-y-1">
-                  <p className="flex items-center gap-2 text-sm text-brand-600">
-                    <Mail size={14} /> {user.email}
-                  </p>
-                  {user.mobile && (
-                    <p className="flex items-center gap-2 text-sm text-brand-600">
-                      <Phone size={14} /> {user.mobile}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+      {/* Main Grid Buttons */}
+      <div className="mt-4 grid grid-cols-2 gap-4 px-5">
+        <Link href="/track" className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+            <Package size={20} />
           </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <Link href="/track" className="flex items-center justify-between rounded-xl border border-brand-100 bg-white p-4 transition hover:border-brand-300 hover:shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100">
-                  <Package size={20} className="text-purple-600" />
-                </div>
-                <span className="font-semibold text-brand-900">Track Order</span>
-              </div>
-              <ChevronRight size={20} className="text-brand-400" />
-            </Link>
-
-            <button onClick={logout} className="flex items-center justify-between rounded-xl border border-red-100 bg-white p-4 transition hover:border-red-300 hover:shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
-                  <LogOut size={20} className="text-red-600" />
-                </div>
-                <span className="font-semibold text-red-700">Logout</span>
-              </div>
-              <ChevronRight size={20} className="text-red-400" />
-            </button>
+          <span className="font-bold text-gray-800">Orders</span>
+        </Link>
+        <Link href="/wishlist" className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600">
+            <Heart size={20} />
           </div>
-        </motion.div>
-      )}
-
-      {/* Addresses Tab */}
-      {activeTab === "addresses" && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-brand-600">{addresses.length} saved address{addresses.length !== 1 ? "es" : ""}</p>
-            <Link href="/checkout" className="flex items-center gap-1 rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-950">
-              <Plus size={16} /> Add New
-            </Link>
+          <span className="font-bold text-gray-800">Wishlist</span>
+        </Link>
+        <Link href="/coupons" className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+            <Ticket size={20} />
           </div>
+          <span className="font-bold text-gray-800">Coupons</span>
+        </Link>
+        <Link href="/help-center" className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+            <Headset size={20} />
+          </div>
+          <span className="font-bold text-gray-800">Help Center</span>
+        </Link>
+      </div>
 
-          {loadingAddresses ? (
-            <div className="py-8 text-center text-brand-600">Loading addresses...</div>
-          ) : addresses.length === 0 ? (
-            <div className="rounded-2xl border border-brand-100 bg-white py-12 text-center">
-              <MapPin size={40} className="mx-auto text-brand-300" />
-              <p className="mt-4 text-brand-700">No saved addresses yet</p>
-              <Link href="/checkout" className="mt-4 inline-flex items-center gap-1 rounded-full bg-brand-900 px-6 py-2 text-sm font-semibold text-white">
-                <Plus size={16} /> Add Address
-              </Link>
+      {/* Account Settings Section */}
+      <div className="mt-8 px-5">
+        <h2 className="text-lg font-bold text-gray-900">Account Settings</h2>
+        <div className="mt-4 divide-y divide-gray-100 rounded-2xl bg-white shadow-sm overflow-hidden">
+          <Link href="#" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <User size={20} className="text-brand-500" />
+              <span className="font-medium text-gray-700">Edit Profile</span>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {addresses.map(addr => (
-                <div key={addr._id} className="rounded-xl border border-brand-100 bg-white p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-brand-900">{addr.fullName}</p>
-                        {addr.isDefault && <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700">Default</span>}
-                      </div>
-                      <p className="mt-1 text-sm text-brand-600">{addr.line1}{addr.line2 ? `, ${addr.line2}` : ""}</p>
-                      <p className="text-sm text-brand-600">{addr.city}, {addr.state} - {addr.postalCode}</p>
-                      <p className="mt-1 text-sm font-medium text-brand-700">📞 {addr.phone}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      {!addr.isDefault && (
-                        <button onClick={() => handleSetDefault(addr._id)} className="rounded-lg bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-600 hover:bg-brand-100">
-                          Set Default
-                        </button>
-                      )}
-                      <button onClick={() => handleDeleteAddress(addr._id)} className="rounded-lg p-1.5 text-red-400 hover:bg-red-50 hover:text-red-600">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+          <Link href="#" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <MapPin size={20} className="text-brand-500" />
+              <span className="font-medium text-gray-700">Saved Addresses</span>
             </div>
-          )}
-        </motion.div>
-      )}
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+          <Link href="#" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <Bell size={20} className="text-brand-500" />
+              <span className="font-medium text-gray-700">Notification Settings</span>
+            </div>
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+        </div>
+      </div>
 
-      {/* Orders Tab */}
-      {activeTab === "orders" && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
-          {loadingOrders ? (
-            <div className="py-8 text-center text-brand-600">Loading orders...</div>
-          ) : orders.length === 0 ? (
-            <div className="rounded-2xl border border-brand-100 bg-white py-12 text-center">
-              <Package size={40} className="mx-auto text-brand-300" />
-              <p className="mt-4 text-brand-700">No orders yet</p>
-              <Link href="/shop" className="mt-4 inline-block rounded-full bg-brand-900 px-6 py-2 text-sm font-semibold text-white">
-                Start Shopping
-              </Link>
+      {/* Payments Section */}
+      <div className="mt-8 px-5">
+        <h2 className="text-lg font-bold text-gray-900">My Payments</h2>
+        <div className="mt-4 divide-y divide-gray-100 rounded-2xl bg-white shadow-sm overflow-hidden">
+          <Link href="#" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <Wallet size={20} className="text-brand-500" />
+              <span className="font-medium text-gray-700">Saved Cards & Wallet</span>
             </div>
-          ) : (
-            <div className="space-y-3">
-              {orders.map(order => (
-                <Link key={order._id} href={`/track?orderId=${order._id}`} className="block rounded-xl border border-brand-100 bg-white p-4 transition hover:border-brand-300 hover:shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-mono text-sm font-semibold text-brand-900">#{order._id.slice(0, 8).toUpperCase()}</p>
-                      <p className="text-sm text-brand-600">{order.items.length} item{order.items.length > 1 ? "s" : ""} • ₹{order.totalAmount.toLocaleString("en-IN")}</p>
-                      <p className="text-xs text-brand-500">{new Date(order.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColors[order.status] || "bg-gray-100 text-gray-700"}`}>
-                        {order.status}
-                      </span>
-                      <ChevronRight size={20} className="text-brand-400" />
-                    </div>
-                  </div>
-                </Link>
-              ))}
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+          <Link href="#" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <CreditCard size={20} className="text-brand-500" />
+              <span className="font-medium text-gray-700">Saved UPI Accounts</span>
             </div>
-          )}
-        </motion.div>
-      )}
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Support Section */}
+      <div className="mt-8 px-5">
+        <h2 className="text-lg font-bold text-gray-900">Support & Legal</h2>
+        <div className="mt-4 divide-y divide-gray-100 rounded-2xl bg-white shadow-sm overflow-hidden">
+          <Link href="/help-center" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <Headset size={20} className="text-brand-500" />
+              <span className="font-medium text-gray-700">Help Center</span>
+            </div>
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+          <Link href="/privacy-policy" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
+            <div className="flex items-center gap-3">
+              <ShieldCheck size={20} className="text-brand-500" />
+              <span className="font-medium text-gray-700">Privacy Policy</span>
+            </div>
+            <ChevronRight size={18} className="text-gray-300" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Logout */}
+      <div className="mt-10 px-5">
+        <button 
+          onClick={logout}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-red-100 bg-white py-4 font-bold text-red-600 shadow-sm transition hover:bg-red-50"
+        >
+          <LogOut size={20} /> Logout
+        </button>
+      </div>
     </div>
   );
 }
