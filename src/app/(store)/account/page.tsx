@@ -222,13 +222,6 @@ export default function AccountPage() {
             </div>
             <ChevronRight size={18} className="text-gray-300" />
           </Link>
-          <Link href="/notifications" className="flex items-center justify-between p-4 transition hover:bg-gray-50">
-            <div className="flex items-center gap-3">
-              <Bell size={20} className="text-brand-500" />
-              <span className="font-medium text-gray-700">Notification Settings</span>
-            </div>
-            <ChevronRight size={18} className="text-gray-300" />
-          </Link>
         </div>
       </div>
 

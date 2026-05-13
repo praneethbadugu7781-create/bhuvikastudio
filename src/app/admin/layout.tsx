@@ -15,7 +15,6 @@ const sidebarLinks = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/customers", label: "Customers", icon: Users },
-  { href: "/admin/marketing", label: "Marketing Hub", icon: Megaphone },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
