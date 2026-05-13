@@ -1,18 +1,13 @@
 "use client";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   Megaphone, 
   Send, 
-  Users, 
   MessageSquare, 
   Mail, 
   CheckCircle, 
   Loader2, 
   AlertCircle,
-  Smartphone,
-  ChevronRight,
-  Plus
 } from "lucide-react";
 
 export default function MarketingPage() {
@@ -126,7 +121,7 @@ export default function MarketingPage() {
                   {["all", "active", "vip"].map((t) => (
                     <button 
                       key={t}
-                      onClick={() => setTarget(t as any)}
+                      onClick={() => setTarget(t as "all" | "active" | "vip")}
                       className={`rounded-full px-5 py-2 text-[10px] font-bold uppercase tracking-widest transition ${target === t ? "bg-brand-900 text-white" : "bg-brand-50 text-brand-600 hover:bg-brand-100"}`}
                     >
                       {t === "all" ? "All Customers" : t === "active" ? "Recent Shoppers" : "VIP Members"}

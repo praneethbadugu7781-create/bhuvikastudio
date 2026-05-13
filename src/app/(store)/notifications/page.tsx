@@ -1,9 +1,17 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { ArrowLeft, Bell, MessageSquare, Mail, Smartphone, ShieldCheck, ChevronRight } from "lucide-react";
+import { ArrowLeft, MessageSquare, Mail, Smartphone, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+
+interface PreferenceToggleProps {
+  icon: any;
+  title: string;
+  description: string;
+  active: boolean;
+  onToggle: () => void;
+  color?: string;
+}
 
 export default function NotificationsPage() {
   const { user, loading } = useAuth();
@@ -110,7 +118,7 @@ export default function NotificationsPage() {
   );
 }
 
-function PreferenceToggle({ icon: Icon, title, description, active, onToggle, color = "text-brand-500" }: any) {
+function PreferenceToggle({ icon: Icon, title, description, active, onToggle, color = "text-brand-500" }: PreferenceToggleProps) {
   return (
     <div className="flex items-center justify-between p-5 transition hover:bg-gray-50">
       <div className="flex items-center gap-4">

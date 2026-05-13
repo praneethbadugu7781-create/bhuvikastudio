@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { ArrowLeft, User, Mail, Smartphone, Save, CheckCircle } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
