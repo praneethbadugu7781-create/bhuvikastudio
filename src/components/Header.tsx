@@ -17,11 +17,11 @@ export default function Header() {
     <header className="sticky top-0 z-30 border-b border-brand-100/60 bg-white/80 backdrop-blur-lg">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2">
         {/* Left: Back button (mobile, not on home) + Logo */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {!isHome && (
             <button
               onClick={() => router.back()}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100 md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100"
               aria-label="Go back"
             >
               <ArrowLeft size={18} />
@@ -30,7 +30,7 @@ export default function Header() {
           <Link href="/" className="transition hover:opacity-80">
             <div className="flex items-center gap-2">
               {/* Brand Logo */}
-              <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-brand-50 md:h-14 md:w-14">
+              <div className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-brand-50 md:h-14 md:w-14">
                 <img src="/logo-icon.svg" alt="Bhuvika Studio" className="h-full w-full object-contain p-1.5" />
               </div>
               {/* Text */}
@@ -72,25 +72,8 @@ export default function Header() {
           <CartBadge />
         </nav>
 
-        {/* Mobile: Home + Account + Wishlist + Cart */}
-        <div className="flex items-center gap-2 md:hidden">
-          {!isHome && (
-            <Link href="/" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Home">
-              <Home size={18} />
-            </Link>
-          )}
-          <Link href="/wishlist" className="relative flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Wishlist">
-            <Heart size={18} className={wishlistItems.length > 0 ? "fill-red-500 text-red-500" : ""} />
-          </Link>
-          {user ? (
-            <Link href="/account" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Account">
-              <User size={18} />
-            </Link>
-          ) : (
-            <Link href="/login" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-900 text-white transition hover:bg-brand-950" aria-label="Login">
-              <User size={18} />
-            </Link>
-          )}
+        {/* Mobile: Logo + Cart Only */}
+        <div className="flex items-center gap-4 md:hidden">
           <CartBadge />
         </div>
       </div>
