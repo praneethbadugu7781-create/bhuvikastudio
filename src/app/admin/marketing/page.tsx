@@ -22,6 +22,14 @@ export default function MarketingPage() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [target, setTarget] = useState<"all" | "active" | "vip">("all");
+  const [customerCount, setCustomerCount] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/stats")
+      .then(res => res.json())
+      .then(data => setCustomerCount(data.userCount || 0))
+      .catch(() => {});
+  }, []);
 
   const handleSend = () => {
     if (!message) return alert("Please enter a message!");
@@ -46,7 +54,7 @@ export default function MarketingPage() {
         <div className="flex gap-3">
           <div className="rounded-2xl bg-white px-6 py-3 shadow-sm border border-brand-100">
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Total Reach</p>
-            <p className="text-2xl font-bold text-brand-950">1,248 Customers</p>
+            <p className="text-2xl font-bold text-brand-950">{customerCount.toLocaleString()} Customers</p>
           </div>
         </div>
       </div>
@@ -113,13 +121,13 @@ export default function MarketingPage() {
 
               {/* Target Audience */}
               <div className="space-y-3">
-                <label className="text-sm font-bold text-brand-900 ml-1">Target Audience</label>
+                <label className="text-sm font-bold text-brand-950 ml-1 font-display uppercase tracking-widest text-[10px]">Target Audience</label>
                 <div className="flex flex-wrap gap-2">
                   {["all", "active", "vip"].map((t) => (
                     <button 
                       key={t}
                       onClick={() => setTarget(t as any)}
-                      className={`rounded-full px-5 py-2 text-xs font-bold uppercase tracking-widest transition ${target === t ? "bg-brand-900 text-white" : "bg-brand-50 text-brand-600 hover:bg-brand-100"}`}
+                      className={`rounded-full px-5 py-2 text-[10px] font-bold uppercase tracking-widest transition ${target === t ? "bg-brand-900 text-white" : "bg-brand-50 text-brand-600 hover:bg-brand-100"}`}
                     >
                       {t === "all" ? "All Customers" : t === "active" ? "Recent Shoppers" : "VIP Members"}
                     </button>
@@ -169,20 +177,12 @@ export default function MarketingPage() {
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-sm border border-brand-100">
-            <h3 className="font-bold text-brand-950 mb-4">Recent History</h3>
-            <div className="space-y-4">
-              {[
-                { label: "Summer Sale 2026", date: "2 days ago", type: "WhatsApp", status: "Sent" },
-                { label: "New Arrival: Silks", date: "1 week ago", type: "Email", status: "Sent" },
-              ].map((h, i) => (
-                <div key={i} className="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 transition border border-transparent hover:border-gray-100">
-                  <div>
-                    <p className="text-sm font-bold text-brand-950">{h.label}</p>
-                    <p className="text-[10px] text-gray-400">{h.date} • {h.type}</p>
-                  </div>
-                  <CheckCircle size={14} className="text-green-500" />
-                </div>
-              ))}
+            <h3 className="font-bold text-brand-950 mb-4 font-display uppercase tracking-widest text-xs">Recent History</h3>
+            <div className="flex flex-col items-center justify-center py-8 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+              <div className="p-3 rounded-full bg-white text-gray-300 shadow-sm">
+                <Megaphone size={20} />
+              </div>
+              <p className="mt-3 text-xs font-bold text-gray-400">No broadcasts sent yet</p>
             </div>
           </div>
         </div>
