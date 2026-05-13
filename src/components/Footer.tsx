@@ -40,10 +40,10 @@ export default function Footer() {
             Premium boutique in Vijayawada offering curated Designer Sarees, Bridal Lehengas, Western Wear, and Kids Wear. Curated fashion for every celebration.
           </p>
           <div className="mt-4 flex gap-3">
-            <motion.a whileHover={{ scale: 1.15 }} href="#" className="rounded-full bg-brand-800 p-2 transition hover:bg-brand-700">
+            <motion.a whileHover={{ scale: 1.15 }} href="https://instagram.com/bhuvika_studio" target="_blank" rel="noopener noreferrer" className="rounded-full bg-brand-800 p-2 transition hover:bg-brand-700">
               <Instagram size={18} className="text-white" />
             </motion.a>
-            <motion.a whileHover={{ scale: 1.15 }} href="#" className="rounded-full bg-brand-800 p-2 transition hover:bg-brand-700">
+            <motion.a whileHover={{ scale: 1.15 }} href="https://facebook.com/bhuvika_studio" target="_blank" rel="noopener noreferrer" className="rounded-full bg-brand-800 p-2 transition hover:bg-brand-700">
               <Facebook size={18} className="text-white" />
             </motion.a>
           </div>
@@ -86,7 +86,8 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="hover:text-white hover:underline"
               >
-                Vijayawada, Andhra Pradesh
+                Bhuvika Studio, Beside Union Bank,<br />
+                MG Road, Vijayawada, AP - 520010
               </a>
             </li>
             <li className="flex items-center gap-2">

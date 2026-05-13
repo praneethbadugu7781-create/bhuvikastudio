@@ -6,12 +6,25 @@ import { motion } from "framer-motion";
 import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import { useCart } from "@/store/cart";
+import { useWishlist } from "@/store/wishlist";
 import ProductCard from "@/components/ProductCard";
 import AnimatedSection from "@/components/AnimatedSection";
+
+// Helper to determine if a color is light for checkmark visibility
+const isLightColor = (color: string) => {
+  if (!color.startsWith('#')) return false;
+  const hex = color.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  return brightness > 155;
+};
 
 export default function ProductPageClient({ product, related }: { product: CatalogItem | null; related: CatalogItem[] }) {
   const router = useRouter();
   const addToCart = useCart((s) => s.add);
+  const { toggle, isInWishlist } = useWishlist();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColorIdx, setSelectedColorIdx] = useState<number>(0);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
@@ -120,8 +133,11 @@ export default function ProductPageClient({ product, related }: { product: Catal
                 {Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
               </span>
             )}
-            <button className="absolute right-4 top-4 rounded-full bg-white/90 p-3 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white">
-              <Heart size={20} />
+            <button 
+              onClick={() => toggle(product)}
+              className={`absolute right-4 top-4 rounded-full p-3 shadow-lg backdrop-blur transition ${active ? "bg-red-500 text-white" : "bg-white/90 hover:bg-brand-500 hover:text-white"}`}
+            >
+              <Heart size={20} fill={active ? "currentColor" : "none"} />
             </button>
           </div>
 

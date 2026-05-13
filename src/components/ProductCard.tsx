@@ -3,8 +3,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingBag, Heart } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
+import { useWishlist } from "@/store/wishlist";
+import { useCart } from "@/store/cart";
 
 export default function ProductCard({ item, index = 0 }: { item: CatalogItem; index?: number }) {
+  const { toggle, isInWishlist } = useWishlist();
+  const addToCart = useCart((s) => s.add);
+  const active = isInWishlist(item.slug);
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
@@ -13,34 +19,41 @@ export default function ProductCard({ item, index = 0 }: { item: CatalogItem; in
       transition={{ duration: 0.5, delay: index * 0.08 }}
       className="group relative overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
     >
-      <Link href={`/product/${item.slug}`} className="block">
-        <div className="relative h-72 overflow-hidden bg-brand-50">
+      <div className="relative h-72 overflow-hidden bg-brand-50">
+        <Link href={`/product/${item.slug}`} className="block h-full w-full">
           <img
             src={item.image}
             alt={item.name}
             className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-          {item.oldPrice && (
-            <span className="absolute left-3 top-3 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
-              {Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100)}% OFF
-            </span>
-          )}
-          {item.stock === "Out of Stock" && (
-            <span className="absolute right-3 top-3 rounded-full bg-gray-900/80 px-3 py-1 text-xs font-bold text-white">
-              Sold Out
-            </span>
-          )}
-          <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 transition-all duration-300 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
-            <button className="rounded-full bg-white/90 p-2.5 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white">
-              <Heart size={18} />
-            </button>
-            <button className="rounded-full bg-white/90 p-2.5 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white">
-              <ShoppingBag size={18} />
-            </button>
-          </div>
+        </Link>
+        
+        {item.oldPrice && (
+          <span className="absolute left-3 top-3 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white">
+            {Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100)}% OFF
+          </span>
+        )}
+        {item.stock === "Out of Stock" && (
+          <span className="absolute right-3 top-3 rounded-full bg-gray-900/80 px-3 py-1 text-xs font-bold text-white">
+            Sold Out
+          </span>
+        )}
+        <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 transition-all duration-300 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+          <button 
+            onClick={() => toggle(item)}
+            className={`rounded-full p-2.5 shadow-lg backdrop-blur transition ${active ? "bg-red-500 text-white" : "bg-white/90 hover:bg-brand-500 hover:text-white"}`}
+          >
+            <Heart size={18} fill={active ? "currentColor" : "none"} />
+          </button>
+          <button 
+            onClick={() => addToCart(item, item.sizes[0])}
+            className="rounded-full bg-white/90 p-2.5 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white"
+          >
+            <ShoppingBag size={18} />
+          </button>
         </div>
-      </Link>
+      </div>
       <div className="p-4">
         <p className="text-xs font-semibold uppercase tracking-widest text-brand-500">{item.category}</p>
         <Link href={`/product/${item.slug}`}>

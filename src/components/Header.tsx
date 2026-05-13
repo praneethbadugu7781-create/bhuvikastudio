@@ -47,6 +47,14 @@ export default function Header() {
           </Link>
           <Link href="/shop" className="transition hover:text-brand-500">Shop</Link>
           <Link href="/categories" className="transition hover:text-brand-500">Categories</Link>
+          <Link href="/wishlist" className="relative transition hover:text-brand-500" title="Wishlist">
+            <Heart size={20} className={wishlistItems.length > 0 ? "fill-red-500 text-red-500" : ""} />
+            {wishlistItems.length > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-brand-900 text-[10px] font-bold text-white">
+                {wishlistItems.length}
+              </span>
+            )}
+          </Link>
           {user ? (
             <div className="flex items-center gap-3">
               <Link href="/account" className="flex items-center gap-1.5 text-brand-600 transition hover:text-brand-900">
@@ -62,13 +70,16 @@ export default function Header() {
           <CartBadge />
         </nav>
 
-        {/* Mobile: Home + Account + Cart */}
+        {/* Mobile: Home + Account + Wishlist + Cart */}
         <div className="flex items-center gap-2 md:hidden">
           {!isHome && (
             <Link href="/" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Home">
               <Home size={18} />
             </Link>
           )}
+          <Link href="/wishlist" className="relative flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Wishlist">
+            <Heart size={18} className={wishlistItems.length > 0 ? "fill-red-500 text-red-500" : ""} />
+          </Link>
           {user ? (
             <Link href="/account" className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-brand-700 transition hover:bg-brand-100" aria-label="Account">
               <User size={18} />
