@@ -19,10 +19,10 @@ export const metadata: Metadata = {
 };
 
 const categories = [
-  { icon: Package, title: "Orders & Shipping", desc: "Track, change, or cancel orders" },
-  { icon: RotateCcw, title: "Returns & Refunds", desc: "Policy and status of your returns" },
-  { icon: CreditCard, title: "Payments & Coupons", desc: "Refunds, wallet, and offers" },
-  { icon: User, title: "Account & Security", desc: "Manage profile and saved addresses" },
+  { icon: Package, title: "Orders & Shipping", desc: "Track, change, or cancel orders", href: "/orders" },
+  { icon: RotateCcw, title: "Returns & Refunds", desc: "Policy and status of your returns", href: "/refund-policy" },
+  { icon: CreditCard, title: "Payments & Coupons", desc: "Refunds, wallet, and offers", href: "/coupons" },
+  { icon: User, title: "Account & Security", desc: "Manage profile and saved addresses", href: "/account" },
 ];
 
 const faqs = [
@@ -56,7 +56,7 @@ export default function HelpCenterPage() {
         {categories.map((cat, i) => (
           <Link 
             key={i} 
-            href="#" 
+            href={cat.href} 
             className="group flex items-center gap-4 rounded-2xl border border-brand-100 bg-white p-5 transition hover:border-brand-300 hover:shadow-md"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-500 transition group-hover:bg-brand-900 group-hover:text-white">
