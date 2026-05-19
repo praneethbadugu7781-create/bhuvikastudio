@@ -6,7 +6,17 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin/", "/api/", "/cart", "/checkout"],
+        disallow: [
+          "/admin/",
+          "/api/",
+          "/cart",
+          "/checkout",
+          "/account",
+          "/orders",
+          "/wishlist",
+          "/track",
+          "/notifications",
+        ],
       },
     ],
     sitemap: "https://bhuvikastudio.com/sitemap.xml",
