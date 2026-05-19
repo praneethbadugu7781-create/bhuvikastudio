@@ -69,6 +69,19 @@ export default function AdminProductsPage() {
     setShowModal(true);
   };
 
+  const getAuthToken = async () => {
+    try {
+      const res = await fetch("/api/auth/token");
+      if (res.ok) {
+        const data = await res.json();
+        return data.token;
+      }
+    } catch (e) {
+      console.error("Failed to get auth token", e);
+    }
+    return null;
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -80,11 +93,17 @@ export default function AdminProductsPage() {
         formData.append("images", files[i]);
       }
 
+      const token = await getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
       const res = await fetch(`${apiBase}/api/upload/multiple`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        headers,
       });
       if (!res.ok) {
         const err = await res.json();
@@ -94,7 +113,8 @@ export default function AdminProductsPage() {
       }
       const data = await res.json();
       setImageUrls(prev => [...prev, ...data.urls]);
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Image upload failed. Please try again.");
     }
     setUploading(false);
@@ -112,11 +132,17 @@ export default function AdminProductsPage() {
         formData.append("images", files[i]);
       }
 
+      const token = await getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
       const res = await fetch(`${apiBase}/api/upload/multiple`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        headers,
       });
       if (!res.ok) {
         const err = await res.json();

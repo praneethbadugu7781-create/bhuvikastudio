@@ -57,6 +57,19 @@ export default function ReelsPage() {
     load();
   }, []);
 
+  const getAuthToken = async () => {
+    try {
+      const res = await fetch("/api/auth/token");
+      if (res.ok) {
+        const data = await res.json();
+        return data.token;
+      }
+    } catch (e) {
+      console.error("Failed to get auth token", e);
+    }
+    return null;
+  };
+
   const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -66,11 +79,17 @@ export default function ReelsPage() {
       const formData = new FormData();
       formData.append("video", file);
 
+      const token = await getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
       const res = await fetch(`${apiBase}/api/upload/video`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        headers,
       });
 
       if (!res.ok) {
@@ -98,11 +117,17 @@ export default function ReelsPage() {
       const formData = new FormData();
       formData.append("image", file);
 
+      const token = await getAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
       const res = await fetch(`${apiBase}/api/upload`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        headers,
       });
 
       if (!res.ok) {
