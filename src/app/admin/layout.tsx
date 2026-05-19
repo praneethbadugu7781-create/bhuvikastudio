@@ -19,6 +19,7 @@ const sidebarLinks = [
   { href: "/admin/coupons", label: "Coupons", icon: Ticket },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/shipping", label: "Shipping", icon: Truck },
+  { href: "/admin/reels", label: "Reels", icon: ImageIcon },
 ];
 
 type AdminUser = { id: string; name: string; email: string; role: string };

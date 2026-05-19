@@ -1,8 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Truck, ShieldCheck, Star } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Sparkles, Truck, ShieldCheck, Star, Play, Video, X } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import ProductCard from "@/components/ProductCard";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -36,8 +36,20 @@ const features = [
 
 export default function HomeClient({ products, featured }: { products: CatalogItem[]; featured: CatalogItem[] }) {
   const newArrivals = products.slice(0, 3);
+  const [reels, setReels] = useState<any[]>([]);
+  const [activeReel, setActiveReel] = useState<string | null>(null);
+  const [activeReelLink, setActiveReelLink] = useState<string | null>(null);
 
-  // Banners removed as requested
+  useEffect(() => {
+    fetch("/api/reels")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setReels(data);
+        }
+      })
+      .catch((err) => console.error("Failed to load reels", err));
+  }, []);
 
   return (
     <div className="overflow-hidden">
@@ -189,6 +201,63 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         </div>
       </section>
 
+      {/* Reels Section */}
+      {reels.length > 0 && (
+        <section className="bg-white py-10 md:py-16">
+          <div className="mx-auto w-full max-w-6xl px-4 md:px-5">
+            <AnimatedSection>
+              <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">Trending Videos</p>
+              <h2 className="mt-1 font-script text-3xl md:text-5xl text-brand-950">Watch & Shop</h2>
+            </AnimatedSection>
+            
+            <div className="mt-6 md:mt-8 flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-brand-100 snap-x">
+              {reels.map((r, i) => (
+                <motion.div
+                  key={r._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  className="relative aspect-[9/16] w-[180px] md:w-[240px] shrink-0 overflow-hidden rounded-2xl bg-black border border-brand-100/50 shadow-md group cursor-pointer snap-start"
+                  onClick={() => {
+                    setActiveReel(r.videoUrl);
+                    setActiveReelLink(r.productLink || null);
+                  }}
+                >
+                  {r.coverImageUrl ? (
+                    <img
+                      src={r.coverImageUrl}
+                      alt={r.title}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full flex-col items-center justify-center bg-brand-950/20 text-brand-300">
+                      <Video className="mb-2" size={28} />
+                      <span className="text-[10px]">Play Reel</span>
+                    </div>
+                  )}
+
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-brand-950 shadow shadow-black/10 scale-90 group-hover:scale-100 transition-all">
+                      <Play className="ml-0.5 fill-brand-950 text-brand-950" size={18} />
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white">
+                    <p className="font-bold text-xs md:text-sm line-clamp-2">{r.title || "Showcase"}</p>
+                    {r.productLink && (
+                      <span className="inline-flex items-center gap-1 mt-1.5 text-[9px] bg-brand-900/80 backdrop-blur-sm px-2 py-0.5 rounded-full font-semibold">
+                        Shop Product
+                      </span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* New Arrivals */}
       <section className="mx-auto w-full max-w-6xl px-4 md:px-5 py-10 md:py-16">
         <AnimatedSection>
@@ -306,6 +375,62 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
           </AnimatedSection>
         </div>
       </section>
+
+      {/* Reel Player Modal */}
+      <AnimatePresence>
+        {activeReel && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setActiveReel(null);
+                setActiveReelLink(null);
+              }}
+              className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+            >
+              <div
+                className="relative aspect-[9/16] w-full max-w-[340px] bg-black rounded-3xl overflow-hidden border border-brand-900/20 shadow-2xl flex flex-col justify-end"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <video
+                  src={activeReel}
+                  controls
+                  autoPlay
+                  loop
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                
+                <button
+                  onClick={() => {
+                    setActiveReel(null);
+                    setActiveReelLink(null);
+                  }}
+                  className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-black/60 hover:bg-black/80 text-white transition"
+                >
+                  <X size={18} />
+                </button>
+
+                {activeReelLink && (
+                  <div className="absolute bottom-4 left-4 right-4 z-10">
+                    <Link
+                      href={activeReelLink}
+                      onClick={() => {
+                        setActiveReel(null);
+                        setActiveReelLink(null);
+                      }}
+                      className="flex items-center justify-center gap-2 w-full rounded-full bg-brand-900 py-3 font-semibold text-white hover:bg-brand-950 shadow-lg shadow-brand-900/35 transition"
+                    >
+                      Shop This Product <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
