@@ -80,7 +80,12 @@ export default function AdminProductsPage() {
         formData.append("images", files[i]);
       }
 
-      const res = await fetch("/api/upload/multiple", { method: "POST", body: formData });
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+      const res = await fetch(`${apiBase}/api/upload/multiple`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
       if (!res.ok) {
         const err = await res.json();
         alert(err.error || "Upload failed");
@@ -107,7 +112,12 @@ export default function AdminProductsPage() {
         formData.append("images", files[i]);
       }
 
-      const res = await fetch("/api/upload/multiple", { method: "POST", body: formData });
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+      const res = await fetch(`${apiBase}/api/upload/multiple`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
       if (!res.ok) {
         const err = await res.json();
         alert(err.error || "Upload failed");

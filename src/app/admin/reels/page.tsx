@@ -66,9 +66,11 @@ export default function ReelsPage() {
       const formData = new FormData();
       formData.append("video", file);
 
-      const res = await fetch("/api/upload/video", {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+      const res = await fetch(`${apiBase}/api/upload/video`, {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -96,9 +98,11 @@ export default function ReelsPage() {
       const formData = new FormData();
       formData.append("image", file);
 
-      const res = await fetch("/api/upload", {
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+      const res = await fetch(`${apiBase}/api/upload`, {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       if (!res.ok) {
