@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check } from "lucide-react";
+import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check, Tag, Lock, Gift } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import { useCart } from "@/store/cart";
 import { useWishlist } from "@/store/wishlist";
@@ -32,6 +32,36 @@ export default function ProductPageClient({ product, related }: { product: Catal
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [added, setAdded] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+
+  const [pincodeInput, setPincodeInput] = useState("");
+  const [deliveryDateMsg, setDeliveryDateMsg] = useState("");
+  const [checkingPincode, setCheckingPincode] = useState(false);
+
+  const [descOpen, setDescOpen] = useState(true);
+  const [noteOpen, setNoteOpen] = useState(false);
+
+  const calculateDelivery = (pin: string) => {
+    if (pin.length !== 6) {
+      alert("Please enter a valid 6-digit pincode");
+      return;
+    }
+    setCheckingPincode(true);
+    
+    setTimeout(() => {
+      const today = new Date();
+      const start = new Date(today);
+      start.setDate(today.getDate() + 5);
+      const end = new Date(today);
+      end.setDate(today.getDate() + 9);
+      
+      const format = (date: Date) => {
+        return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      };
+      
+      setDeliveryDateMsg(`${format(start)} - ${format(end)}`);
+      setCheckingPincode(false);
+    }, 600);
+  };
 
   if (!product) {
     return (
@@ -171,10 +201,6 @@ export default function ProductPageClient({ product, related }: { product: Catal
             {product.oldPrice && <span className="text-lg text-brand-400 line-through">&#8377;{product.oldPrice.toLocaleString("en-IN")}</span>}
           </div>
 
-          {/* Description */}
-          {product.description && (
-            <p className="mt-4 text-brand-700 leading-relaxed">{product.description}</p>
-          )}
 
           {/* Color Swatches */}
           {hasColorOptions ? (
@@ -230,13 +256,122 @@ export default function ProductPageClient({ product, related }: { product: Catal
             </button>
           </div>
 
-          <div className="mt-8 grid grid-cols-3 gap-3">
-            {[{ icon: Truck, label: "Free Delivery" }, { icon: RotateCcw, label: "Easy Returns" }, { icon: Shield, label: "Secure Pay" }].map(({ icon: Icon, label }) => (
-              <div key={label} className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-3 text-center">
-                <Icon size={20} className="text-brand-500" />
-                <span className="text-xs font-semibold text-brand-800">{label}</span>
-              </div>
-            ))}
+          {/* Premium Badges */}
+          <div className="mt-8 grid grid-cols-3 border-y border-brand-100 py-5 gap-2">
+            <div className="flex flex-col items-center text-center px-1">
+              <span className="mb-2 p-2 bg-brand-50 rounded-full text-brand-700">
+                <Tag size={18} />
+              </span>
+              <span className="text-[10px] font-bold tracking-tight text-brand-900 uppercase">Reasonable Prices</span>
+            </div>
+            <div className="flex flex-col items-center text-center px-1 border-x border-brand-100">
+              <span className="mb-2 p-2 bg-brand-50 rounded-full text-brand-700">
+                <Lock size={18} />
+              </span>
+              <span className="text-[10px] font-bold tracking-tight text-brand-900 uppercase">Secure Payment</span>
+            </div>
+            <div className="flex flex-col items-center text-center px-1">
+              <span className="mb-2 p-2 bg-brand-50 rounded-full text-brand-700">
+                <Gift size={18} />
+              </span>
+              <span className="text-[10px] font-bold tracking-tight text-brand-900 uppercase">Premium Package</span>
+            </div>
+          </div>
+
+          {/* Pincode & Delivery Section */}
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <Truck size={18} className="text-brand-500 shrink-0" />
+              <span className="text-sm font-semibold text-brand-900">Estimated Delivery:</span>
+              {deliveryDateMsg ? (
+                <span className="text-sm font-bold text-green-700">{deliveryDateMsg}</span>
+              ) : (
+                <span className="text-sm text-brand-500">Enter pincode below to check</span>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter 6-digit pincode"
+                maxLength={6}
+                value={pincodeInput}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setPincodeInput(val);
+                  if (val.length === 6) {
+                    calculateDelivery(val);
+                  } else {
+                    setDeliveryDateMsg("");
+                  }
+                }}
+                className="w-full max-w-[200px] rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none focus:border-brand-500 font-medium"
+              />
+              <button
+                type="button"
+                onClick={() => calculateDelivery(pincodeInput)}
+                className="rounded-xl bg-brand-900 px-5 py-2.5 text-xs font-semibold text-white hover:bg-brand-950 transition-all shadow-sm shrink-0"
+              >
+                {checkingPincode ? "Checking..." : "Check"}
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-brand-700 font-medium">
+              <RotateCcw size={14} className="text-brand-500 shrink-0" />
+              <span>Shipping: Flat ₹120 on all orders</span>
+            </div>
+          </div>
+
+          {/* Description & Note Accordions */}
+          <div className="mt-8 border-t border-brand-100 pt-6 space-y-4">
+            {/* Description Tab */}
+            <div className="border-b border-brand-100 pb-4">
+              <button 
+                type="button"
+                onClick={() => setDescOpen(!descOpen)}
+                className="flex w-full items-center justify-between font-display text-lg text-brand-950 font-medium"
+              >
+                <span>Description</span>
+                <span className="text-brand-500 transition-transform duration-300 text-xs" style={{ transform: descOpen ? "rotate(180deg)" : "rotate(0)" }}>
+                  ▼
+                </span>
+              </button>
+              {descOpen && (
+                <div className="mt-3 text-sm text-brand-700 leading-relaxed font-normal">
+                  {product.description || "No description available for this item."}
+                </div>
+              )}
+            </div>
+
+            {/* Note Tab */}
+            <div className="border-b border-brand-100 pb-4">
+              <button 
+                type="button"
+                onClick={() => setNoteOpen(!noteOpen)}
+                className="flex w-full items-center justify-between font-display text-lg text-brand-950 font-medium"
+              >
+                <span>Note</span>
+                <span className="text-brand-500 transition-transform duration-300 text-xs" style={{ transform: noteOpen ? "rotate(180deg)" : "rotate(0)" }}>
+                  ▼
+                </span>
+              </button>
+              {noteOpen && (
+                <div className="mt-3 text-sm text-brand-700 space-y-3 font-normal">
+                  <div className="flex gap-2">
+                    <span className="font-bold text-brand-900 shrink-0">• Color Accuracy:</span>
+                    <span>We strive to capture accurate product colors in natural light. However, slight variations may occur due to camera lens differences.</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="font-bold text-brand-900 shrink-0">• Shipping Time:</span>
+                    <span>Please allow 5-7 business days for delivery.</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="font-bold text-brand-900 shrink-0">• Return Policy:</span>
+                    <span>Orders are non-returnable and non-exchangeable.</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </motion.div>
       </div>
