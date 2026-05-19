@@ -35,16 +35,23 @@ export default function ChatStylist() {
         if (res.ok) {
           const data = await res.json();
           // Map backend products schema to frontend CatalogItem schema
-          const mapped = data.map((p: any) => ({
-            name: p.name,
-            slug: p.slug,
-            price: p.price,
-            oldPrice: p.oldPrice,
-            image: p.images?.[0]?.imageUrl || p.image || "/images/placeholder.jpg",
-            category: p.category,
-            stock: p.stock,
-            description: p.description,
-          }));
+          const mapped = data.map((p: any) => {
+            const firstVariant = p.variants?.[0];
+            return {
+              slug: p.slug,
+              name: p.name,
+              category: p.category,
+              price: firstVariant?.salePrice ? Number(firstVariant.salePrice) : (firstVariant ? Number(firstVariant.price) : 0),
+              oldPrice: firstVariant?.salePrice ? Number(firstVariant.price) : undefined,
+              sizes: p.variants ? [...new Set(p.variants.map((v: any) => v.size))] : [],
+              color: firstVariant?.color ?? "",
+              image: p.images?.[0]?.imageUrl ?? "",
+              images: p.images ? p.images.map((i: any) => i.imageUrl) : [],
+              stock: p.stockStatus === "IN_STOCK" ? "In Stock" : "Out of Stock",
+              featured: p.featured,
+              description: p.description,
+            };
+          });
           setAllProducts(mapped);
         }
       } catch (err) {
