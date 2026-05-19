@@ -48,11 +48,37 @@ export default function ProductPageClient({ product, related }: { product: Catal
     setCheckingPincode(true);
     
     setTimeout(() => {
+      const firstDigit = pin[0];
+      let minDays = 5;
+      let maxDays = 8;
+      
+      if (firstDigit === "5") {
+        // AP, Telangana, Karnataka (Bhuvika Studio home region)
+        minDays = 2;
+        maxDays = 4;
+      } else if (firstDigit === "6") {
+        // Tamil Nadu, Kerala
+        minDays = 3;
+        maxDays = 5;
+      } else if (firstDigit === "4") {
+        // Maharashtra, Goa, MP, Chhattisgarh
+        minDays = 4;
+        maxDays = 6;
+      } else if (firstDigit === "1" || firstDigit === "2") {
+        // North India (Delhi, Haryana, Punjab, UP)
+        minDays = 5;
+        maxDays = 7;
+      } else if (firstDigit === "7" || firstDigit === "9") {
+        // East / North East / J&K / Army
+        minDays = 6;
+        maxDays = 9;
+      }
+
       const today = new Date();
       const start = new Date(today);
-      start.setDate(today.getDate() + 5);
+      start.setDate(today.getDate() + minDays);
       const end = new Date(today);
-      end.setDate(today.getDate() + 9);
+      end.setDate(today.getDate() + maxDays);
       
       const format = (date: Date) => {
         return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -60,7 +86,7 @@ export default function ProductPageClient({ product, related }: { product: Catal
       
       setDeliveryDateMsg(`${format(start)} - ${format(end)}`);
       setCheckingPincode(false);
-    }, 600);
+    }, 500);
   };
 
   if (!product) {
@@ -316,10 +342,6 @@ export default function ProductPageClient({ product, related }: { product: Catal
               </button>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-brand-700 font-medium">
-              <RotateCcw size={14} className="text-brand-500 shrink-0" />
-              <span>Shipping: Flat ₹120 on all orders</span>
-            </div>
           </div>
 
           {/* Description & Note Accordions */}
