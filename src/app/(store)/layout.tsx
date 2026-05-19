@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ChatStylist from "@/components/ChatStylist";
 import { AuthProvider } from "@/context/AuthContext";
 
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
@@ -8,6 +9,7 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
       <Header />
       <main className="min-h-screen">{children}</main>
       <Footer />
+      <ChatStylist />
     </AuthProvider>
   );
 }
