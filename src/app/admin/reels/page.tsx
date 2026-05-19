@@ -39,6 +39,8 @@ export default function ReelsPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [previewVideo, setPreviewVideo] = useState<string | null>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   const load = async () => {
     try {
@@ -54,6 +56,66 @@ export default function ReelsPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingVideo(true);
+    try {
+      const formData = new FormData();
+      formData.append("video", file);
+
+      const res = await fetch("/api/upload/video", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Video upload failed");
+        return;
+      }
+
+      const data = await res.json();
+      setForm((f) => ({ ...f, videoUrl: data.url }));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload video");
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Image upload failed");
+        return;
+      }
+
+      const data = await res.json();
+      setForm((f) => ({ ...f, coverImageUrl: data.url }));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload cover image");
+    } finally {
+      setUploadingCover(false);
+    }
+  };
 
   const save = async () => {
     setSaving(true);
@@ -259,26 +321,95 @@ export default function ReelsPage() {
 
                 <div>
                   <label className="text-sm font-semibold text-brand-800">
-                    Video URL <span className="text-red-500">*</span>
+                    Upload Video Reel <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    value={form.videoUrl}
-                    onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))}
-                    placeholder="e.g. Cloudinary link, direct MP4 link, or Instagram video"
-                    className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500"
-                    required
-                  />
-                  <p className="mt-1 text-[11px] text-brand-500">Provide a direct video link ending in .mp4 or .webm for best performance.</p>
+                  {form.videoUrl ? (
+                    <div className="mt-1 flex items-center justify-between rounded-xl border border-brand-200 bg-brand-50/50 p-3">
+                      <div className="flex items-center gap-2 text-brand-900 min-w-0">
+                        <Video size={18} className="shrink-0 text-brand-500" />
+                        <span className="text-xs truncate font-medium">{form.videoUrl}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, videoUrl: "" }))}
+                        className="text-xs font-bold text-red-500 hover:text-red-700 underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-1">
+                      <input
+                        type="file"
+                        accept="video/*"
+                        id="video-file"
+                        onChange={handleVideoUpload}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="video-file"
+                        className="flex flex-col items-center justify-center border-2 border-dashed border-brand-200 rounded-xl py-6 hover:border-brand-500 cursor-pointer bg-brand-50/30 transition text-brand-500 hover:text-brand-900"
+                      >
+                        {uploadingVideo ? (
+                          <>
+                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+                            <span className="mt-2 text-xs font-semibold">Uploading video...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Video size={24} className="mb-1" />
+                            <span className="text-xs font-bold">Select Video File</span>
+                            <span className="text-[10px] text-brand-400 mt-1">MP4 or WebM (Max 50MB)</span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  )}
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-brand-800">Cover Image / Thumbnail URL</label>
-                  <input
-                    value={form.coverImageUrl}
-                    onChange={(e) => setForm((f) => ({ ...f, coverImageUrl: e.target.value }))}
-                    placeholder="e.g. Image URL shown before playing the video"
-                    className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500"
-                  />
+                  <label className="text-sm font-semibold text-brand-800">Cover Image / Thumbnail</label>
+                  {form.coverImageUrl ? (
+                    <div className="mt-1 flex items-center justify-between rounded-xl border border-brand-200 bg-brand-50/50 p-3">
+                      <div className="flex items-center gap-2 text-brand-900 min-w-0">
+                        <img src={form.coverImageUrl} alt="Preview" className="h-10 w-8 rounded object-cover border shrink-0" />
+                        <span className="text-xs truncate font-medium">{form.coverImageUrl}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, coverImageUrl: "" }))}
+                        className="text-xs font-bold text-red-500 hover:text-red-700 underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mt-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        id="image-file"
+                        onChange={handleCoverImageUpload}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="image-file"
+                        className="flex flex-col items-center justify-center border-2 border-dashed border-brand-200 rounded-xl py-5 hover:border-brand-500 cursor-pointer bg-brand-50/30 transition text-brand-500 hover:text-brand-900"
+                      >
+                        {uploadingCover ? (
+                          <>
+                            <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand-500 border-t-transparent" />
+                            <span className="mt-2 text-xs font-semibold">Uploading cover image...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus size={20} className="mb-1" />
+                            <span className="text-xs font-bold">Select Cover Image</span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  )}
                 </div>
 
                 <div>

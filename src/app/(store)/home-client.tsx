@@ -224,23 +224,19 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                     setActiveReelLink(r.productLink || null);
                   }}
                 >
-                  {r.coverImageUrl ? (
-                    <img
-                      src={r.coverImageUrl}
-                      alt={r.title}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center bg-brand-950/20 text-brand-300">
-                      <Video className="mb-2" size={28} />
-                      <span className="text-[10px]">Play Reel</span>
-                    </div>
-                  )}
+                  <video
+                    src={r.videoUrl}
+                    poster={r.coverImageUrl || undefined}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-102"
+                  />
 
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-brand-950 shadow shadow-black/10 scale-90 group-hover:scale-100 transition-all">
-                      <Play className="ml-0.5 fill-brand-950 text-brand-950" size={18} />
-                    </div>
+                  {/* Play Indicator Icon */}
+                  <div className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-transform group-hover:scale-110">
+                    <Play size={12} className="ml-0.5 fill-white text-white" />
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white">
