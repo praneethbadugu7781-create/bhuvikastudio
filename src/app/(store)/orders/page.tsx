@@ -113,7 +113,13 @@ export default function MyOrdersPage() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-[10px] font-black uppercase text-brand-400">Total</span>
-                    <span className="text-sm font-bold text-brand-950">₹{order.totalAmount || 0}</span>
+                    <span className="text-sm font-bold text-brand-950">₹{(order.totalAmount || 0).toLocaleString("en-IN")}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black uppercase text-brand-400">Payment</span>
+                    <span className="text-xs font-bold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-0.5 rounded-md w-fit">
+                      {order.paymentMethod || "COD"}
+                    </span>
                   </div>
                   <div className={`flex items-center gap-2 rounded-full px-4 py-1.5 ${status.bg} ${status.color}`}>
                     <StatusIcon size={16} />
@@ -123,11 +129,25 @@ export default function MyOrdersPage() {
 
                 {/* Items Summary */}
                 <div className="p-5">
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-3">
                     {(order.items || []).map((item: any, idx: number) => (
-                      <div key={idx} className="flex items-center justify-between text-sm">
-                        <span className="text-brand-900 font-medium">{item?.productName || item?.name || "Product"}</span>
-                        <span className="text-brand-400">x{item?.quantity || item?.qty || 1}</span>
+                      <div key={idx} className="flex items-center gap-3 text-sm">
+                        {item?.image ? (
+                          <img 
+                            src={item.image} 
+                            alt={item?.productName || "Product"} 
+                            className="h-12 w-9 rounded object-cover bg-brand-50 border border-brand-100 shrink-0"
+                          />
+                        ) : (
+                          <div className="flex h-12 w-9 items-center justify-center rounded bg-brand-100 text-brand-400 border border-brand-100 shrink-0">
+                            <Package size={16} />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-brand-900 font-semibold truncate">{item?.productName || item?.name || "Product"}</p>
+                          <p className="text-xs text-brand-500">Size: {item?.size || "Free Size"} &bull; Qty: {item?.quantity || item?.qty || 1}</p>
+                        </div>
+                        <span className="text-brand-900 font-bold shrink-0">₹{(item?.unitPrice || 0).toLocaleString("en-IN")}</span>
                       </div>
                     ))}
                   </div>

@@ -10,6 +10,7 @@ type OrderItem = {
   size: string;
   quantity: number;
   unitPrice: number;
+  image?: string | null;
 };
 
 type TrackingData = {
@@ -161,7 +162,27 @@ function TrackOrderContent() {
                 })()}
               </div>
             </div>
-            <p className="mt-2 text-sm text-brand-600">Ordered on {formatDate(tracking.createdAt)}</p>
+            <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-sm">
+              <p className="text-brand-650">Ordered on {formatDate(tracking.createdAt)}</p>
+              <div className="flex gap-3 text-xs font-semibold">
+                <div>
+                  <span className="text-brand-400 uppercase mr-1 text-[10px] font-black">Payment</span>
+                  <span className="rounded bg-brand-50 border border-brand-100 px-2 py-0.5 text-brand-900 font-bold">
+                    {tracking.paymentMethod || "COD"}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-brand-400 uppercase mr-1 text-[10px] font-black">Status</span>
+                  <span className={`rounded px-2 py-0.5 font-bold ${
+                    tracking.paymentStatus === "VERIFIED" ? "bg-green-150 text-green-700" :
+                    tracking.paymentStatus === "REJECTED" ? "bg-red-100 text-red-700" :
+                    "bg-amber-100 text-amber-700"
+                  }`}>
+                    {tracking.paymentStatus || "PENDING"}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Progress Tracker */}
@@ -264,12 +285,23 @@ function TrackOrderContent() {
             <h2 className="mb-4 text-lg font-bold text-brand-950">Order Items</h2>
             <div className="space-y-3">
               {tracking.items.map((item, index) => (
-                <div key={index} className="flex items-center justify-between rounded-xl bg-brand-50 p-4">
-                  <div>
-                    <p className="font-semibold text-brand-900">{item.productName}</p>
-                    <p className="text-sm text-brand-600">Size: {item.size} &bull; Qty: {item.quantity}</p>
+                <div key={index} className="flex items-center gap-4 rounded-xl bg-brand-50 p-4">
+                  {item.image ? (
+                    <img 
+                      src={item.image} 
+                      alt={item.productName} 
+                      className="h-16 w-12 rounded-lg object-cover bg-white border border-brand-100 shrink-0"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-12 items-center justify-center rounded-lg bg-brand-100 text-brand-400 border border-brand-100 shrink-0">
+                      <Package size={20} />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-brand-900 truncate">{item.productName}</p>
+                    <p className="text-sm text-brand-650">Size: {item.size} &bull; Qty: {item.quantity}</p>
                   </div>
-                  <p className="font-bold text-brand-900">₹{item.unitPrice.toLocaleString("en-IN")}</p>
+                  <p className="font-bold text-brand-900 shrink-0">₹{item.unitPrice.toLocaleString("en-IN")}</p>
                 </div>
               ))}
             </div>
