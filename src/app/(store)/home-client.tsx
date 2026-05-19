@@ -10,15 +10,15 @@ import AnimatedSection from "@/components/AnimatedSection";
 // Removed Banner type
 
 const categoryImages: Record<string, string> = {
-  "Kurta sets": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043986/bhuvika-categories/kurta-sets.jpg",
-  "Sarees": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043988/bhuvika-categories/sarees.jpg",
-  "Lehengas": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043989/bhuvika-categories/lehengas.jpg",
-  "Indo western": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043990/bhuvika-categories/indo-western.jpg",
-  "Kids wear": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775044014/bhuvika-categories/kids-wear.jpg",
-  "Western wear": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043991/bhuvika-categories/western-wear.jpg",
-  "Co-ords sets": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043992/bhuvika-categories/co-ords-sets.jpg",
-  "Anarkali": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043993/bhuvika-categories/anarkali.jpg",
-  "Gowns": "https://res.cloudinary.com/dfdin5phc/image/upload/v1775043994/bhuvika-categories/gowns.jpg",
+  "Kurta sets": "/categories/kurta-sets.png",
+  "Sarees": "/categories/sarees.png",
+  "Lehengas": "/categories/lehengas.png",
+  "Indo western": "/categories/indo-western.png",
+  "Kids wear": "/categories/kids-wear.png",
+  "Western wear": "/categories/western-wear.png",
+  "Co-ords sets": "/categories/co-ords-sets.png",
+  "Anarkali": "/categories/anarkali.png",
+  "Gowns": "/categories/gowns.png",
 };
 const categories = ["Kurta sets", "Sarees", "Lehengas", "Indo western", "Kids wear", "Western wear", "Co-ords sets", "Anarkali", "Gowns"];
 
@@ -172,11 +172,11 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: i * 0.08 }}
               >
-                <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="group relative block h-auto overflow-visible rounded-xl md:rounded-2xl bg-brand-50/50">
+                <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="group relative block aspect-[3/4] overflow-hidden rounded-xl md:rounded-2xl bg-brand-50/50">
                   <img
                     src={categoryImages[cat]}
                     alt={cat}
-                    className="h-auto w-full object-contain transition-transform duration-700 group-hover:scale-110 p-4 md:p-6"
+                    className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-110 p-4 md:p-6"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   <div className="absolute bottom-0 left-0 p-3 md:p-4">
