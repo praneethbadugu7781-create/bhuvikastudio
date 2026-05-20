@@ -142,18 +142,37 @@ export default function ChatStylist() {
       <AnimatePresence>
         {/* Floating Bubble Button */}
         {!isOpen && (
-          <motion.button
-            initial={{ scale: 0, rotate: -45 }}
-            animate={{ scale: 1, rotate: 0 }}
-            exit={{ scale: 0, rotate: 45 }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => setIsOpen(true)}
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-amber-600 to-amber-800 text-white shadow-lg shadow-amber-800/30 border border-amber-500/20"
-            aria-label="Open AI Stylist"
-          >
-            <Sparkles size={26} className="animate-pulse" />
-          </motion.button>
+          <div className="relative group">
+            {/* Outer premium gold/rose-gold pulsing aura */}
+            <div className="absolute -inset-1 rounded-full bg-gradient-to-tr from-amber-400 via-brand-400 to-amber-600 opacity-60 blur-md transition duration-1000 group-hover:opacity-90 group-hover:duration-200 animate-pulse" />
+            
+            {/* Main high-level glassmorphic button */}
+            <motion.button
+              initial={{ scale: 0, rotate: -45 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: 45 }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={() => setIsOpen(true)}
+              className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-brand-950 via-brand-900 to-brand-850 text-white shadow-xl shadow-brand-950/40 border border-amber-300/40 backdrop-blur-md transition-all duration-300"
+              aria-label="Open AI Stylist"
+            >
+              {/* Internal glossy shine effect */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/25 via-transparent to-transparent pointer-events-none" />
+              
+              {/* Premium Sparkles icon with custom styling */}
+              <Sparkles 
+                size={24} 
+                className="text-amber-300 filter drop-shadow-[0_0_8px_rgba(252,211,77,0.8)] animate-pulse" 
+              />
+              
+              {/* Elegant dot indicator indicating AI is online and ready */}
+              <span className="absolute top-0 right-0 flex h-3.5 w-3.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-400 border border-brand-950"></span>
+              </span>
+            </motion.button>
+          </div>
         )}
 
         {/* Chat Drawer Window */}
@@ -166,14 +185,17 @@ export default function ChatStylist() {
             className="flex h-[520px] w-[350px] flex-col overflow-hidden rounded-3xl border border-brand-100 bg-white/95 shadow-2xl backdrop-blur-md sm:w-[380px]"
           >
             {/* Header */}
-            <div className="flex items-center justify-between bg-gradient-to-r from-brand-900 to-brand-950 px-5 py-4 text-white">
-              <div className="flex items-center gap-2">
-                <div className="rounded-lg bg-white/10 p-1.5">
-                  <Sparkles size={20} className="text-amber-300" />
+            <div className="flex items-center justify-between bg-gradient-to-r from-brand-950 via-brand-900 to-brand-950 px-5 py-4 text-white border-b border-brand-800/40">
+              <div className="flex items-center gap-2.5">
+                <div className="relative rounded-xl bg-gradient-to-tr from-amber-400 to-amber-600 p-2 shadow-[0_0_12px_rgba(245,158,11,0.3)]">
+                  <Sparkles size={18} className="text-brand-950 animate-pulse" />
                 </div>
                 <div>
-                  <h3 className="font-display text-sm font-semibold tracking-wide">Bhuvika AI Stylist</h3>
-                  <span className="text-[10px] text-amber-200">Online | Saree & Lehenga Expert</span>
+                  <h3 className="font-display text-sm font-bold tracking-wide text-brand-50">Bhuvika AI Stylist</h3>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-[10px] font-medium text-amber-200/90">Personal Fashion Stylist</span>
+                  </div>
                 </div>
               </div>
               <button
