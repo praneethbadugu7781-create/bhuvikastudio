@@ -75,6 +75,18 @@ export default function ChatStylist() {
 
     // Append User Message
     const userMsgId = Date.now().toString();
+    
+    // Gather all currently recommended product slugs in this session to exclude them from the next recommendations
+    const excludeSlugs = messages
+      .filter((m) => m.sender === "stylist" && m.products)
+      .flatMap((m) => m.products!.map((p) => p.slug));
+
+    // Gather chat history context
+    const chatHistory = messages.map((m) => ({
+      sender: m.sender,
+      text: m.text,
+    }));
+
     setMessages((prev) => [...prev, { id: userMsgId, sender: "user", text: userMsgText }]);
     setIsTyping(true);
 
@@ -83,7 +95,11 @@ export default function ChatStylist() {
       const res = await fetch(`${apiBase}/api/products/chat-stylist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsgText }),
+        body: JSON.stringify({
+          message: userMsgText,
+          excludeSlugs,
+          history: chatHistory,
+        }),
       });
 
       if (!res.ok) throw new Error("Chat request failed");
