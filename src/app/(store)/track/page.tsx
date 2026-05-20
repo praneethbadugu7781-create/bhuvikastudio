@@ -1,8 +1,11 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { Package, Truck, CheckCircle, Clock, Search, MapPin, ExternalLink } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Package, Truck, CheckCircle, Clock, Search, MapPin, ExternalLink,
+  RotateCcw, X, Send, Loader2, AlertCircle, CheckCircle2 
+} from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 
 type OrderItem = {
@@ -34,6 +37,16 @@ type TrackingData = {
     state: string;
     postalCode: string;
   };
+  returnStatus?: string;
+  returnReason?: string;
+  returnRequestedAt?: string | null;
+  returnCourierCompany?: string | null;
+  returnTrackingNumber?: string | null;
+  returnApprovedAt?: string | null;
+  returnReceivedAt?: string | null;
+  refundAmount?: number | null;
+  refundNote?: string | null;
+  refundedAt?: string | null;
 };
 
 const statusSteps = ["PENDING", "CONFIRMED", "PACKED", "SHIPPED", "DELIVERED"];
@@ -47,12 +60,35 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; col
   CANCELLED: { label: "Cancelled", icon: Clock, color: "text-red-500" },
 };
 
+const returnStatusConfig: Record<string, { label: string; bg: string; text: string; description: string }> = {
+  REQUESTED: { label: "Return Requested", bg: "bg-amber-100", text: "text-amber-700", description: "Waiting for admin approval" },
+  APPROVED: { label: "Return Approved", bg: "bg-blue-100", text: "text-blue-700", description: "Ship the item back using self-courier" },
+  RECEIVED: { label: "Item Received", bg: "bg-purple-100", text: "text-purple-700", description: "Refund is being processed by admin" },
+  REFUNDED: { label: "Refunded", bg: "bg-green-100", text: "text-green-700", description: "Refund has been completed" },
+  REJECTED: { label: "Return Rejected", bg: "bg-red-100", text: "text-red-700", description: "Your return request was declined" },
+};
+
 function TrackOrderContent() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState(searchParams.get("orderId") || "");
   const [tracking, setTracking] = useState<TrackingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Return modal state
+  const [returnModalOpen, setReturnModalOpen] = useState(false);
+  const [returnReason, setReturnReason] = useState("");
+  const [submittingReturn, setSubmittingReturn] = useState(false);
+  const [returnError, setReturnError] = useState("");
+  const [returnSuccess, setReturnSuccess] = useState("");
+
+  // Courier info state
+  const [courierModalOpen, setCourierModalOpen] = useState(false);
+  const [courierCompany, setCourierCompany] = useState("");
+  const [courierTracking, setCourierTracking] = useState("");
+  const [submittingCourier, setSubmittingCourier] = useState(false);
+  const [courierError, setCourierError] = useState("");
+  const [courierSuccess, setCourierSuccess] = useState("");
 
   useEffect(() => {
     const id = searchParams.get("orderId");
@@ -105,6 +141,84 @@ function TrackOrderContent() {
     });
   };
 
+  const isWithin7Days = (dateStr: string | null | undefined) => {
+    if (!dateStr) return false;
+    const delivered = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - delivered.getTime();
+    return diffMs <= 7 * 24 * 60 * 60 * 1000;
+  };
+
+  const handleReturnRequest = async () => {
+    if (!tracking) return;
+    if (returnReason.trim().length < 10) {
+      setReturnError("Please provide a reason with at least 10 characters.");
+      return;
+    }
+    setSubmittingReturn(true);
+    setReturnError("");
+    setReturnSuccess("");
+    try {
+      const res = await fetch(`/api/orders/${tracking.orderId}/return`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ returnReason: returnReason.trim() }),
+      });
+      if (res.ok) {
+        setReturnSuccess("Return request submitted successfully!");
+        setReturnReason("");
+        await fetchOrder(tracking.orderId);
+        setTimeout(() => {
+          setReturnModalOpen(false);
+          setReturnSuccess("");
+        }, 2000);
+      } else {
+        const err = await res.json();
+        setReturnError(err.error || "Failed to submit return request.");
+      }
+    } catch {
+      setReturnError("Network error. Please try again.");
+    }
+    setSubmittingReturn(false);
+  };
+
+  const handleCourierSubmit = async () => {
+    if (!tracking) return;
+    if (!courierCompany.trim() || !courierTracking.trim()) {
+      setCourierError("Please fill in both courier company and tracking number.");
+      return;
+    }
+    setSubmittingCourier(true);
+    setCourierError("");
+    setCourierSuccess("");
+    try {
+      const res = await fetch(`/api/orders/${tracking.orderId}/return-courier`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          returnCourierCompany: courierCompany.trim(),
+          returnTrackingNumber: courierTracking.trim(),
+        }),
+      });
+      if (res.ok) {
+        setCourierSuccess("Courier info submitted successfully!");
+        await fetchOrder(tracking.orderId);
+        setTimeout(() => {
+          setCourierModalOpen(false);
+          setCourierSuccess("");
+          setCourierCompany("");
+          setCourierTracking("");
+        }, 2000);
+      } else {
+        const err = await res.json();
+        setCourierError(err.error || "Failed to submit courier info.");
+      }
+    } catch {
+      setCourierError("Network error. Please try again.");
+    }
+    setSubmittingCourier(false);
+  };
+
   return (
     <div className="mx-auto w-full max-w-3xl px-5 py-12">
       <AnimatedSection>
@@ -147,7 +261,7 @@ function TrackOrderContent() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-brand-500">Order ID</p>
-                <p className="font-mono text-lg font-bold text-brand-900">#{tracking.orderId.slice(0, 8).toUpperCase()}</p>
+                <p className="font-mono text-lg font-bold text-brand-990">#{tracking.orderId.slice(0, 8).toUpperCase()}</p>
               </div>
               <div className={`flex items-center gap-2 rounded-full px-4 py-2 ${tracking.status === "CANCELLED" ? "bg-red-100" : tracking.status === "DELIVERED" ? "bg-green-100" : "bg-brand-100"}`}>
                 {(() => {
@@ -184,6 +298,82 @@ function TrackOrderContent() {
               </div>
             </div>
           </div>
+
+          {/* Returns & Refunds Section */}
+          {(() => {
+            const returnStatus = tracking.returnStatus || "NONE";
+            const hasReturn = returnStatus !== "NONE";
+            const canRequestReturn = tracking.status === "DELIVERED" && returnStatus === "NONE" && isWithin7Days(tracking.deliveredAt);
+            const rConfig = returnStatusConfig[returnStatus];
+
+            if (!hasReturn && !canRequestReturn) return null;
+
+            return (
+              <div className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 border border-amber-100 text-amber-600">
+                    <RotateCcw size={20} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-brand-950">Returns & Refunds</h2>
+                    <p className="text-sm text-brand-600">Request or track returns for this order</p>
+                  </div>
+                </div>
+
+                {hasReturn && rConfig && (
+                  <div className={`mt-4 flex items-center gap-3 rounded-2xl ${rConfig.bg} px-4 py-4`}>
+                    <RotateCcw size={20} className={rConfig.text} />
+                    <div className="flex-1">
+                      <p className={`text-sm font-bold ${rConfig.text}`}>{rConfig.label}</p>
+                      {rConfig.description && (
+                        <p className={`text-xs ${rConfig.text} opacity-80 mt-0.5`}>{rConfig.description}</p>
+                      )}
+                      {returnStatus === "REFUNDED" && tracking.refundAmount && (
+                        <p className="text-sm font-bold text-green-800 mt-1">
+                          Refund of ₹{Number(tracking.refundAmount).toLocaleString("en-IN")} processed
+                        </p>
+                      )}
+                    </div>
+                    {returnStatus === "APPROVED" && (
+                      <button
+                        onClick={() => {
+                          setCourierCompany(tracking.returnCourierCompany || "");
+                          setCourierTracking(tracking.returnTrackingNumber || "");
+                          setCourierError("");
+                          setCourierSuccess("");
+                          setCourierModalOpen(true);
+                        }}
+                        className="rounded-full bg-blue-600 px-4 py-2 text-xs font-bold text-white hover:bg-blue-700 transition flex items-center gap-1.5 shrink-0"
+                      >
+                        <Truck size={14} />
+                        {tracking.returnCourierCompany ? "Update Courier" : "Add Courier Info"}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {canRequestReturn && (
+                  <div className="mt-4">
+                    <p className="text-sm text-brand-700">
+                      This order is eligible for return under our 7-day return policy.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setReturnReason("");
+                        setReturnError("");
+                        setReturnSuccess("");
+                        setReturnModalOpen(true);
+                      }}
+                      className="mt-3 flex items-center gap-1.5 rounded-full bg-amber-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-amber-700 transition shadow-lg shadow-amber-600/10"
+                    >
+                      <RotateCcw size={16} />
+                      Request Return
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Progress Tracker */}
           {tracking.status !== "CANCELLED" && (
@@ -340,6 +530,157 @@ function TrackOrderContent() {
           </div>
         </motion.div>
       )}
+
+      {/* Return Request Modal */}
+      <AnimatePresence>
+        {returnModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setReturnModalOpen(false)}
+              className="fixed inset-0 z-50 bg-black/50"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100">
+                    <RotateCcw size={20} className="text-amber-600" />
+                  </div>
+                  <h3 className="font-display text-xl text-brand-950">Request Return</h3>
+                </div>
+                <button onClick={() => setReturnModalOpen(false)} className="rounded-lg p-2 hover:bg-brand-50 transition">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="mt-5 space-y-4">
+                <div>
+                  <label className="text-sm font-semibold text-brand-800">Why are you returning this order?</label>
+                  <textarea
+                    value={returnReason}
+                    onChange={e => setReturnReason(e.target.value)}
+                    rows={4}
+                    placeholder="Please describe the reason for return (min 10 characters)..."
+                    className="mt-2 w-full rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-sm text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 resize-none"
+                  />
+                  <p className="mt-1 text-xs text-brand-400">{returnReason.length}/10 characters minimum</p>
+                </div>
+
+                {returnError && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">
+                    {returnError}
+                  </motion.p>
+                )}
+
+                {returnSuccess && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-lg bg-green-50 border border-green-100 px-3 py-2 text-sm text-green-600 font-medium">
+                    <CheckCircle2 size={14} className="inline mr-1.5" />{returnSuccess}
+                  </motion.p>
+                )}
+
+                <button
+                  onClick={handleReturnRequest}
+                  disabled={submittingReturn || returnReason.trim().length < 10}
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-900 py-3.5 font-semibold text-white transition hover:bg-brand-950 disabled:opacity-50"
+                >
+                  {submittingReturn ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                  {submittingReturn ? "Submitting..." : "Submit Return Request"}
+                </button>
+
+                <p className="text-xs text-center text-brand-400">
+                  Returns are accepted within 7 days of delivery. The admin will review your request.
+                </p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Courier Info Modal */}
+      <AnimatePresence>
+        {courierModalOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setCourierModalOpen(false)}
+              className="fixed inset-0 z-50 bg-black/50"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
+                    <Truck size={20} className="text-blue-600" />
+                  </div>
+                  <h3 className="font-display text-xl text-brand-950">Ship Return</h3>
+                </div>
+                <button onClick={() => setCourierModalOpen(false)} className="rounded-lg p-2 hover:bg-brand-50 transition">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <p className="mt-3 text-sm text-brand-600">
+                Send the item back and provide the courier details below so we can track your return.
+              </p>
+
+              <div className="mt-5 space-y-4">
+                <div>
+                  <label className="text-sm font-semibold text-brand-800">Courier Company</label>
+                  <input
+                    value={courierCompany}
+                    onChange={e => setCourierCompany(e.target.value)}
+                    placeholder="e.g. Delhivery, Blue Dart, India Post..."
+                    className="mt-1 w-full rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-sm text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold text-brand-800">Tracking Number / AWB</label>
+                  <input
+                    value={courierTracking}
+                    onChange={e => setCourierTracking(e.target.value)}
+                    placeholder="Enter tracking number..."
+                    className="mt-1 w-full rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-3 text-sm text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+                  />
+                </div>
+
+                {courierError && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-600">
+                    {courierError}
+                  </motion.p>
+                )}
+
+                {courierSuccess && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-lg bg-green-50 border border-green-100 px-3 py-2 text-sm text-green-600 font-medium">
+                    <CheckCircle2 size={14} className="inline mr-1.5" />{courierSuccess}
+                  </motion.p>
+                )}
+
+                <button
+                  onClick={handleCourierSubmit}
+                  disabled={submittingCourier || !courierCompany.trim() || !courierTracking.trim()}
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-600 py-3.5 font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {submittingCourier ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+                  {submittingCourier ? "Submitting..." : "Submit Courier Info"}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
