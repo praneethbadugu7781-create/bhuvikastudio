@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp, ShoppingBag, Users, Package, CreditCard, ArrowUp, ArrowDown } from "lucide-react";
+import { TrendingUp, ShoppingBag, Users, Package, CreditCard, ArrowUp, ArrowDown, RotateCcw, Clock } from "lucide-react";
 
 type DashboardData = {
   totalOrders: number;
@@ -12,10 +12,22 @@ type DashboardData = {
   totalRevenue: number;
   ordersByStatus: Record<string, number>;
   recentOrders: { id: string; totalAmount: number; status: string; createdAt: string; user?: { name: string; email: string } }[];
+  totalReturns: number;
+  pendingReturns: number;
+  totalRefunded: number;
+  returnsByStatus: Record<string, number>;
 };
 
 type SalesData = { _id: string; revenue: number; orders: number }[];
 type BestSeller = { _id: string; name: string; totalSold: number; revenue: number };
+
+const returnStatusColors: Record<string, string> = {
+  REQUESTED: "bg-amber-100 text-amber-700",
+  APPROVED: "bg-blue-100 text-blue-700",
+  RECEIVED: "bg-purple-100 text-purple-700",
+  REFUNDED: "bg-green-100 text-green-700",
+  REJECTED: "bg-red-100 text-red-700",
+};
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -78,6 +90,27 @@ export default function AnalyticsPage() {
           <div className="rounded-xl bg-blue-100 p-3 w-fit"><Package className="text-blue-600" size={20} /></div>
           <p className="mt-3 text-2xl font-bold text-brand-950">{data.totalProducts}</p>
           <p className="text-sm text-brand-500">Products</p>
+        </motion.div>
+      </div>
+
+      {/* Returns Stats Cards */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
+          <div className="rounded-xl bg-orange-100 p-3 w-fit"><RotateCcw className="text-orange-600" size={20} /></div>
+          <p className="mt-3 text-2xl font-bold text-brand-950">{data.totalReturns || 0}</p>
+          <p className="text-sm text-brand-500">Total Returns</p>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
+          <div className="rounded-xl bg-amber-100 p-3 w-fit"><Clock className="text-amber-600" size={20} /></div>
+          <p className="mt-3 text-2xl font-bold text-brand-950">{data.pendingReturns || 0}</p>
+          <p className="text-sm text-brand-500">Pending Returns</p>
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
+          <div className="rounded-xl bg-red-100 p-3 w-fit"><CreditCard className="text-red-600" size={20} /></div>
+          <p className="mt-3 text-2xl font-bold text-brand-950">₹{(data.totalRefunded || 0).toLocaleString("en-IN")}</p>
+          <p className="text-sm text-brand-500">Total Refunded</p>
         </motion.div>
       </div>
 
@@ -150,6 +183,28 @@ export default function AnalyticsPage() {
             ))}
           </div>
         </div>
+
+        {/* Returns by Status */}
+        {data.returnsByStatus && Object.keys(data.returnsByStatus).length > 0 && (
+          <div className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100">
+                <RotateCcw size={18} className="text-orange-600" />
+              </div>
+              <h2 className="font-display text-xl text-brand-950">Returns by Status</h2>
+            </div>
+            <div className="space-y-3">
+              {Object.entries(data.returnsByStatus).map(([status, count]) => (
+                <div key={status} className="flex items-center justify-between">
+                  <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${returnStatusColors[status] || "bg-gray-100 text-gray-700"}`}>
+                    {status}
+                  </span>
+                  <span className="rounded-full bg-brand-100 px-3 py-1 text-sm font-bold text-brand-900">{count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
