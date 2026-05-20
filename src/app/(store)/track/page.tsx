@@ -353,9 +353,12 @@ function TrackOrderContent() {
                 )}
 
                 {canRequestReturn && (
-                  <div className="mt-4">
-                    <p className="text-sm text-brand-700">
-                      This order is eligible for return under our 7-day return policy.
+                  <div className="mt-4 rounded-xl border border-amber-250 bg-amber-50/50 p-4">
+                    <p className="text-sm font-bold text-brand-900">
+                      Self-Courier Return Only:
+                    </p>
+                    <p className="mt-1 text-xs text-brand-700 leading-relaxed">
+                      Bhuvika Studio does NOT provide return pickup. You must package the item and send it back via a courier service of your choice at your own expense.
                     </p>
                     <button
                       onClick={() => {
@@ -595,7 +598,7 @@ function TrackOrderContent() {
                 </button>
 
                 <p className="text-xs text-center text-brand-400">
-                  Returns are accepted within 7 days of delivery. The admin will review your request.
+                  Returns are accepted within 7 days of delivery. <strong>No pickup service is provided.</strong> You must ship the item back via your own courier at your own expense.
                 </p>
               </div>
             </motion.div>
@@ -633,7 +636,7 @@ function TrackOrderContent() {
               </div>
 
               <p className="mt-3 text-sm text-brand-600">
-                Send the item back and provide the courier details below so we can track your return.
+                Since returns are <strong>self-courier only</strong>, pack the item and ship it using any courier of your choice at your own expense. Enter the details below so we can track your return.
               </p>
 
               <div className="mt-5 space-y-4">

@@ -28,16 +28,18 @@ export default function RefundPolicyPage() {
             <li>Returns are accepted within 7 days of delivery</li>
             <li>Products must be unused, unwashed, and in original packaging with tags intact</li>
             <li>Items marked as &quot;Non-returnable&quot; or on sale cannot be returned</li>
-            <li>Return shipping costs are borne by the customer unless the product is defective</li>
+            <li><strong>Self-Courier Only</strong>: Bhuvika Studio does NOT arrange or provide any return pickup services. The customer must ship the return parcel themselves at their own cost.</li>
+            <li><strong>Return Shipping Cost</strong>: All return shipping costs are borne entirely by the customer. Bhuvika Studio does not reimburse return shipping charges.</li>
           </ul>
         </section>
 
         <section>
           <h2 className="mb-3 text-xl font-semibold text-brand-800">3. Return Process</h2>
           <ol className="ml-5 list-decimal space-y-1">
-            <li>Contact us within 7 days of delivery with your order number and reason for return</li>
-            <li>Once approved, pack the item securely and ship to our address</li>
-            <li>After receiving and inspecting the item, we will process your refund</li>
+            <li>Submit a return request on either your "My Orders" or "Track Order" page within 7 days of delivery.</li>
+            <li>Once approved by the admin, book a courier of your choice and send the item back to our shipping address at your own expense.</li>
+            <li>Enter your courier company name and tracking number on your order tracking page.</li>
+            <li>After receiving and inspecting the item, we will process your refund.</li>
           </ol>
         </section>
 

@@ -27,7 +27,7 @@ const categories = [
 
 const faqs = [
   { q: "How do I track my order?", a: "You can track your order in the 'Orders' section of your account or by visiting our tracking page with your order ID." },
-  { q: "What is the return policy?", a: "We offer a 7-day return policy for most items. The item must be unused and in its original packaging." },
+  { q: "What is the return policy?", a: "We offer a 7-day return policy for unused items in original packaging. Please note that Bhuvika Studio does NOT provide or arrange return pickups. Customers must ship the items back using their own courier and bear all return shipping costs." },
   { q: "How do I use a coupon code?", a: "You can apply your coupon code at the checkout page before making the payment." },
   { q: "Can I change my delivery address?", a: "Addresses can be changed before the order is shipped. Once shipped, we cannot change the destination." },
 ];
