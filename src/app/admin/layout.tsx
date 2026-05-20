@@ -20,6 +20,7 @@ const sidebarLinks = [
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/shipping", label: "Shipping", icon: Truck },
   { href: "/admin/reels", label: "Reels", icon: ImageIcon },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 type AdminUser = { id: string; name: string; email: string; role: string };
