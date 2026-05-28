@@ -221,14 +221,14 @@ export default function AdminProductsPage() {
   const productTable = useMemo(() => {
     if (loading) return <div className="py-12 text-center text-brand-700">Loading...</div>;
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm will-change-transform transform-gpu">
         <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-brand-100 text-left text-xs font-semibold uppercase tracking-wider text-brand-500">
           <th className="px-6 py-4">Product</th><th className="px-6 py-4">Category</th><th className="px-6 py-4">Price</th><th className="px-6 py-4">Colors</th><th className="px-6 py-4">Sizes</th><th className="px-6 py-4 text-right">Actions</th>
         </tr></thead><tbody>
           {filtered.map(p => (
             <tr key={p.id} className="border-b border-brand-50 hover:bg-brand-50/50">
               <td className="px-6 py-4"><div className="flex items-center gap-3">
-                {p.images[0] ? <img src={p.images[0].imageUrl} alt="" className="h-12 w-12 rounded-xl object-cover" /> : <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50"><ImageIcon size={20} className="text-brand-300" /></div>}
+                {p.images[0] ? <img src={p.images[0].imageUrl} alt="" className="h-12 w-12 rounded-xl object-cover" loading="lazy" /> : <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50"><ImageIcon size={20} className="text-brand-300" /></div>}
                 <div><p className="font-semibold text-brand-900">{p.name}</p><p className="text-xs text-brand-500">{p.slug}</p></div>
               </div></td>
               <td className="px-6 py-4"><span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-800">{p.category}</span></td>

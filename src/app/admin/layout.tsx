@@ -240,7 +240,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-5 md:p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto p-5 md:p-8 will-change-transform transform-gpu">{children}</main>
       </div>
     </div>
   );
