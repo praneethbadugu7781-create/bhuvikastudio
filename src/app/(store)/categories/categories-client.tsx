@@ -5,31 +5,33 @@ import { ArrowRight } from "lucide-react";
 import AnimatedSection from "@/components/AnimatedSection";
 
 const categoryImages: Record<string, string> = {
-  "Kurta sets": "/categories/kurta-sets.png",
+  "Kurta Sets": "/categories/kurta-sets.png",
   "Sarees": "/categories/sarees.png",
   "Lehengas": "/categories/lehengas.png",
-  "Indo western": "/categories/indo-western.png",
-  "Kids wear": "/categories/kids-wear.png",
-  "Western wear": "/categories/western-wear.png",
-  "Co-ords sets": "/categories/co-ords-sets.png",
+  "Indo Western": "/categories/indo-western.png",
+  "Fusion Wear": "/categories/indo-western.png",
+  "Kids Wear": "/categories/kids-wear.png",
+  "Western Wear": "/categories/western-wear.png",
+  "Co-ords Sets": "/categories/co-ords-sets.png",
   "Anarkali": "/categories/anarkali.png",
   "Gowns": "/categories/gowns.png",
 };
 
 const categoryDescriptions: Record<string, string> = {
-  "Kurta sets": "Comfortable and stylish kurta sets perfect for everyday wear and casual gatherings.",
+  "Kurta Sets": "Comfortable and stylish kurta sets perfect for everyday wear and casual gatherings.",
   "Sarees": "Handloom elegance and designer drapes for every occasion.",
   "Lehengas": "Stunning bridal and festive lehengas that steal the show.",
-  "Indo western": "Where tradition meets trend. Anarkalis, Indo-Western & more.",
-  "Kids wear": "Adorable party frocks and festive outfits for little stars.",
-  "Western wear": "Trendy dresses, tops, and midi styles for the modern woman.",
-  "Co-ords sets": "Matching sets that make styling effortless and chic.",
+  "Indo Western": "Where tradition meets trend. Indo-Western styles that define grace.",
+  "Fusion Wear": "Contemporary ethnic styles blending the best of East and West.",
+  "Kids Wear": "Adorable party frocks and festive outfits for little stars.",
+  "Western Wear": "Trendy dresses, tops, and midi styles for the modern woman.",
+  "Co-ords Sets": "Matching sets that make styling effortless and chic.",
   "Anarkali": "Elegant Anarkali suits combining tradition with contemporary style.",
   "Gowns": "Elegant gowns for parties, weddings, and special occasions.",
 };
 
 export default function CategoriesClient({ categoryCounts }: { categoryCounts: { name: string; count: number }[] }) {
-  const allCategories = ["Kurta sets", "Sarees", "Lehengas", "Indo western", "Kids wear", "Western wear", "Co-ords sets", "Anarkali", "Gowns"];
+  const allCategories = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Fusion Wear", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12">
       <AnimatedSection>

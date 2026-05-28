@@ -26,8 +26,10 @@ export default function ChatStylist() {
   const [allProducts, setAllProducts] = useState<CatalogItem[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load products list on mount to map slugs to product details instantly
+  // Load products list only when chatbot is opened to save initial load resources
   useEffect(() => {
+    if (!isOpen || allProducts.length > 0) return;
+
     const fetchProducts = async () => {
       try {
         const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
@@ -59,7 +61,7 @@ export default function ChatStylist() {
       }
     };
     fetchProducts();
-  }, []);
+  }, [isOpen, allProducts.length]);
 
   // Scroll to bottom whenever messages change
   useEffect(() => {

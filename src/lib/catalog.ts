@@ -21,13 +21,14 @@ export type CatalogItem = {
 };
 
 export const categories = [
-  "Kurta sets",
+  "Kurta Sets",
   "Sarees",
   "Lehengas",
-  "Indo western",
-  "Kids wear",
-  "Western wear",
-  "Co-ords sets",
+  "Indo Western",
+  "Fusion Wear",
+  "Kids Wear",
+  "Western Wear",
+  "Co-ords Sets",
   "Anarkali",
   "Gowns",
 ] as const;

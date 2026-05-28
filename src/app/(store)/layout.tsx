@@ -1,7 +1,9 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import ChatStylist from "@/components/ChatStylist";
+import dynamic from "next/dynamic";
 import { AuthProvider } from "@/context/AuthContext";
+
+const ChatStylist = dynamic(() => import("@/components/ChatStylist"));
 
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -10,17 +10,18 @@ import AnimatedSection from "@/components/AnimatedSection";
 // Removed Banner type
 
 const categoryImages: Record<string, string> = {
-  "Kurta sets": "/categories/kurta-sets.png",
+  "Kurta Sets": "/categories/kurta-sets.png",
   "Sarees": "/categories/sarees.png",
   "Lehengas": "/categories/lehengas.png",
-  "Indo western": "/categories/indo-western.png",
-  "Kids wear": "/categories/kids-wear.png",
-  "Western wear": "/categories/western-wear.png",
-  "Co-ords sets": "/categories/co-ords-sets.png",
+  "Indo Western": "/categories/indo-western.png",
+  "Fusion Wear": "/categories/indo-western.png",
+  "Kids Wear": "/categories/kids-wear.png",
+  "Western Wear": "/categories/western-wear.png",
+  "Co-ords Sets": "/categories/co-ords-sets.png",
   "Anarkali": "/categories/anarkali.png",
   "Gowns": "/categories/gowns.png",
 };
-const categories = ["Kurta sets", "Sarees", "Lehengas", "Indo western", "Kids wear", "Western wear", "Co-ords sets", "Anarkali", "Gowns"];
+const categories = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Fusion Wear", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
 
 const testimonials = [
   { name: "Priya S.", rating: 5, text: "Absolutely loved the lehenga! The quality is amazing and it arrived quickly. Will definitely order again." },
@@ -56,20 +57,16 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
       {/* Hero with animated background and banner slider */}
       <section className="hero-bg relative min-h-[auto] md:min-h-[600px]">
         <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+          <div
+            style={{ animation: "spin 120s linear infinite" }}
             className="absolute -right-16 -top-16 h-48 w-48 md:h-96 md:w-96 md:-right-32 md:-top-32 rounded-full bg-brand-300/20"
           />
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+          <div
+            style={{ animation: "spin 150s linear infinite reverse" }}
             className="absolute -bottom-10 -left-10 h-36 w-36 md:h-72 md:w-72 md:-bottom-20 md:-left-20 rounded-full bg-brand-500/10"
           />
-          <motion.div
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute right-1/4 top-1/3 h-24 w-24 md:h-48 md:w-48 rounded-full bg-brand-400/10"
+          <div
+            className="absolute right-1/4 top-1/3 h-24 w-24 md:h-48 md:w-48 rounded-full bg-brand-400/10 animate-pulse"
           />
         </div>
         <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-8 px-4 md:px-5 py-16 md:py-32 text-center">
@@ -224,19 +221,18 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                     setActiveReelLink(r.productLink || null);
                   }}
                 >
-                  <video
-                    src={r.videoUrl}
-                    poster={r.coverImageUrl || undefined}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-102"
+                  <img
+                    src={r.coverImageUrl || "/placeholder-reel.jpg"}
+                    alt={r.title || "Watch Reel"}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
                   />
 
-                  {/* Play Indicator Icon */}
-                  <div className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-transform group-hover:scale-110">
-                    <Play size={12} className="ml-0.5 fill-white text-white" />
+                  {/* Play Indicator Glassmorphic Icon Overlay */}
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/25 backdrop-blur-md text-white border border-white/20 transition-transform group-hover:scale-110 shadow-lg">
+                      <Play size={18} className="ml-1 fill-white text-white" />
+                    </div>
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white">

@@ -18,12 +18,41 @@ type ApiProduct = {
   colorOptions?: { colorName: string; colorCode: string; images: { imageUrl: string }[] }[];
 };
 
+export function normalizeCategory(cat: string): string {
+  if (!cat) return "";
+  const mapping: Record<string, string> = {
+    "kurta sets": "Kurta Sets",
+    "kurtasets": "Kurta Sets",
+    "sarees": "Sarees",
+    "saree": "Sarees",
+    "lehengas": "Lehengas",
+    "lehenga": "Lehengas",
+    "indo western": "Indo Western",
+    "indowestern": "Indo Western",
+    "kids wear": "Kids Wear",
+    "kidswear": "Kids Wear",
+    "western wear": "Western Wear",
+    "westernwear": "Western Wear",
+    "co-ords sets": "Co-ords Sets",
+    "co-ords": "Co-ords Sets",
+    "coords sets": "Co-ords Sets",
+    "coordsets": "Co-ords Sets",
+    "anarkali": "Anarkali",
+    "gowns": "Gowns",
+    "gown": "Gowns",
+    "fusion wear": "Fusion Wear",
+    "fusionwear": "Fusion Wear"
+  };
+  const key = cat.trim().toLowerCase();
+  return mapping[key] || cat.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+}
+
 function toCatalogItem(p: ApiProduct): CatalogItem {
   const firstVariant = p.variants[0];
   return {
     slug: p.slug,
     name: p.name,
-    category: p.category,
+    category: normalizeCategory(p.category),
     price: firstVariant?.salePrice ? Number(firstVariant.salePrice) : (firstVariant ? Number(firstVariant.price) : 0),
     oldPrice: firstVariant?.salePrice ? Number(firstVariant.price) : undefined,
     sizes: [...new Set(p.variants.map((v) => v.size))],
@@ -55,7 +84,7 @@ export async function getProductBySlug(slug: string) {
     slug: p.slug,
     name: p.name,
     description: p.description,
-    category: p.category,
+    category: normalizeCategory(p.category),
     price: firstVariant?.salePrice ? Number(firstVariant.salePrice) : (firstVariant ? Number(firstVariant.price) : 0),
     oldPrice: firstVariant?.salePrice ? Number(firstVariant.price) : undefined,
     sizes: [...new Set(p.variants.map((v) => v.size))],
@@ -81,7 +110,8 @@ export async function getCategories() {
   const products: ApiProduct[] = (await apiFetch("/api/products")) || [];
   const catMap = new Map<string, number>();
   for (const p of products) {
-    catMap.set(p.category, (catMap.get(p.category) || 0) + 1);
+    const normalizedCat = normalizeCategory(p.category);
+    catMap.set(normalizedCat, (catMap.get(normalizedCat) || 0) + 1);
   }
   return Array.from(catMap, ([name, count]) => ({ name, count }));
 }
