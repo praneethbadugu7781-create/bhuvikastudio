@@ -198,51 +198,16 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         </div>
       </section>
 
-      {/* Our Story / About Section */}
-      <section id="our-store" className="bg-white py-16 md:py-24">
-        <div className="mx-auto w-full max-w-6xl px-4 md:px-5">
-          <div className="grid gap-12 md:grid-cols-2 md:items-center">
-            <AnimatedSection>
-              <div className="relative overflow-hidden rounded-3xl bg-brand-50 shadow-2xl">
-                <img 
-                  src="/store-front.jpg" 
-                  alt="Bhuvika Studio Store Front" 
-                  className="w-full h-auto object-contain rounded-3xl"
-                />
-                <div className="absolute inset-0 bg-brand-900/10 transition-opacity hover:opacity-0 rounded-3xl" />
-              </div>
-            </AnimatedSection>
-            
-            <AnimatedSection delay={0.2}>
-              <div className="flex flex-col">
-                <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">The Bhuvika Story</p>
-                <h2 className="mt-2 font-script text-4xl md:text-6xl text-brand-950">Elegance in Every Stitch</h2>
-                <p className="mt-6 text-lg leading-relaxed text-brand-800">
-                  Founded in the heart of <strong>Vijayawada</strong>, Bhuvika Studio was born from a simple yet powerful dream: to bring premium, handpicked fashion to every woman&apos;s wardrobe.
-                </p>
-                <p className="mt-4 text-brand-700 leading-relaxed">
-                  What started as a small boutique has grown into a destination for those who seek the perfect blend of traditional heritage and modern style. Whether it&apos;s a bridal lehenga for your big day or a trendy co-ord set for a weekend brunch, we curate every piece with love and an eye for perfection.
-                </p>
-                
-                <div className="mt-8 grid grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="text-2xl font-bold text-brand-900">500+</h4>
-                    <p className="text-sm text-brand-600 uppercase tracking-wide">Unique Styles</p>
-                  </div>
-                  <div>
-                    <h4 className="text-2xl font-bold text-brand-900">Vijayawada</h4>
-                    <p className="text-sm text-brand-600 uppercase tracking-wide">Our Home</p>
-                  </div>
-                </div>
-
-                <div className="mt-10">
-                  <Link href="/about" className="inline-flex items-center gap-2 font-bold text-brand-900 transition hover:text-brand-600">
-                    Learn more about us <ArrowRight size={18} />
-                  </Link>
-                </div>
-              </div>
-            </AnimatedSection>
-          </div>
+      {/* New Arrivals */}
+      <section className="mx-auto w-full max-w-6xl px-4 md:px-5 py-10 md:py-16">
+        <AnimatedSection>
+          <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">Just Dropped</p>
+          <h2 className="mt-1 font-script text-3xl md:text-5xl text-brand-950">New Arrivals</h2>
+        </AnimatedSection>
+        <div className="mt-6 md:mt-8 grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-3">
+          {newArrivals.map((item, i) => (
+            <ProductCard key={item.slug} item={item} index={i} />
+          ))}
         </div>
       </section>
 
@@ -299,16 +264,51 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         </section>
       )}
 
-      {/* New Arrivals */}
-      <section className="mx-auto w-full max-w-6xl px-4 md:px-5 py-10 md:py-16">
-        <AnimatedSection>
-          <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">Just Dropped</p>
-          <h2 className="mt-1 font-script text-3xl md:text-5xl text-brand-950">New Arrivals</h2>
-        </AnimatedSection>
-        <div className="mt-6 md:mt-8 grid gap-4 md:gap-6 grid-cols-2 lg:grid-cols-3">
-          {newArrivals.map((item, i) => (
-            <ProductCard key={item.slug} item={item} index={i} />
-          ))}
+      {/* Our Story / About Section */}
+      <section id="our-store" className="bg-white py-16 md:py-24">
+        <div className="mx-auto w-full max-w-6xl px-4 md:px-5">
+          <div className="grid gap-12 md:grid-cols-2 md:items-center">
+            <AnimatedSection>
+              <div className="relative overflow-hidden rounded-3xl bg-brand-50 shadow-2xl">
+                <img 
+                  src="/store-front.jpg" 
+                  alt="Bhuvika Studio Store Front" 
+                  className="w-full h-auto object-contain rounded-3xl"
+                />
+                <div className="absolute inset-0 bg-brand-900/10 transition-opacity hover:opacity-0 rounded-3xl" />
+              </div>
+            </AnimatedSection>
+            
+            <AnimatedSection delay={0.2}>
+              <div className="flex flex-col">
+                <p className="text-xs md:text-sm font-bold uppercase tracking-widest text-brand-500">The Bhuvika Story</p>
+                <h2 className="mt-2 font-script text-4xl md:text-6xl text-brand-950">Elegance in Every Stitch</h2>
+                <p className="mt-6 text-lg leading-relaxed text-brand-800">
+                  Founded in the heart of <strong>Vijayawada</strong>, Bhuvika Studio was born from a simple yet powerful dream: to bring premium, handpicked fashion to every woman&apos;s wardrobe.
+                </p>
+                <p className="mt-4 text-brand-700 leading-relaxed">
+                  What started as a small boutique has grown into a destination for those who seek the perfect blend of traditional heritage and modern style. Whether it&apos;s a bridal lehenga for your big day or a trendy co-ord set for a weekend brunch, we curate every piece with love and an eye for perfection.
+                </p>
+                
+                <div className="mt-8 grid grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="text-2xl font-bold text-brand-900">500+</h4>
+                    <p className="text-sm text-brand-600 uppercase tracking-wide">Unique Styles</p>
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold text-brand-900">Vijayawada</h4>
+                    <p className="text-sm text-brand-600 uppercase tracking-wide">Our Home</p>
+                  </div>
+                </div>
+
+                <div className="mt-10">
+                  <Link href="/about" className="inline-flex items-center gap-2 font-bold text-brand-900 transition hover:text-brand-600">
+                    Learn more about us <ArrowRight size={18} />
+                  </Link>
+                </div>
+              </div>
+            </AnimatedSection>
+          </div>
         </div>
       </section>
 
