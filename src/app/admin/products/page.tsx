@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palette } from "lucide-react";
 
@@ -214,7 +214,63 @@ export default function AdminProductsPage() {
 
   const upVar = (i: number, f: keyof Variant, v: string | number) => { const u = [...vars]; u[i] = { ...u[i], [f]: v }; setVars(u); };
 
-  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()));
+  const filtered = useMemo(() => {
+    return products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()));
+  }, [products, search]);
+
+  const productTable = useMemo(() => {
+    if (loading) return <div className="py-12 text-center text-brand-700">Loading...</div>;
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
+        <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-brand-100 text-left text-xs font-semibold uppercase tracking-wider text-brand-500">
+          <th className="px-6 py-4">Product</th><th className="px-6 py-4">Category</th><th className="px-6 py-4">Price</th><th className="px-6 py-4">Colors</th><th className="px-6 py-4">Sizes</th><th className="px-6 py-4 text-right">Actions</th>
+        </tr></thead><tbody>
+          {filtered.map(p => (
+            <tr key={p.id} className="border-b border-brand-50 hover:bg-brand-50/50">
+              <td className="px-6 py-4"><div className="flex items-center gap-3">
+                {p.images[0] ? <img src={p.images[0].imageUrl} alt="" className="h-12 w-12 rounded-xl object-cover" /> : <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50"><ImageIcon size={20} className="text-brand-300" /></div>}
+                <div><p className="font-semibold text-brand-900">{p.name}</p><p className="text-xs text-brand-500">{p.slug}</p></div>
+              </div></td>
+              <td className="px-6 py-4"><span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-800">{p.category}</span></td>
+              <td className="px-6 py-4 font-semibold text-brand-900">
+                {p.variants[0] ? (
+                  p.variants[0].salePrice ? (
+                    <div className="flex flex-col">
+                      <span className="text-brand-900">₹{Number(p.variants[0].salePrice).toLocaleString("en-IN")}</span>
+                      <span className="text-[10px] text-brand-400 line-through">₹{Number(p.variants[0].price).toLocaleString("en-IN")}</span>
+                    </div>
+                  ) : (
+                    `₹${Number(p.variants[0].price).toLocaleString("en-IN")}`
+                  )
+                ) : "—"}
+              </td>
+              <td className="px-6 py-4">
+                {p.colorOptions && p.colorOptions.length > 0 ? (
+                  <div className="flex gap-1">
+                    {p.colorOptions.slice(0, 4).map((c, i) => (
+                      <div 
+                        key={i} 
+                        className="h-5 w-5 rounded-full border border-brand-200" 
+                        style={{ backgroundColor: c.colorCode === "#000000" && c.colorName.toLowerCase() !== "black" ? c.colorName : c.colorCode }} 
+                        title={c.colorName} 
+                      />
+                    ))}
+                    {p.colorOptions.length > 4 && <span className="text-xs text-brand-500">+{p.colorOptions.length - 4}</span>}
+                  </div>
+                ) : <span className="text-brand-400">—</span>}
+              </td>
+              <td className="px-6 py-4 text-sm text-brand-700">{[...new Set(p.variants.map(v => v.size))].join(", ") || "—"}</td>
+              <td className="px-6 py-4"><div className="flex justify-end gap-1">
+                <button onClick={() => openEdit(p)} className="rounded-lg p-2 text-brand-400 hover:bg-blue-50 hover:text-blue-600"><Edit2 size={16} /></button>
+                <button onClick={() => del(p.id)} disabled={delId === p.id} className="rounded-lg p-2 text-brand-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-50"><Trash2 size={16} /></button>
+              </div></td>
+            </tr>
+          ))}
+        </tbody></table></div>
+        {filtered.length === 0 && <div className="py-12 text-center text-brand-700">No products found.</div>}
+      </motion.div>
+    );
+  }, [filtered, loading, delId]);
 
   return (
     <div className="space-y-6">
@@ -225,56 +281,7 @@ export default function AdminProductsPage() {
       <div className="relative"><Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-400" />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." className="w-full rounded-xl border border-brand-200 bg-white py-3 pl-11 pr-4 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" />
       </div>
-      {loading ? <div className="py-12 text-center text-brand-700">Loading...</div> : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
-          <div className="overflow-x-auto"><table className="w-full"><thead><tr className="border-b border-brand-100 text-left text-xs font-semibold uppercase tracking-wider text-brand-500">
-            <th className="px-6 py-4">Product</th><th className="px-6 py-4">Category</th><th className="px-6 py-4">Price</th><th className="px-6 py-4">Colors</th><th className="px-6 py-4">Sizes</th><th className="px-6 py-4 text-right">Actions</th>
-          </tr></thead><tbody>
-            {filtered.map(p => (
-              <tr key={p.id} className="border-b border-brand-50 hover:bg-brand-50/50">
-                <td className="px-6 py-4"><div className="flex items-center gap-3">
-                  {p.images[0] ? <img src={p.images[0].imageUrl} alt="" className="h-12 w-12 rounded-xl object-cover" /> : <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50"><ImageIcon size={20} className="text-brand-300" /></div>}
-                  <div><p className="font-semibold text-brand-900">{p.name}</p><p className="text-xs text-brand-500">{p.slug}</p></div>
-                </div></td>
-                <td className="px-6 py-4"><span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-800">{p.category}</span></td>
-                <td className="px-6 py-4 font-semibold text-brand-900">
-                  {p.variants[0] ? (
-                    p.variants[0].salePrice ? (
-                      <div className="flex flex-col">
-                        <span className="text-brand-900">₹{Number(p.variants[0].salePrice).toLocaleString("en-IN")}</span>
-                        <span className="text-[10px] text-brand-400 line-through">₹{Number(p.variants[0].price).toLocaleString("en-IN")}</span>
-                      </div>
-                    ) : (
-                      `₹${Number(p.variants[0].price).toLocaleString("en-IN")}`
-                    )
-                  ) : "—"}
-                </td>
-                <td className="px-6 py-4">
-                  {p.colorOptions && p.colorOptions.length > 0 ? (
-                    <div className="flex gap-1">
-                      {p.colorOptions.slice(0, 4).map((c, i) => (
-                        <div 
-                          key={i} 
-                          className="h-5 w-5 rounded-full border border-brand-200" 
-                          style={{ backgroundColor: c.colorCode === "#000000" && c.colorName.toLowerCase() !== "black" ? c.colorName : c.colorCode }} 
-                          title={c.colorName} 
-                        />
-                      ))}
-                      {p.colorOptions.length > 4 && <span className="text-xs text-brand-500">+{p.colorOptions.length - 4}</span>}
-                    </div>
-                  ) : <span className="text-brand-400">—</span>}
-                </td>
-                <td className="px-6 py-4 text-sm text-brand-700">{[...new Set(p.variants.map(v => v.size))].join(", ") || "—"}</td>
-                <td className="px-6 py-4"><div className="flex justify-end gap-1">
-                  <button onClick={() => openEdit(p)} className="rounded-lg p-2 text-brand-400 hover:bg-blue-50 hover:text-blue-600"><Edit2 size={16} /></button>
-                  <button onClick={() => del(p.id)} disabled={delId === p.id} className="rounded-lg p-2 text-brand-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-50"><Trash2 size={16} /></button>
-                </div></td>
-              </tr>
-            ))}
-          </tbody></table></div>
-          {filtered.length === 0 && <div className="py-12 text-center text-brand-700">No products found.</div>}
-        </motion.div>
-      )}
+      {productTable}
 
       <AnimatePresence>
         {showModal && (<>

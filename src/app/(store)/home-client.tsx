@@ -221,18 +221,19 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                     setActiveReelLink(r.productLink || null);
                   }}
                 >
-                  <img
-                    src={r.coverImageUrl || "/placeholder-reel.jpg"}
-                    alt={r.title || "Watch Reel"}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
+                  <video
+                    src={r.videoUrl}
+                    poster={r.coverImageUrl || undefined}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-102"
                   />
 
-                  {/* Play Indicator Glassmorphic Icon Overlay */}
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/25 transition-colors flex items-center justify-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/25 backdrop-blur-md text-white border border-white/20 transition-transform group-hover:scale-110 shadow-lg">
-                      <Play size={18} className="ml-1 fill-white text-white" />
-                    </div>
+                  {/* Play Indicator Icon */}
+                  <div className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-black/40 backdrop-blur-sm text-white transition-transform group-hover:scale-110">
+                    <Play size={12} className="ml-0.5 fill-white text-white" />
                   </div>
 
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white">
