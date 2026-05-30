@@ -378,8 +378,12 @@ export default function AdminProductsPage() {
                             placeholder="Color name (e.g., Red, Blue) *"
                             className={`flex-1 rounded-lg border px-3 py-1.5 text-sm outline-none focus:border-purple-500 ${!color.colorName.trim() ? "border-red-300 bg-red-50/10 placeholder-red-400" : "border-purple-200"}`}
                           />
-                          <button onClick={() => setActiveColorIdx(activeColorIdx === idx ? null : idx)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${activeColorIdx === idx ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-700"}`}>
-                            {color.images.length} Images
+                          <button 
+                            onClick={() => setActiveColorIdx(activeColorIdx === idx ? null : idx)} 
+                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${activeColorIdx === idx ? "bg-purple-600 text-white shadow-sm" : "bg-purple-100 text-purple-700 hover:bg-purple-200"}`}
+                          >
+                            <ImageIcon size={14} />
+                            <span>{color.images.length} {color.images.length === 1 ? "Image" : "Images"} / Add</span>
                           </button>
                           <button onClick={() => removeColor(idx)} className="text-red-400 hover:text-red-600">
                             <X size={16} />
