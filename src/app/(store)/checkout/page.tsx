@@ -289,9 +289,17 @@ export default function CheckoutPage() {
           }
         },
         modal: {
-          ondismiss: () => {
+          ondismiss: async () => {
             setPlacing(false);
-            setError("Payment cancelled. Your order is saved — you can retry payment.");
+            setError("Payment cancelled. Your order has been marked as cancelled.");
+            try {
+              await fetch(`/api/orders/${orderId}/cancel`, {
+                method: "POST",
+                credentials: "include",
+              });
+            } catch (err) {
+              console.error("Failed to cancel order on payment dismissal:", err);
+            }
           },
         },
         theme: {
