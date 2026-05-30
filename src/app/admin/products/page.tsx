@@ -186,17 +186,20 @@ export default function AdminProductsPage() {
     if (!name.trim()) return;
     setSaving(true);
     const slug = editing?.slug || name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    const good = vars.filter(v => v.size && v.price);
+    const good = vars.filter(v => v.price);
     const body = {
       name, slug, description: desc, category: cat, featured: feat, isNewArrival: newArr, isBestSeller: best, stockStatus: stock,
-      variants: good.map(v => ({
-        sku: v.sku || `${slug}-${v.size}-${Date.now()}`,
-        size: v.size,
-        color: v.color,
-        price: Number(v.price),
-        salePrice: v.salePrice ? Number(v.salePrice) : null,
-        stockQuantity: Number(v.stockQuantity)
-      })),
+      variants: good.map(v => {
+        const normSize = (v.size || "").trim() || "Free Size";
+        return {
+          sku: v.sku || `${slug}-${normSize.replace(/\s+/g, "-")}-${Date.now()}`,
+          size: normSize,
+          color: v.color,
+          price: Number(v.price),
+          salePrice: v.salePrice ? Number(v.salePrice) : null,
+          stockQuantity: Number(v.stockQuantity)
+        };
+      }),
       images: imageUrls,
       colorOptions: colorOptions.filter(c => c.colorName.trim()).map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images }))
     };
