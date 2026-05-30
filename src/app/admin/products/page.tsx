@@ -183,7 +183,18 @@ export default function AdminProductsPage() {
   };
 
   const save = async () => {
-    if (!name.trim()) return;
+    if (!name.trim()) {
+      alert("Product Name is required.");
+      return;
+    }
+
+    // Validate that all added color options have a non-empty name
+    const hasEmptyColorName = colorOptions.some(c => !c.colorName.trim());
+    if (hasEmptyColorName) {
+      alert("Please enter a color name (e.g., Red, Blue, Pink) for all your added color options.");
+      return;
+    }
+
     setSaving(true);
     const slug = editing?.slug || name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
     const good = vars.filter(v => v.price);
@@ -201,7 +212,7 @@ export default function AdminProductsPage() {
         };
       }),
       images: imageUrls,
-      colorOptions: colorOptions.filter(c => c.colorName.trim()).map(c => ({ colorName: c.colorName, colorCode: c.colorCode, images: c.images }))
+      colorOptions: colorOptions.map(c => ({ colorName: c.colorName.trim(), colorCode: c.colorCode, images: c.images }))
     };
     let response;
     if (editing) {
@@ -364,8 +375,8 @@ export default function AdminProductsPage() {
                           <input
                             value={color.colorName}
                             onChange={e => updateColor(idx, "colorName", e.target.value)}
-                            placeholder="Color name (e.g., Red, Blue)"
-                            className="flex-1 rounded-lg border border-purple-200 px-3 py-1.5 text-sm outline-none focus:border-purple-500"
+                            placeholder="Color name (e.g., Red, Blue) *"
+                            className={`flex-1 rounded-lg border px-3 py-1.5 text-sm outline-none focus:border-purple-500 ${!color.colorName.trim() ? "border-red-300 bg-red-50/10 placeholder-red-400" : "border-purple-200"}`}
                           />
                           <button onClick={() => setActiveColorIdx(activeColorIdx === idx ? null : idx)} className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${activeColorIdx === idx ? "bg-purple-600 text-white" : "bg-purple-100 text-purple-700"}`}>
                             {color.images.length} Images
