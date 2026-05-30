@@ -28,7 +28,7 @@ export default function ProductPageClient({ product, related }: { product: Catal
   const active = product ? isInWishlist(product.slug) : false;
   
   const [selectedSize, setSelectedSize] = useState<string>("");
-  const [selectedColorIdx, setSelectedColorIdx] = useState<number>(0);
+  const [selectedColorIdx, setSelectedColorIdx] = useState<number | null>(null);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [added, setAdded] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -102,20 +102,22 @@ export default function ProductPageClient({ product, related }: { product: Catal
   }
 
   const hasColorOptions = product.colorOptions && product.colorOptions.length > 0;
-  const selectedColor = hasColorOptions ? product.colorOptions![selectedColorIdx] : null;
+  const selectedColor = hasColorOptions && selectedColorIdx !== null ? product.colorOptions![selectedColorIdx] : null;
 
   // Get images based on selected color
-  // Get images: Combine color-specific images with main product images
   const displayImages = (() => {
     const mainImages = product.images && product.images.length > 0 ? product.images : [product.image];
     const colorImages = selectedColor && selectedColor.images.length > 0 ? selectedColor.images : [];
     
-    // Combine and remove duplicates while keeping order (color images first)
-    return Array.from(new Set([...colorImages, ...mainImages]));
+    // Show only the selected color's images if selected, otherwise show default product images.
+    if (selectedColor && colorImages.length > 0) {
+      return colorImages;
+    }
+    return mainImages;
   })();
 
   const currentImage = displayImages[currentImageIdx] || displayImages[0];
-  const currentColorName = selectedColor?.colorName || product.color;
+  const currentColorName = selectedColor?.colorName || (hasColorOptions ? "Select color" : product.color);
 
   const handleColorChange = (idx: number) => {
     setSelectedColorIdx(idx);
