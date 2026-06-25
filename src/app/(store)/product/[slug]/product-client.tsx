@@ -484,22 +484,38 @@ export default function ProductPageClient({ product, related }: { product: Catal
                       <thead>
                         <tr className="border-b border-brand-100 text-brand-400 font-bold uppercase bg-brand-50/50">
                           <th className="p-3">Size</th>
-                          {fetchedSizeChartType === "kids" && <th className="p-3">Age Range</th>}
-                          <th className="p-3">Chest (in)</th>
-                          <th className="p-3">Waist (in)</th>
-                          <th className="p-3">Hip (in)</th>
-                          <th className="p-3">Length (in)</th>
+                          {fetchedSizeChartType === "kids" ? (
+                            <>
+                              <th className="p-3">Age Range</th>
+                              <th className="p-3">Length (in)</th>
+                            </>
+                          ) : (
+                            <>
+                              <th className="p-3">Chest (in)</th>
+                              <th className="p-3">Waist (in)</th>
+                              <th className="p-3">Hip (in)</th>
+                              <th className="p-3">Length (in)</th>
+                            </>
+                          )}
                         </tr>
                       </thead>
                       <tbody>
                         {fetchedSizeChart.map((row, index) => (
                           <tr key={index} className="border-b border-brand-50 last:border-0 hover:bg-brand-50/30">
                             <td className="p-3 font-semibold text-brand-950">{row.size}</td>
-                            {fetchedSizeChartType === "kids" && <td className="p-3 text-brand-700 font-medium">{row.ageRange || "—"}</td>}
-                            <td className="p-3 text-brand-700">{row.chest || "—"}</td>
-                            <td className="p-3 text-brand-700">{row.waist || "—"}</td>
-                            <td className="p-3 text-brand-700">{row.hip || "—"}</td>
-                            <td className="p-3 text-brand-700">{row.length || "—"}</td>
+                            {fetchedSizeChartType === "kids" ? (
+                              <>
+                                <td className="p-3 text-brand-700 font-medium">{row.ageRange || "—"}</td>
+                                <td className="p-3 text-brand-700">{row.length || "—"}</td>
+                              </>
+                            ) : (
+                              <>
+                                <td className="p-3 text-brand-700">{row.chest || "—"}</td>
+                                <td className="p-3 text-brand-700">{row.waist || "—"}</td>
+                                <td className="p-3 text-brand-700">{row.hip || "—"}</td>
+                                <td className="p-3 text-brand-700">{row.length || "—"}</td>
+                              </>
+                            )}
                           </tr>
                         ))}
                       </tbody>

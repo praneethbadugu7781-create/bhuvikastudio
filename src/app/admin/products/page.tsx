@@ -227,8 +227,9 @@ export default function AdminProductsPage() {
       sizeChartType: useCustomSizeChart ? sizeChartType : (cat === "Kids Wear" ? "kids" : "standard")
     };
     let response;
-    if (editing) {
-      response = await fetch(`/api/products/${editing.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const editingId = editing ? (editing.id || (editing as any)._id) : null;
+    if (editingId) {
+      response = await fetch(`/api/products/${editingId}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     } else {
       response = await fetch("/api/products", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     }
@@ -236,7 +237,13 @@ export default function AdminProductsPage() {
     setSaving(false); setShowModal(false); reset(); load();
   };
 
-  const del = async (id: string) => { setDelId(id); await fetch(`/api/products/${id}`, { method: "DELETE" }); setDelId(null); load(); };
+  const del = async (id: string) => { 
+    if (!id) return;
+    setDelId(id); 
+    await fetch(`/api/products/${id}`, { method: "DELETE" }); 
+    setDelId(null); 
+    load(); 
+  };
 
   const upVar = (i: number, f: keyof Variant, v: string | number) => { const u = [...vars]; u[i] = { ...u[i], [f]: v }; setVars(u); };
 
@@ -252,7 +259,7 @@ export default function AdminProductsPage() {
           <th className="px-6 py-4">Product</th><th className="px-6 py-4">Category</th><th className="px-6 py-4">Price</th><th className="px-6 py-4">Colors</th><th className="px-6 py-4">Sizes</th><th className="px-6 py-4 text-right">Actions</th>
         </tr></thead><tbody>
           {filtered.map(p => (
-            <tr key={p.id} className="border-b border-brand-50 hover:bg-brand-50/50">
+            <tr key={p.id || (p as any)._id} className="border-b border-brand-50 hover:bg-brand-50/50">
               <td className="px-6 py-4"><div className="flex items-center gap-3">
                 {p.images[0] ? <img src={p.images[0].imageUrl} alt="" className="h-12 w-12 rounded-xl object-cover" loading="lazy" /> : <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50"><ImageIcon size={20} className="text-brand-300" /></div>}
                 <div><p className="font-semibold text-brand-900">{p.name}</p><p className="text-xs text-brand-500">{p.slug}</p></div>
@@ -288,7 +295,7 @@ export default function AdminProductsPage() {
               <td className="px-6 py-4 text-sm text-brand-700">{[...new Set(p.variants.map(v => v.size))].join(", ") || "—"}</td>
               <td className="px-6 py-4"><div className="flex justify-end gap-1">
                 <button onClick={() => openEdit(p)} className="rounded-lg p-2 text-brand-400 hover:bg-blue-50 hover:text-blue-600"><Edit2 size={16} /></button>
-                <button onClick={() => del(p.id)} disabled={delId === p.id} className="rounded-lg p-2 text-brand-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-50"><Trash2 size={16} /></button>
+                <button onClick={() => del(p.id || (p as any)._id)} disabled={delId === (p.id || (p as any)._id)} className="rounded-lg p-2 text-brand-400 hover:bg-red-50 hover:text-red-500 disabled:opacity-50"><Trash2 size={16} /></button>
               </div></td>
             </tr>
           ))}
@@ -517,11 +524,19 @@ export default function AdminProductsPage() {
                         <thead>
                           <tr className="border-b border-brand-100 text-brand-400 font-bold uppercase">
                             <th className="pb-1">Size *</th>
-                            {sizeChartType === "kids" && <th className="pb-1">Age Range</th>}
-                            <th className="pb-1">Chest</th>
-                            <th className="pb-1">Waist</th>
-                            <th className="pb-1">Hip</th>
-                            <th className="pb-1">Length</th>
+                            {sizeChartType === "kids" ? (
+                              <>
+                                <th className="pb-1">Age Range</th>
+                                <th className="pb-1">Length</th>
+                              </>
+                            ) : (
+                              <>
+                                <th className="pb-1">Chest</th>
+                                <th className="pb-1">Waist</th>
+                                <th className="pb-1">Hip</th>
+                                <th className="pb-1">Length</th>
+                              </>
+                            )}
                             <th className="pb-1 text-right">Delete</th>
                           </tr>
                         </thead>
@@ -540,68 +555,85 @@ export default function AdminProductsPage() {
                                   className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
                                 />
                               </td>
-                              {sizeChartType === "kids" && (
-                                <td className="py-1">
-                                  <input 
-                                    value={entry.ageRange} 
-                                    onChange={e => {
-                                      const newChart = [...sizeChart];
-                                      newChart[idx].ageRange = e.target.value;
-                                      setSizeChart(newChart);
-                                    }} 
-                                    placeholder="e.g. 1-2 Years" 
-                                    className="w-20 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
-                                  />
-                                </td>
+                              {sizeChartType === "kids" ? (
+                                <>
+                                  <td className="py-1">
+                                    <input 
+                                      value={entry.ageRange} 
+                                      onChange={e => {
+                                        const newChart = [...sizeChart];
+                                        newChart[idx].ageRange = e.target.value;
+                                        setSizeChart(newChart);
+                                      }} 
+                                      placeholder="e.g. 1-2 Years" 
+                                      className="w-20 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                    />
+                                  </td>
+                                  <td className="py-1">
+                                    <input 
+                                      value={entry.length} 
+                                      onChange={e => {
+                                        const newChart = [...sizeChart];
+                                        newChart[idx].length = e.target.value;
+                                        setSizeChart(newChart);
+                                      }} 
+                                      placeholder='18"' 
+                                      className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                    />
+                                  </td>
+                                </>
+                              ) : (
+                                <>
+                                  <td className="py-1">
+                                    <input 
+                                      value={entry.chest} 
+                                      onChange={e => {
+                                        const newChart = [...sizeChart];
+                                        newChart[idx].chest = e.target.value;
+                                        setSizeChart(newChart);
+                                      }} 
+                                      placeholder='36"' 
+                                      className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                    />
+                                  </td>
+                                  <td className="py-1">
+                                    <input 
+                                      value={entry.waist} 
+                                      onChange={e => {
+                                        const newChart = [...sizeChart];
+                                        newChart[idx].waist = e.target.value;
+                                        setSizeChart(newChart);
+                                      }} 
+                                      placeholder='34"' 
+                                      className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                    />
+                                  </td>
+                                  <td className="py-1">
+                                    <input 
+                                      value={entry.hip} 
+                                      onChange={e => {
+                                        const newChart = [...sizeChart];
+                                        newChart[idx].hip = e.target.value;
+                                        setSizeChart(newChart);
+                                      }} 
+                                      placeholder='38"' 
+                                      className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                    />
+                                  </td>
+                                  <td className="py-1">
+                                    <input 
+                                      value={entry.length} 
+                                      onChange={e => {
+                                        const newChart = [...sizeChart];
+                                        newChart[idx].length = e.target.value;
+                                        setSizeChart(newChart);
+                                      }} 
+                                      placeholder='30"' 
+                                      className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                    />
+                                  </td>
+                                </>
                               )}
-                              <td className="py-1">
-                                <input 
-                                  value={entry.chest} 
-                                  onChange={e => {
-                                    const newChart = [...sizeChart];
-                                    newChart[idx].chest = e.target.value;
-                                    setSizeChart(newChart);
-                                  }} 
-                                  placeholder='36"' 
-                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
-                                />
-                              </td>
-                              <td className="py-1">
-                                <input 
-                                  value={entry.waist} 
-                                  onChange={e => {
-                                    const newChart = [...sizeChart];
-                                    newChart[idx].waist = e.target.value;
-                                    setSizeChart(newChart);
-                                  }} 
-                                  placeholder='34"' 
-                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
-                                />
-                              </td>
-                              <td className="py-1">
-                                <input 
-                                  value={entry.hip} 
-                                  onChange={e => {
-                                    const newChart = [...sizeChart];
-                                    newChart[idx].hip = e.target.value;
-                                    setSizeChart(newChart);
-                                  }} 
-                                  placeholder='38"' 
-                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
-                                />
-                              </td>
-                              <td className="py-1">
-                                <input 
-                                  value={entry.length} 
-                                  onChange={e => {
-                                    const newChart = [...sizeChart];
-                                    newChart[idx].length = e.target.value;
-                                    setSizeChart(newChart);
-                                  }} 
-                                  placeholder='30"' 
-                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
-                                />
-                              </td>
                               <td className="py-1 text-right">
                                 <button 
                                   type="button" 

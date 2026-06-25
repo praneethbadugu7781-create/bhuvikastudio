@@ -275,11 +275,19 @@ export default function AdminSizeChartsPage() {
                   <thead>
                     <tr className="border-b border-brand-100 text-left text-xs font-bold uppercase tracking-wider text-brand-400">
                       <th className="pb-3 pr-4">Size *</th>
-                      {selectedChart.type === "kids" && <th className="pb-3 pr-4">Age Range</th>}
-                      <th className="pb-3 pr-4">Chest (Bust)</th>
-                      <th className="pb-3 pr-4">Waist</th>
-                      <th className="pb-3 pr-4">Hip</th>
-                      <th className="pb-3 pr-4">Length</th>
+                      {selectedChart.type === "kids" ? (
+                        <>
+                          <th className="pb-3 pr-4">Age Range</th>
+                          <th className="pb-3 pr-4">Length</th>
+                        </>
+                      ) : (
+                        <>
+                          <th className="pb-3 pr-4">Chest (Bust)</th>
+                          <th className="pb-3 pr-4">Waist</th>
+                          <th className="pb-3 pr-4">Hip</th>
+                          <th className="pb-3 pr-4">Length</th>
+                        </>
+                      )}
                       <th className="pb-3 text-right">Action</th>
                     </tr>
                   </thead>
@@ -295,53 +303,67 @@ export default function AdminSizeChartsPage() {
                             className="w-full max-w-[80px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
                           />
                         </td>
-                        {selectedChart.type === "kids" && (
-                          <td className="py-2.5 pr-4">
-                            <input
-                              type="text"
-                              value={entry.ageRange}
-                              onChange={e => handleMeasurementChange(idx, "ageRange", e.target.value)}
-                              placeholder="e.g. 1–2 Years"
-                              className="w-full max-w-[140px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
-                            />
-                          </td>
+                        {selectedChart.type === "kids" ? (
+                          <>
+                            <td className="py-2.5 pr-4">
+                              <input
+                                type="text"
+                                value={entry.ageRange}
+                                onChange={e => handleMeasurementChange(idx, "ageRange", e.target.value)}
+                                placeholder="e.g. 1–2 Years"
+                                className="w-full max-w-[140px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
+                              />
+                            </td>
+                            <td className="py-2.5 pr-4">
+                              <input
+                                type="text"
+                                value={entry.length}
+                                onChange={e => handleMeasurementChange(idx, "length", e.target.value)}
+                                placeholder='e.g. 18"'
+                                className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
+                              />
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="py-2.5 pr-4">
+                              <input
+                                type="text"
+                                value={entry.chest}
+                                onChange={e => handleMeasurementChange(idx, "chest", e.target.value)}
+                                placeholder='e.g. 36"'
+                                className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
+                              />
+                            </td>
+                            <td className="py-2.5 pr-4">
+                              <input
+                                type="text"
+                                value={entry.waist}
+                                onChange={e => handleMeasurementChange(idx, "waist", e.target.value)}
+                                placeholder='e.g. 34"'
+                                className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
+                              />
+                            </td>
+                            <td className="py-2.5 pr-4">
+                              <input
+                                type="text"
+                                value={entry.hip}
+                                onChange={e => handleMeasurementChange(idx, "hip", e.target.value)}
+                                placeholder='e.g. 38"'
+                                className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
+                              />
+                            </td>
+                            <td className="py-2.5 pr-4">
+                              <input
+                                type="text"
+                                value={entry.length}
+                                onChange={e => handleMeasurementChange(idx, "length", e.target.value)}
+                                placeholder='e.g. 30"'
+                                className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
+                              />
+                            </td>
+                          </>
                         )}
-                        <td className="py-2.5 pr-4">
-                          <input
-                            type="text"
-                            value={entry.chest}
-                            onChange={e => handleMeasurementChange(idx, "chest", e.target.value)}
-                            placeholder='e.g. 36"'
-                            className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
-                          />
-                        </td>
-                        <td className="py-2.5 pr-4">
-                          <input
-                            type="text"
-                            value={entry.waist}
-                            onChange={e => handleMeasurementChange(idx, "waist", e.target.value)}
-                            placeholder='e.g. 34"'
-                            className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
-                          />
-                        </td>
-                        <td className="py-2.5 pr-4">
-                          <input
-                            type="text"
-                            value={entry.hip}
-                            onChange={e => handleMeasurementChange(idx, "hip", e.target.value)}
-                            placeholder='e.g. 38"'
-                            className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
-                          />
-                        </td>
-                        <td className="py-2.5 pr-4">
-                          <input
-                            type="text"
-                            value={entry.length}
-                            onChange={e => handleMeasurementChange(idx, "length", e.target.value)}
-                            placeholder='e.g. 30"'
-                            className="w-full max-w-[100px] rounded-lg border border-brand-200 px-2 py-1.5 text-sm outline-none focus:border-brand-500"
-                          />
-                        </td>
                         <td className="py-2.5 text-right">
                           <button
                             onClick={() => removeRow(idx)}
