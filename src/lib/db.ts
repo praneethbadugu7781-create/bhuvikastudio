@@ -1,5 +1,5 @@
 import "server-only";
-import type { CatalogItem, ColorOption } from "./catalog";
+import type { CatalogItem, ColorOption, SizeChartEntry } from "./catalog";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -16,6 +16,8 @@ type ApiProduct = {
   variants: { _id: string; sku: string; size: string; color: string; price: number; salePrice: number | null; stockQuantity: number }[];
   images: { _id: string; imageUrl: string; altText: string | null; displayRank: number }[];
   colorOptions?: { colorName: string; colorCode: string; images: { imageUrl: string }[] }[];
+  sizeChart?: SizeChartEntry[];
+  sizeChartType?: "standard" | "kids";
 };
 
 export function normalizeCategory(cat: string): string {
@@ -66,6 +68,8 @@ function toCatalogItem(p: ApiProduct): CatalogItem {
     })),
     stock: p.stockStatus === "IN_STOCK" ? "In Stock" : "Out of Stock",
     featured: p.featured,
+    sizeChart: p.sizeChart,
+    sizeChartType: p.sizeChartType,
   };
 }
 
@@ -98,6 +102,8 @@ export async function getProductBySlug(slug: string) {
     })),
     stock: (p.stockStatus === "IN_STOCK" ? "In Stock" : "Out of Stock") as "In Stock" | "Out of Stock",
     featured: p.featured,
+    sizeChart: p.sizeChart,
+    sizeChartType: p.sizeChartType,
   };
 }
 

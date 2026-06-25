@@ -4,6 +4,15 @@ export type ColorOption = {
   images: string[];
 };
 
+export type SizeChartEntry = {
+  size: string;
+  chest: string;
+  waist: string;
+  hip: string;
+  length: string;
+  ageRange: string;
+};
+
 export type CatalogItem = {
   slug: string;
   name: string;
@@ -18,6 +27,8 @@ export type CatalogItem = {
   colorOptions?: ColorOption[];
   stock: "In Stock" | "Out of Stock";
   featured?: boolean;
+  sizeChart?: SizeChartEntry[];
+  sizeChartType?: "standard" | "kids";
 };
 
 export const categories = [

@@ -1,15 +1,18 @@
 "use client";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palette } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palette, Ruler } from "lucide-react";
 
 type Variant = { sku: string; size: string; color: string; price: string; salePrice?: string; stockQuantity: number };
 type ColorOption = { colorName: string; colorCode: string; images: string[] };
 type ApiColorOption = { colorName: string; colorCode: string; images: { imageUrl: string }[] };
+type SizeChartEntry = { size: string; chest: string; waist: string; hip: string; length: string; ageRange: string };
 type Product = {
   id: string; slug: string; name: string; description: string; category: string;
   featured: boolean; isNewArrival: boolean; isBestSeller: boolean; stockStatus: string;
   variants: Variant[]; images: { imageUrl: string }[]; colorOptions?: ApiColorOption[];
+  sizeChart?: SizeChartEntry[];
+  sizeChartType?: "standard" | "kids";
 };
 
 const emptyVariant: Variant = { sku: "", size: "", color: "", price: "", stockQuantity: 0 };
@@ -36,6 +39,9 @@ export default function AdminProductsPage() {
   const [colorOptions, setColorOptions] = useState<ColorOption[]>([]);
   const [saving, setSaving] = useState(false);
   const [activeColorIdx, setActiveColorIdx] = useState<number | null>(null);
+  const [sizeChart, setSizeChart] = useState<SizeChartEntry[]>([]);
+  const [sizeChartType, setSizeChartType] = useState<"standard" | "kids">("standard");
+  const [useCustomSizeChart, setUseCustomSizeChart] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const colorFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,6 +58,7 @@ export default function AdminProductsPage() {
     setName(""); setDesc(""); setCat(cats[0]); setFeat(false); setNewArr(false);
     setBest(false); setStock("IN_STOCK"); setImageUrls([]); setVars([{ ...emptyVariant }]);
     setColorOptions([]); setActiveColorIdx(null); setEditing(null);
+    setSizeChart([]); setSizeChartType("standard"); setUseCustomSizeChart(false);
   };
 
   const openAdd = () => { reset(); setShowModal(true); };
@@ -66,6 +73,9 @@ export default function AdminProductsPage() {
       images: c.images?.map((img: any) => typeof img === 'string' ? img : img.imageUrl) || []
     })) || []);
     setActiveColorIdx(null);
+    setSizeChart(p.sizeChart || []);
+    setSizeChartType(p.sizeChartType || (p.category === "Kids Wear" ? "kids" : "standard"));
+    setUseCustomSizeChart(p.sizeChart && p.sizeChart.length > 0 ? true : false);
     setShowModal(true);
   };
 
@@ -212,7 +222,9 @@ export default function AdminProductsPage() {
         };
       }),
       images: imageUrls,
-      colorOptions: colorOptions.map(c => ({ colorName: c.colorName.trim(), colorCode: c.colorCode, images: c.images }))
+      colorOptions: colorOptions.map(c => ({ colorName: c.colorName.trim(), colorCode: c.colorCode, images: c.images })),
+      sizeChart: useCustomSizeChart ? sizeChart : [],
+      sizeChartType: useCustomSizeChart ? sizeChartType : (cat === "Kids Wear" ? "kids" : "standard")
     };
     let response;
     if (editing) {
@@ -441,6 +453,178 @@ export default function AdminProductsPage() {
                     {vars.length > 1 && <button onClick={() => setVars(vars.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600"><X size={16} /></button>}
                   </div>
                 ))}</div>
+              </div>
+
+              {/* Custom Size Chart Override */}
+              <div className="rounded-xl border border-brand-200 bg-brand-50/30 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Ruler size={16} className="text-brand-900" />
+                    <span className="text-sm font-semibold text-brand-900">Custom Size Chart Override</span>
+                  </div>
+                  <label className="flex items-center gap-1.5 text-xs font-semibold text-brand-700 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={useCustomSizeChart} 
+                      onChange={e => {
+                        setUseCustomSizeChart(e.target.checked);
+                        if (e.target.checked && sizeChart.length === 0) {
+                          fetch(`/api/size-charts/${encodeURIComponent(cat)}`)
+                            .then(res => res.json())
+                            .then(data => {
+                              if (data && data.measurements && data.measurements.length > 0) {
+                                setSizeChart(data.measurements);
+                                setSizeChartType(data.type);
+                              } else {
+                                setSizeChart([{ size: "", chest: "", waist: "", hip: "", length: "", ageRange: "" }]);
+                                setSizeChartType(cat === "Kids Wear" ? "kids" : "standard");
+                              }
+                            }).catch(() => {
+                              setSizeChart([{ size: "", chest: "", waist: "", hip: "", length: "", ageRange: "" }]);
+                              setSizeChartType(cat === "Kids Wear" ? "kids" : "standard");
+                            });
+                        }
+                      }} 
+                    /> 
+                    <span>Override default template</span>
+                  </label>
+                </div>
+
+                {useCustomSizeChart && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between border-t border-brand-100/50 pt-2">
+                      <span className="text-xs text-brand-500">Add measurements to override the default template.</span>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          type="button"
+                          onClick={() => setSizeChartType("standard")} 
+                          className={`px-2 py-1 text-[10px] font-bold rounded ${sizeChartType === "standard" ? "bg-brand-900 text-white" : "bg-white text-brand-600 border"}`}
+                        >
+                          Standard
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => setSizeChartType("kids")} 
+                          className={`px-2 py-1 text-[10px] font-bold rounded ${sizeChartType === "kids" ? "bg-brand-900 text-white" : "bg-white text-brand-600 border"}`}
+                        >
+                          Kids
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead>
+                          <tr className="border-b border-brand-100 text-brand-400 font-bold uppercase">
+                            <th className="pb-1">Size *</th>
+                            {sizeChartType === "kids" && <th className="pb-1">Age Range</th>}
+                            <th className="pb-1">Chest</th>
+                            <th className="pb-1">Waist</th>
+                            <th className="pb-1">Hip</th>
+                            <th className="pb-1">Length</th>
+                            <th className="pb-1 text-right">Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sizeChart.map((entry, idx) => (
+                            <tr key={idx} className="border-b border-brand-100/50">
+                              <td className="py-1">
+                                <input 
+                                  value={entry.size} 
+                                  onChange={e => {
+                                    const newChart = [...sizeChart];
+                                    newChart[idx].size = e.target.value;
+                                    setSizeChart(newChart);
+                                  }} 
+                                  placeholder="M" 
+                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                />
+                              </td>
+                              {sizeChartType === "kids" && (
+                                <td className="py-1">
+                                  <input 
+                                    value={entry.ageRange} 
+                                    onChange={e => {
+                                      const newChart = [...sizeChart];
+                                      newChart[idx].ageRange = e.target.value;
+                                      setSizeChart(newChart);
+                                    }} 
+                                    placeholder="e.g. 1-2 Years" 
+                                    className="w-20 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                  />
+                                </td>
+                              )}
+                              <td className="py-1">
+                                <input 
+                                  value={entry.chest} 
+                                  onChange={e => {
+                                    const newChart = [...sizeChart];
+                                    newChart[idx].chest = e.target.value;
+                                    setSizeChart(newChart);
+                                  }} 
+                                  placeholder='36"' 
+                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                />
+                              </td>
+                              <td className="py-1">
+                                <input 
+                                  value={entry.waist} 
+                                  onChange={e => {
+                                    const newChart = [...sizeChart];
+                                    newChart[idx].waist = e.target.value;
+                                    setSizeChart(newChart);
+                                  }} 
+                                  placeholder='34"' 
+                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                />
+                              </td>
+                              <td className="py-1">
+                                <input 
+                                  value={entry.hip} 
+                                  onChange={e => {
+                                    const newChart = [...sizeChart];
+                                    newChart[idx].hip = e.target.value;
+                                    setSizeChart(newChart);
+                                  }} 
+                                  placeholder='38"' 
+                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                />
+                              </td>
+                              <td className="py-1">
+                                <input 
+                                  value={entry.length} 
+                                  onChange={e => {
+                                    const newChart = [...sizeChart];
+                                    newChart[idx].length = e.target.value;
+                                    setSizeChart(newChart);
+                                  }} 
+                                  placeholder='30"' 
+                                  className="w-12 rounded border p-1 text-[11px] outline-none focus:border-brand-500" 
+                                />
+                              </td>
+                              <td className="py-1 text-right">
+                                <button 
+                                  type="button" 
+                                  onClick={() => setSizeChart(sizeChart.filter((_, i) => i !== idx))} 
+                                  className="text-red-400 hover:text-red-600"
+                                >
+                                  <X size={14} />
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => setSizeChart([...sizeChart, { size: "", chest: "", waist: "", hip: "", length: "", ageRange: sizeChartType === "kids" ? "1-2 Years" : "" }])} 
+                      className="text-[11px] font-bold text-brand-500 hover:text-brand-700"
+                    >
+                      + Add Size Row
+                    </button>
+                  </div>
+                )}
               </div>
               <button onClick={save} disabled={saving || !name.trim()} className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-900 py-3 font-semibold text-white hover:bg-brand-950 disabled:opacity-50">
                 <Save size={18} /> {saving ? "Saving..." : editing ? "Update Product" : "Create Product"}

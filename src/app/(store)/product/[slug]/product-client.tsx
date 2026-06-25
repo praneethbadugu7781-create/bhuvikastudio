@@ -2,8 +2,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check, Tag, Lock, Gift } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check, Tag, Lock, Gift, Ruler, X, Loader2 } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import { useCart } from "@/store/cart";
 import { useWishlist } from "@/store/wishlist";
@@ -28,6 +28,32 @@ export default function ProductPageClient({ product, related }: { product: Catal
   const active = product ? isInWishlist(product.slug) : false;
   
   const [selectedSize, setSelectedSize] = useState<string>("");
+  const [showSizeChartModal, setShowSizeChartModal] = useState(false);
+  const [loadingSizeChart, setLoadingSizeChart] = useState(false);
+  const [fetchedSizeChart, setFetchedSizeChart] = useState<any[] | null>(null);
+  const [fetchedSizeChartType, setFetchedSizeChartType] = useState<string>("standard");
+
+  const openSizeChart = async () => {
+    setShowSizeChartModal(true);
+    if (product?.sizeChart && product.sizeChart.length > 0) {
+      setFetchedSizeChart(product.sizeChart);
+      setFetchedSizeChartType(product.sizeChartType || "standard");
+    } else if (product) {
+      setLoadingSizeChart(true);
+      try {
+        const res = await fetch(`/api/size-charts/${encodeURIComponent(product.category)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setFetchedSizeChart(data.measurements || []);
+          setFetchedSizeChartType(data.type || "standard");
+        }
+      } catch (err) {
+        console.error("Failed to load category size chart", err);
+      } finally {
+        setLoadingSizeChart(false);
+      }
+    }
+  };
   const [selectedColorIdx, setSelectedColorIdx] = useState<number | null>(null);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [added, setAdded] = useState(false);
@@ -264,7 +290,15 @@ export default function ProductPageClient({ product, related }: { product: Catal
           </p>
 
           <div className="mt-6">
-            <p className="text-sm font-semibold text-brand-800">Select Size</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-brand-800">Select Size</p>
+              <button 
+                onClick={openSizeChart} 
+                className="flex items-center gap-1 text-xs font-semibold text-brand-600 hover:text-brand-800 hover:underline"
+              >
+                <Ruler size={14} /> Size Chart
+              </button>
+            </div>
             <div className="mt-2 flex flex-wrap gap-2">
               {product.sizes.map((size) => (
                 <button key={size} onClick={() => setSelectedSize(size)} className={`rounded-xl border-2 px-5 py-2.5 text-sm font-semibold transition ${selectedSize === size ? "border-brand-900 bg-brand-900 text-white" : "border-brand-200 text-brand-800 hover:border-brand-500"}`}>
@@ -408,6 +442,81 @@ export default function ProductPageClient({ product, related }: { product: Catal
           </div>
         </section>
       )}
+
+      {/* Size Chart Modal */}
+      <AnimatePresence>
+        {showSizeChartModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSizeChartModal(false)}
+              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-x-4 top-[10%] z-50 mx-auto max-h-[80vh] max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl md:top-[15%]"
+            >
+              <div className="flex items-center justify-between border-b border-brand-100 pb-4">
+                <div>
+                  <h3 className="font-display text-xl text-brand-950">Size Chart</h3>
+                  <p className="text-xs text-brand-500">{product.category} ({fetchedSizeChartType === "kids" ? "Kids Sizing" : "Standard Sizing"})</p>
+                </div>
+                <button
+                  onClick={() => setShowSizeChartModal(false)}
+                  className="rounded-full p-1.5 hover:bg-brand-50 transition"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="mt-6">
+                {loadingSizeChart ? (
+                  <div className="flex justify-center py-10">
+                    <Loader2 className="animate-spin text-brand-500" size={28} />
+                  </div>
+                ) : fetchedSizeChart && fetchedSizeChart.length > 0 ? (
+                  <div className="overflow-x-auto rounded-2xl border border-brand-100 bg-brand-50/20">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-brand-100 text-brand-400 font-bold uppercase bg-brand-50/50">
+                          <th className="p-3">Size</th>
+                          {fetchedSizeChartType === "kids" && <th className="p-3">Age Range</th>}
+                          <th className="p-3">Chest (in)</th>
+                          <th className="p-3">Waist (in)</th>
+                          <th className="p-3">Hip (in)</th>
+                          <th className="p-3">Length (in)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {fetchedSizeChart.map((row, index) => (
+                          <tr key={index} className="border-b border-brand-50 last:border-0 hover:bg-brand-50/30">
+                            <td className="p-3 font-semibold text-brand-950">{row.size}</td>
+                            {fetchedSizeChartType === "kids" && <td className="p-3 text-brand-700 font-medium">{row.ageRange || "—"}</td>}
+                            <td className="p-3 text-brand-700">{row.chest || "—"}</td>
+                            <td className="p-3 text-brand-700">{row.waist || "—"}</td>
+                            <td className="p-3 text-brand-700">{row.hip || "—"}</td>
+                            <td className="p-3 text-brand-700">{row.length || "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-center py-10 text-sm text-brand-500">No measurements available for this category.</p>
+                )}
+              </div>
+
+              <div className="mt-6 border-t border-brand-100 pt-4 text-center">
+                <p className="text-[10px] text-brand-400">Note: All measurements are in inches. Standard Indian garment sizing applies.</p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
