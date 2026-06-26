@@ -5,6 +5,7 @@ import { Heart, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
 import { useWishlist } from "@/store/wishlist";
 import { useCart } from "@/store/cart";
 import AnimatedSection from "@/components/AnimatedSection";
+import { flyToCart } from "@/lib/animation";
 
 export default function WishlistPage() {
   const { items, remove, clear } = useWishlist();
@@ -70,7 +71,14 @@ export default function WishlistPage() {
               <div className="mt-2 flex items-center justify-between">
                 <span className="font-bold text-brand-900">&#8377;{item.price.toLocaleString("en-IN")}</span>
                 <button 
-                  onClick={() => addToCart(item, item.sizes[0])}
+                  onClick={(e) => {
+                    addToCart(item, item.sizes[0]);
+                    const card = e.currentTarget.closest("article");
+                    const img = card?.querySelector("img");
+                    if (img) {
+                      flyToCart(img as HTMLElement, item.image);
+                    }
+                  }}
                   className="flex items-center gap-1.5 rounded-full bg-brand-900 px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-950"
                 >
                   <ShoppingBag size={14} /> Add to Cart

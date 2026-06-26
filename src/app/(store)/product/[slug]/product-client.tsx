@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +9,7 @@ import { useCart } from "@/store/cart";
 import { useWishlist } from "@/store/wishlist";
 import ProductCard from "@/components/ProductCard";
 import AnimatedSection from "@/components/AnimatedSection";
+import { flyToCart } from "@/lib/animation";
 
 // Helper to determine if a color is light for checkmark visibility
 const isLightColor = (color: string) => {
@@ -23,6 +24,7 @@ const isLightColor = (color: string) => {
 
 export default function ProductPageClient({ product, related }: { product: CatalogItem | null; related: CatalogItem[] }) {
   const router = useRouter();
+  const imageRef = useRef<HTMLImageElement>(null);
   const addToCart = useCart((s) => s.add);
   const { toggle, isInWishlist } = useWishlist();
   const active = product ? isInWishlist(product.slug) : false;
@@ -158,6 +160,9 @@ export default function ProductPageClient({ product, related }: { product: Catal
     addToCart(product, size);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+    if (imageRef.current) {
+      flyToCart(imageRef.current, currentImage);
+    }
   };
 
   const handleBuyNow = () => {
@@ -183,6 +188,7 @@ export default function ProductPageClient({ product, related }: { product: Catal
           <div className="relative group overflow-hidden rounded-3xl bg-brand-50 sm:rounded-[2rem]">
             {!imgLoaded && <div className="absolute inset-0 shimmer rounded-3xl" />}
             <img
+              ref={imageRef}
               src={currentImage}
               alt={product.name}
               onLoad={() => setImgLoaded(true)}

@@ -7,6 +7,7 @@ import { CheckCircle, CreditCard, Banknote, Truck, ArrowLeft, ArrowRight, LogIn,
 import { useCart, AppliedCoupon } from "@/store/cart";
 import { useAuth } from "@/context/AuthContext";
 import AnimatedSection from "@/components/AnimatedSection";
+import { runTruckAnimation } from "@/lib/animation";
 
 declare global {
   interface Window {
@@ -54,6 +55,7 @@ export default function CheckoutPage() {
 
   // Store coupon in ref to prevent losing it
   const couponRef = useRef<AppliedCoupon>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Update ref whenever appliedCoupon changes and is valid
   useEffect(() => {
@@ -281,8 +283,15 @@ export default function CheckoutPage() {
               return;
             }
 
-            setPlaced(true);
-            clear();
+            if (buttonRef.current) {
+              runTruckAnimation(buttonRef.current, () => {
+                setPlaced(true);
+                clear();
+              });
+            } else {
+              setPlaced(true);
+              clear();
+            }
           } catch {
             setError("Payment verification failed. Contact support.");
             setPlacing(false);
@@ -395,8 +404,15 @@ export default function CheckoutPage() {
       }
 
       // COD — order placed directly
-      setPlaced(true);
-      clear();
+      if (buttonRef.current) {
+        runTruckAnimation(buttonRef.current, () => {
+          setPlaced(true);
+          clear();
+        });
+      } else {
+        setPlaced(true);
+        clear();
+      }
     } catch {
       setError("Network error. Please try again.");
     }
@@ -591,9 +607,28 @@ export default function CheckoutPage() {
               <p className="mt-4 text-sm text-brand-700">Your cart is empty. <Link href="/shop" className="text-brand-500 underline">Add items</Link> to proceed.</p>
             )}
             {error && <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{error}</p>}
-            <motion.button whileTap={{ scale: 0.97 }} onClick={handlePlaceOrder} disabled={items.length === 0 || placing} className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-brand-900 px-6 py-3.5 font-semibold text-white transition hover:bg-brand-950 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50">
-              {placing ? "Processing..." : payment === "COD" ? "Place Order" : "Pay Now"} <ArrowRight size={18} />
-            </motion.button>
+            <button
+              ref={buttonRef}
+              onClick={handlePlaceOrder}
+              disabled={items.length === 0 || placing}
+              className="truck-button mt-6 w-full disabled:cursor-not-allowed disabled:opacity-50 mx-auto"
+            >
+              <span className="default">
+                {placing ? "Processing..." : payment === "COD" ? "Place Order" : "Pay Now"}
+              </span>
+              <span className="success">
+                Order Placed
+                <svg viewBox="0 0 12 10">
+                  <polyline points="1.5 6 4.5 9 10.5 1"></polyline>
+                </svg>
+              </span>
+              <div className="truck">
+                <div className="wheel"></div>
+                <div className="back"></div>
+                <div className="front"></div>
+                <div className="box"></div>
+              </div>
+            </button>
           </motion.aside>
         </div>
       </div>

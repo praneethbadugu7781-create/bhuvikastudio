@@ -31,6 +31,7 @@ export default function BottomTabBar() {
             <Link
               key={label}
               href={href}
+              id={label === "Cart" ? "cart-icon-bottom-target" : undefined}
               className={`relative flex flex-col items-center gap-1 rounded-xl px-2 py-1 text-[10px] font-bold uppercase tracking-tighter transition ${
                 isActive ? "text-brand-900" : "text-brand-400"
               }`}

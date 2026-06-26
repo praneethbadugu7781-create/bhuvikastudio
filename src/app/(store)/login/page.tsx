@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, ArrowRight, Sparkles, ShieldCheck, ArrowLeft, User } from "lucide-react";
+import { Mail, ArrowRight, Sparkles, ShieldCheck, ArrowLeft, User, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import Script from "next/script";
@@ -30,6 +30,52 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const handleOtpChange = (val: string, index: number) => {
+    const digit = val.replace(/\D/g, "").slice(-1);
+    if (!digit && val !== "") return;
+    
+    const currentOtp = otp.split("");
+    while (currentOtp.length < 6) currentOtp.push("");
+    
+    currentOtp[index] = digit;
+    const newOtpStr = currentOtp.join("").slice(0, 6);
+    setOtp(newOtpStr);
+
+    if (digit && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Backspace") {
+      const currentOtp = otp.split("");
+      while (currentOtp.length < 6) currentOtp.push("");
+      
+      if (!currentOtp[index] && index > 0) {
+        currentOtp[index - 1] = "";
+        setOtp(currentOtp.join("").slice(0, 6));
+        inputRefs.current[index - 1]?.focus();
+      } else {
+        currentOtp[index] = "";
+        setOtp(currentOtp.join("").slice(0, 6));
+      }
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    setOtp(pastedData);
+    const nextIndex = Math.min(pastedData.length, 5);
+    inputRefs.current[nextIndex]?.focus();
+  };
+
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -277,17 +323,32 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-brand-800">Enter 6-digit OTP</label>
-                <input
-                  value={otp}
-                  onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  placeholder="000000"
-                  autoFocus
-                  className="mt-1 w-full rounded-xl border border-brand-200 bg-brand-50/50 px-4 py-4 text-center text-2xl font-bold tracking-[0.5em] text-brand-900 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
-                />
+                <label className="text-sm font-semibold text-brand-800 block text-center mb-3">Enter 6-digit OTP</label>
+                <div className="flex justify-between gap-2 max-w-sm mx-auto">
+                  {Array.from({ length: 6 }).map((_, idx) => {
+                    const digit = otp[idx] || "";
+                    return (
+                      <input
+                        key={idx}
+                        ref={(el) => { inputRefs.current[idx] = el; }}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(e.target.value, idx)}
+                        onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                        onPaste={handleOtpPaste}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        placeholder="•"
+                        autoFocus={idx === 0}
+                        className={`h-12 w-12 rounded-xl border text-center text-2xl font-bold text-brand-950 bg-white outline-none transition-all duration-200 focus:scale-105 focus:ring-4 focus:ring-brand-500/10 focus:border-brand-500 ${
+                          digit 
+                            ? "border-brand-500 bg-brand-50/30 shadow-sm" 
+                            : "border-brand-200"
+                        }`}
+                      />
+                    );
+                  })}
+                </div>
               </div>
 
               {error && (
@@ -302,7 +363,15 @@ export default function LoginPage() {
                 disabled={verifying || otp.length < 6}
                 className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-900 py-3.5 font-semibold text-white transition hover:bg-brand-950 disabled:opacity-50"
               >
-                {verifying ? "Verifying..." : "Verify & Continue"} <ShieldCheck size={18} />
+                {verifying ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Verifying...
+                  </>
+                ) : (
+                  <>
+                    Verify & Continue <ShieldCheck size={18} />
+                  </>
+                )}
               </motion.button>
 
               <div className="flex items-center justify-between">

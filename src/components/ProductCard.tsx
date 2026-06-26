@@ -1,15 +1,18 @@
 "use client";
+import { useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingBag, Heart } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import { useWishlist } from "@/store/wishlist";
 import { useCart } from "@/store/cart";
+import { flyToCart } from "@/lib/animation";
 
 export default function ProductCard({ item, index = 0 }: { item: CatalogItem; index?: number }) {
   const { toggle, isInWishlist } = useWishlist();
   const addToCart = useCart((s) => s.add);
   const active = isInWishlist(item.slug);
+  const imageRef = useRef<HTMLImageElement>(null);
 
   return (
     <motion.article
@@ -22,6 +25,7 @@ export default function ProductCard({ item, index = 0 }: { item: CatalogItem; in
       <div className="relative h-48 md:h-72 overflow-hidden bg-brand-50">
         <Link href={`/product/${item.slug}`} className="block h-full w-full">
           <img
+            ref={imageRef}
             src={item.image}
             alt={item.name}
             className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-110"
@@ -47,7 +51,12 @@ export default function ProductCard({ item, index = 0 }: { item: CatalogItem; in
             <Heart size={16} className="md:w-[18px] md:h-[18px]" fill={active ? "currentColor" : "none"} />
           </button>
           <button 
-            onClick={() => addToCart(item, item.sizes[0])}
+            onClick={() => {
+              addToCart(item, item.sizes[0]);
+              if (imageRef.current) {
+                flyToCart(imageRef.current, item.image);
+              }
+            }}
             className="rounded-full bg-white/90 p-2 shadow-lg backdrop-blur transition hover:bg-brand-500 hover:text-white md:p-2.5"
           >
             <ShoppingBag size={16} className="md:w-[18px] md:h-[18px]" />
