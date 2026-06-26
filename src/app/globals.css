@@ -157,3 +157,13 @@ body {
 .img-zoom:hover img {
   transform: scale(1.08);
 }
+
+/* Promo marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}

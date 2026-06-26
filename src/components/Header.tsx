@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { User, LogOut, Home, ArrowLeft, Heart } from "lucide-react";
@@ -13,9 +14,53 @@ export default function Header() {
   const pathname = usePathname();
   const isHome = pathname === "/";
 
+  const [promo, setPromo] = useState<{ text: string; enabled: boolean } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/settings/promo")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && typeof data.enabled === "boolean") {
+          setPromo(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching promo settings", err));
+  }, []);
+
+  const parts = promo && promo.enabled && promo.text
+    ? promo.text.split("|").map((t) => t.trim()).filter(Boolean)
+    : [];
+
+  const repeatedParts = parts.length > 0
+    ? Array(Math.max(1, Math.ceil(8 / parts.length))).fill(parts).flat()
+    : [];
+
   return (
-    <header className="sticky top-0 z-30 border-b border-brand-100/60 bg-white/80 backdrop-blur-lg">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2">
+    <div className="w-full">
+      {promo && promo.enabled && parts.length > 0 && (
+        <div className="w-full bg-brand-900 text-brand-50 py-2 border-b border-brand-800/40 relative select-none overflow-hidden">
+          <div className="flex overflow-hidden w-full group">
+            <div className="animate-marquee flex shrink-0 items-center gap-12 pr-12 text-[11px] font-semibold uppercase tracking-wider group-hover:[animation-play-state:paused] transition-all duration-300">
+              {repeatedParts.map((part, idx) => (
+                <span key={idx} className="flex items-center gap-12 shrink-0">
+                  <span>{part}</span>
+                  <span className="text-brand-300/60 font-normal shrink-0">•</span>
+                </span>
+              ))}
+            </div>
+            <div className="animate-marquee flex shrink-0 items-center gap-12 pr-12 text-[11px] font-semibold uppercase tracking-wider group-hover:[animation-play-state:paused] transition-all duration-300" aria-hidden="true">
+              {repeatedParts.map((part, idx) => (
+                <span key={idx} className="flex items-center gap-12 shrink-0">
+                  <span>{part}</span>
+                  <span className="text-brand-300/60 font-normal shrink-0">•</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      <header className="sticky top-0 z-30 border-b border-brand-100/60 bg-white/80 backdrop-blur-lg">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-2">
         {/* Left: Back button (mobile, not on home) + Logo */}
         <div className="flex items-center gap-3">
           {!isHome && (
@@ -90,5 +135,6 @@ export default function Header() {
         </div>
       </div>
     </header>
+  </div>
   );
 }
