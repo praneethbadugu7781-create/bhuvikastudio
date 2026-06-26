@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Search, Users, Mail, Phone, ShoppingBag } from "lucide-react";
+import { exportToCSV, exportToPDF } from "@/lib/export";
 
 type Customer = {
   id: string; name: string | null; email: string | null; mobile: string | null;
@@ -32,11 +33,53 @@ export default function AdminCustomersPage() {
 
   const totalRevenue = (c: Customer) => c.orders.reduce((sum, o) => sum + Number(o.totalAmount), 0);
 
+  const handleExportCSV = () => {
+    const headers = ["Customer Name", "Email", "Mobile", "Orders Count", "Total Spent", "Joined Date"];
+    const rows = filtered.map(c => [
+      c.name || "Guest",
+      c.email || "—",
+      c.mobile || "—",
+      c.orders.length,
+      totalRevenue(c),
+      new Date(c.createdAt).toLocaleString("en-IN")
+    ]);
+    exportToCSV("customers_export", headers, rows);
+  };
+
+  const handleExportPDF = () => {
+    const headers = ["Customer Name", "Email", "Mobile", "Orders", "Total Spent", "Joined"];
+    const rows = filtered.map(c => [
+      c.name || "Guest",
+      c.email || "—",
+      c.mobile || "—",
+      c.orders.length,
+      `INR ${totalRevenue(c).toLocaleString("en-IN")}`,
+      new Date(c.createdAt).toLocaleDateString()
+    ]);
+    exportToPDF("customers_export", "Bhuvika Studio - Customers Report", headers, rows);
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl text-brand-950">Customers</h1>
-        <p className="mt-1 text-brand-700">{customers.length} registered customers</p>
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <div>
+          <h1 className="font-display text-3xl text-brand-950">Customers</h1>
+          <p className="mt-1 text-brand-700">{customers.length} registered customers</p>
+        </div>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleExportCSV}
+            className="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-800 transition hover:bg-brand-50 cursor-pointer"
+          >
+            Export CSV
+          </button>
+          <button 
+            onClick={handleExportPDF}
+            className="rounded-xl bg-brand-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-950 cursor-pointer"
+          >
+            Export PDF
+          </button>
+        </div>
       </div>
 
       <div className="relative">

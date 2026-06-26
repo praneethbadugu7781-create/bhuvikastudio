@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Truck, CheckCircle, XCircle, Clock, Package, X, ChevronDown, ExternalLink, Copy } from "lucide-react";
+import { exportToCSV, exportToPDF } from "@/lib/export";
 
 type OrderItem = { id: string; quantity: number; unitPrice: number; productName: string; size: string; color: string };
 type Address = { fullName: string; phone: string; line1: string; line2?: string; city: string; state: string; postalCode: string };
@@ -147,9 +148,58 @@ export default function AdminOrdersPage() {
     return matchSearch && matchStatus;
   });
 
+  const handleExportCSV = () => {
+    const headers = ["Order ID", "Customer", "Email", "Items Qty", "Total", "Payment Method", "Status", "Date"];
+    const rows = filtered.map(o => [
+      o.id.toUpperCase(),
+      o.user?.name || o.address?.fullName || "Guest",
+      o.user?.email || "—",
+      o.items.length,
+      Number(o.totalAmount),
+      o.paymentMethod,
+      o.status,
+      new Date(o.createdAt).toLocaleString("en-IN")
+    ]);
+    exportToCSV("orders_export", headers, rows);
+  };
+
+  const handleExportPDF = () => {
+    const headers = ["ID", "Customer", "Email", "Items", "Total", "Payment", "Status", "Date"];
+    const rows = filtered.map(o => [
+      o.id.slice(0, 8).toUpperCase(),
+      o.user?.name || o.address?.fullName || "Guest",
+      o.user?.email || "—",
+      o.items.length,
+      `INR ${Number(o.totalAmount).toLocaleString("en-IN")}`,
+      o.paymentMethod,
+      o.status,
+      new Date(o.createdAt).toLocaleDateString()
+    ]);
+    exportToPDF("orders_export", "Bhuvika Studio - Orders Report", headers, rows);
+  };
+
   return (
     <div className="space-y-6">
-      <div><h1 className="font-display text-3xl text-brand-950">Orders</h1><p className="mt-1 text-brand-700">{orders.length} total orders</p></div>
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <div>
+          <h1 className="font-display text-3xl text-brand-950">Orders</h1>
+          <p className="mt-1 text-brand-700">{orders.length} total orders</p>
+        </div>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleExportCSV}
+            className="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-800 transition hover:bg-brand-50 cursor-pointer"
+          >
+            Export CSV
+          </button>
+          <button 
+            onClick={handleExportPDF}
+            className="rounded-xl bg-brand-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-950 cursor-pointer"
+          >
+            Export PDF
+          </button>
+        </div>
+      </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1"><Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-400" />

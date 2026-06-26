@@ -63,11 +63,11 @@ export function flyToCart(sourceElement: HTMLElement, imageUrl?: string) {
       offset: 0.3
     },
     {
-      transform: `translate(${xDiff}px, ${yDiff}px) scale(0.1) rotate(360deg)`,
+      transform: `translate(${xDiff}px, ${yDiff}px) scale(0.3) rotate(360deg)`,
       opacity: 0.2
     }
   ], {
-    duration: 800,
+    duration: 1300,
     easing: "cubic-bezier(0.25, 1, 0.5, 1)"
   });
 

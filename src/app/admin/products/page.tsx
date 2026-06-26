@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palette, Ruler } from "lucide-react";
+import { exportToCSV, exportToPDF } from "@/lib/export";
 
 type Variant = { sku: string; size: string; color: string; price: string; salePrice?: string; stockQuantity: number };
 type ColorOption = { colorName: string; colorCode: string; images: string[] };
@@ -305,11 +306,58 @@ export default function AdminProductsPage() {
     );
   }, [filtered, loading, delId]);
 
+  const handleExportCSV = () => {
+    const headers = ["Product Name", "Slug", "Category", "Featured", "Best Seller", "New Arrival", "Stock Status", "Base Price", "Variants Count"];
+    const rows = filtered.map(p => [
+      p.name,
+      p.slug,
+      p.category,
+      p.featured ? "Yes" : "No",
+      p.isBestSeller ? "Yes" : "No",
+      p.isNewArrival ? "Yes" : "No",
+      p.stockStatus,
+      p.variants && p.variants.length > 0 ? p.variants[0].price : "0",
+      p.variants ? p.variants.length : 0
+    ]);
+    exportToCSV("products_export", headers, rows);
+  };
+
+  const handleExportPDF = () => {
+    const headers = ["Name", "Category", "Status", "Base Price", "Sizes"];
+    const rows = filtered.map(p => [
+      p.name,
+      p.category,
+      p.stockStatus === "IN_STOCK" ? "In Stock" : "Out of Stock",
+      p.variants && p.variants.length > 0 ? `INR ${p.variants[0].price}` : "N/A",
+      [...new Set(p.variants.map(v => v.size))].join(", ") || "—"
+    ]);
+    exportToPDF("products_export", "Bhuvika Studio - Products Report", headers, rows);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div><h1 className="font-display text-3xl text-brand-950">Products</h1><p className="mt-1 text-brand-700">{products.length} products</p></div>
-        <button onClick={openAdd} className="flex items-center gap-2 rounded-full bg-brand-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-950"><Plus size={18} /> Add Product</button>
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <div>
+          <h1 className="font-display text-3xl text-brand-950">Products</h1>
+          <p className="mt-1 text-brand-700">{products.length} products</p>
+        </div>
+        <div className="flex gap-2">
+          <button 
+            onClick={handleExportCSV}
+            className="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-800 transition hover:bg-brand-50 cursor-pointer"
+          >
+            Export CSV
+          </button>
+          <button 
+            onClick={handleExportPDF}
+            className="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-800 transition hover:bg-brand-50 cursor-pointer"
+          >
+            Export PDF
+          </button>
+          <button onClick={openAdd} className="flex items-center gap-2 rounded-full bg-brand-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-950 cursor-pointer">
+            <Plus size={18} /> Add Product
+          </button>
+        </div>
       </div>
       <div className="relative"><Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-400" />
         <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search products..." className="w-full rounded-xl border border-brand-200 bg-white py-3 pl-11 pr-4 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20" />
