@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf7f2;
+  --background: #fce4ec;
   --foreground: #2d2d2d;
-  --brand-50: #faf7f2;
-  --brand-100: #f0ebe5;
-  --brand-200: #e8dcd5;
-  --brand-300: #d4bfb9;
+  --brand-50: #fce4ec;
+  --brand-100: #f8d0dc;
+  --brand-200: #f5b9cb;
+  --brand-300: #e5a4b8;
   --brand-400: #c8a2a2;
   --brand-500: #b8848a;
   --brand-600: #a86e72;
@@ -58,7 +58,7 @@ body {
   background-image:
     radial-gradient(circle at 10% 10%, rgba(200, 162, 162, 0.12) 0, rgba(200, 162, 162, 0) 32%),
     radial-gradient(circle at 90% 70%, rgba(212, 191, 185, 0.15) 0, rgba(212, 191, 185, 0) 40%),
-    linear-gradient(120deg, #faf7f2, #f0ebe5 55%, #e8dcd5);
+    linear-gradient(120deg, var(--background), var(--brand-100) 55%, var(--brand-200));
 }
 
 /* Shimmer effect for loading / hover */
