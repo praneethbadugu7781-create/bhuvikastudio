@@ -1,12 +1,5 @@
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
-
-// Declare autotable on jsPDF to satisfy TypeScript compiler
-declare module "jspdf" {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
+import autoTable from "jspdf-autotable";
 
 export function exportToCSV(filename: string, headers: string[], rows: any[][]) {
   const csvContent = [
@@ -18,9 +11,10 @@ export function exportToCSV(filename: string, headers: string[], rows: any[][]) 
         return `"${str.replace(/"/g, '""')}"`;
       }).join(",")
     )
-  ].join("\n");
+  ].join("\r\n"); // Use CRLF line endings for maximum Excel compatibility
 
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  // Prepend UTF-8 BOM so Excel opens it with the correct encoding
+  const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.setAttribute("href", url);
@@ -46,14 +40,13 @@ export function exportToPDF(filename: string, title: string, headers: string[], 
   doc.text(`Generated on: ${new Date().toLocaleString("en-IN")}`, 14, 28);
   
   // Table
-  doc.autoTable({
+  autoTable(doc, {
     startY: 34,
     head: [headers],
     body: rows,
     theme: "striped",
     headStyles: { fillColor: [127, 62, 71] }, // brand-900
-    styles: { font: "helvetica", fontSize: 9 },
-    columnStyles: { text: { overflow: "visible" } }
+    styles: { font: "helvetica", fontSize: 9 }
   });
 
   doc.save(`${filename}.pdf`);
