@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "https://bhuvika-api.onrender.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "https://bhuvikastudiobackend.onrender.com";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params;

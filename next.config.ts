@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://www.google-analytics.com https://lh3.googleusercontent.com",
               "media-src 'self' data: blob: https://res.cloudinary.com",
-              "connect-src 'self' https://bhuvika-api.onrender.com https://api.cashfree.com https://sandbox.cashfree.com https://api.razorpay.com https://lumberjack.razorpay.com https://www.google-analytics.com https://accounts.google.com",
+              "connect-src 'self' https://bhuvikastudiobackend.onrender.com https://api.cashfree.com https://sandbox.cashfree.com https://api.razorpay.com https://lumberjack.razorpay.com https://www.google-analytics.com https://accounts.google.com",
               "frame-src 'self' https://api.cashfree.com https://sdk.cashfree.com https://api.razorpay.com https://accounts.google.com",
               "object-src 'none'",
               "base-uri 'self'",

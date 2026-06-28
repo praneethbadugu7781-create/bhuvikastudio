@@ -32,7 +32,7 @@ export default function ChatStylist() {
 
     const fetchProducts = async () => {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
         const res = await fetch(`${apiBase}/api/products`);
         if (res.ok) {
           const data = await res.json();
@@ -93,7 +93,7 @@ export default function ChatStylist() {
     setIsTyping(true);
 
     try {
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvika-api.onrender.com";
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
       const res = await fetch(`${apiBase}/api/products/chat-stylist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
