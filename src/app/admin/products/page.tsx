@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palette, Ruler } from "lucide-react";
 import { exportToCSV, exportToPDF } from "@/lib/export";
+import { createClient } from "@/lib/supabase-browser";
 
 type Variant = { sku: string; size: string; color: string; price: string; salePrice?: string; stockQuantity: number };
 type ColorOption = { colorName: string; colorCode: string; images: string[] };
@@ -99,38 +100,35 @@ export default function AdminProductsPage() {
 
     setUploading(true);
     try {
-      const formData = new FormData();
+      const supabase = createClient();
+      const urls: string[] = [];
+
       for (let i = 0; i < files.length; i++) {
-        formData.append("images", files[i]);
+        const file = files[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+        const filePath = `products/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from('bhuvika')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('bhuvika')
+          .getPublicUrl(filePath);
+
+        urls.push(publicUrl);
       }
 
-      const token = await getAuthToken();
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
-      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
-      if (apiBase.includes("bhuvika-api.onrender.com")) {
-        apiBase = "https://bhuvikastudiobackend.onrender.com";
-      }
-      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
-      const res = await fetch(`${apiBase}/api/upload/multiple`, {
-        method: "POST",
-        body: formData,
-        headers,
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Upload failed");
-        setUploading(false);
-        return;
-      }
-      const data = await res.json();
-      setImageUrls(prev => [...prev, ...data.urls]);
-    } catch (err) {
+      setImageUrls(prev => [...prev, ...urls]);
+    } catch (err: any) {
       console.error(err);
-      alert("Image upload failed. Please try again.");
+      alert("Image upload failed: " + (err.message || err));
     }
     setUploading(false);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -142,38 +140,36 @@ export default function AdminProductsPage() {
 
     setUploading(true);
     try {
-      const formData = new FormData();
+      const supabase = createClient();
+      const urls: string[] = [];
+
       for (let i = 0; i < files.length; i++) {
-        formData.append("images", files[i]);
+        const file = files[i];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+        const filePath = `products/colors/${fileName}`;
+
+        const { data, error } = await supabase.storage
+          .from('bhuvika')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (error) throw error;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('bhuvika')
+          .getPublicUrl(filePath);
+
+        urls.push(publicUrl);
       }
 
-      const token = await getAuthToken();
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
-
-      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
-      if (apiBase.includes("bhuvika-api.onrender.com")) {
-        apiBase = "https://bhuvikastudiobackend.onrender.com";
-      }
-      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
-      const res = await fetch(`${apiBase}/api/upload/multiple`, {
-        method: "POST",
-        body: formData,
-        headers,
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Upload failed");
-        setUploading(false);
-        return;
-      }
-      const data = await res.json();
       const colorIdx = activeColorIdx;
-      setColorOptions(prev => prev.map((c, i) => i === colorIdx ? { ...c, images: [...c.images, ...data.urls] } : c));
-    } catch {
-      alert("Image upload failed.");
+      setColorOptions(prev => prev.map((c, i) => i === colorIdx ? { ...c, images: [...c.images, ...urls] } : c));
+    } catch (err: any) {
+      console.error(err);
+      alert("Image upload failed: " + (err.message || err));
     }
     setUploading(false);
     if (colorFileInputRef.current) colorFileInputRef.current.value = "";

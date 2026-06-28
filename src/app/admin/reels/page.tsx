@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Video, Plus, X, Trash2, Edit2, Check, ExternalLink, Play, Eye } from "lucide-react";
+import { createClient } from "@/lib/supabase-browser";
 
 type Reel = {
   _id: string;
@@ -76,37 +77,28 @@ export default function ReelsPage() {
 
     setUploadingVideo(true);
     try {
-      const formData = new FormData();
-      formData.append("video", file);
+      const supabase = createClient();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `reels/videos/${fileName}`;
 
-      const token = await getAuthToken();
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
+      const { data, error } = await supabase.storage
+        .from('bhuvika')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
-      if (apiBase.includes("bhuvika-api.onrender.com")) {
-        apiBase = "https://bhuvikastudiobackend.onrender.com";
-      }
-      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
-      const res = await fetch(`${apiBase}/api/upload/video`, {
-        method: "POST",
-        body: formData,
-        headers,
-      });
+      if (error) throw error;
 
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Video upload failed");
-        return;
-      }
+      const { data: { publicUrl } } = supabase.storage
+        .from('bhuvika')
+        .getPublicUrl(filePath);
 
-      const data = await res.json();
-      setForm((f) => ({ ...f, videoUrl: data.url }));
-    } catch (err) {
+      setForm((f) => ({ ...f, videoUrl: publicUrl }));
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to upload video");
+      alert("Video upload failed: " + (err.message || err));
     } finally {
       setUploadingVideo(false);
     }
@@ -118,37 +110,28 @@ export default function ReelsPage() {
 
     setUploadingCover(true);
     try {
-      const formData = new FormData();
-      formData.append("image", file);
+      const supabase = createClient();
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `reels/covers/${fileName}`;
 
-      const token = await getAuthToken();
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers["Authorization"] = `Bearer ${token}`;
-      }
+      const { data, error } = await supabase.storage
+        .from('bhuvika')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
-      if (apiBase.includes("bhuvika-api.onrender.com")) {
-        apiBase = "https://bhuvikastudiobackend.onrender.com";
-      }
-      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
-      const res = await fetch(`${apiBase}/api/upload`, {
-        method: "POST",
-        body: formData,
-        headers,
-      });
+      if (error) throw error;
 
-      if (!res.ok) {
-        const err = await res.json();
-        alert(err.error || "Image upload failed");
-        return;
-      }
+      const { data: { publicUrl } } = supabase.storage
+        .from('bhuvika')
+        .getPublicUrl(filePath);
 
-      const data = await res.json();
-      setForm((f) => ({ ...f, coverImageUrl: data.url }));
-    } catch (err) {
+      setForm((f) => ({ ...f, coverImageUrl: publicUrl }));
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to upload cover image");
+      alert("Cover image upload failed: " + (err.message || err));
     } finally {
       setUploadingCover(false);
     }
