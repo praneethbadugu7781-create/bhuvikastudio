@@ -36,6 +36,7 @@ export default function ChatStylist() {
         if (apiBase.includes("bhuvika-api.onrender.com")) {
           apiBase = "https://bhuvikastudiobackend.onrender.com";
         }
+        apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
         const res = await fetch(`${apiBase}/api/products`);
         if (res.ok) {
           const data = await res.json();
@@ -100,6 +101,7 @@ export default function ChatStylist() {
       if (apiBase.includes("bhuvika-api.onrender.com")) {
         apiBase = "https://bhuvikastudiobackend.onrender.com";
       }
+      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
       const res = await fetch(`${apiBase}/api/products/chat-stylist`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

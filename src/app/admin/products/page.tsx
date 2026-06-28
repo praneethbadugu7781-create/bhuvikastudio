@@ -114,6 +114,7 @@ export default function AdminProductsPage() {
       if (apiBase.includes("bhuvika-api.onrender.com")) {
         apiBase = "https://bhuvikastudiobackend.onrender.com";
       }
+      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
       const res = await fetch(`${apiBase}/api/upload/multiple`, {
         method: "POST",
         body: formData,
@@ -156,6 +157,7 @@ export default function AdminProductsPage() {
       if (apiBase.includes("bhuvika-api.onrender.com")) {
         apiBase = "https://bhuvikastudiobackend.onrender.com";
       }
+      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
       const res = await fetch(`${apiBase}/api/upload/multiple`, {
         method: "POST",
         body: formData,

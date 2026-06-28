@@ -4,6 +4,7 @@ let API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "https:/
 if (API_URL.includes("bhuvika-api.onrender.com")) {
   API_URL = "https://bhuvikastudiobackend.onrender.com";
 }
+API_URL = API_URL.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params;

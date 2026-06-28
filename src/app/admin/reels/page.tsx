@@ -89,6 +89,7 @@ export default function ReelsPage() {
       if (apiBase.includes("bhuvika-api.onrender.com")) {
         apiBase = "https://bhuvikastudiobackend.onrender.com";
       }
+      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
       const res = await fetch(`${apiBase}/api/upload/video`, {
         method: "POST",
         body: formData,
@@ -130,6 +131,7 @@ export default function ReelsPage() {
       if (apiBase.includes("bhuvika-api.onrender.com")) {
         apiBase = "https://bhuvikastudiobackend.onrender.com";
       }
+      apiBase = apiBase.replace(/\/api\/?$/, "").replace(/\/$/, "");
       const res = await fetch(`${apiBase}/api/upload`, {
         method: "POST",
         body: formData,
