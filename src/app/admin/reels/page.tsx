@@ -85,7 +85,10 @@ export default function ReelsPage() {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      if (apiBase.includes("bhuvika-api.onrender.com")) {
+        apiBase = "https://bhuvikastudiobackend.onrender.com";
+      }
       const res = await fetch(`${apiBase}/api/upload/video`, {
         method: "POST",
         body: formData,
@@ -123,7 +126,10 @@ export default function ReelsPage() {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      if (apiBase.includes("bhuvika-api.onrender.com")) {
+        apiBase = "https://bhuvikastudiobackend.onrender.com";
+      }
       const res = await fetch(`${apiBase}/api/upload`, {
         method: "POST",
         body: formData,

@@ -110,7 +110,10 @@ export default function AdminProductsPage() {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      if (apiBase.includes("bhuvika-api.onrender.com")) {
+        apiBase = "https://bhuvikastudiobackend.onrender.com";
+      }
       const res = await fetch(`${apiBase}/api/upload/multiple`, {
         method: "POST",
         body: formData,
@@ -149,7 +152,10 @@ export default function AdminProductsPage() {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      let apiBase = process.env.NEXT_PUBLIC_API_URL || "https://bhuvikastudiobackend.onrender.com";
+      if (apiBase.includes("bhuvika-api.onrender.com")) {
+        apiBase = "https://bhuvikastudiobackend.onrender.com";
+      }
       const res = await fetch(`${apiBase}/api/upload/multiple`, {
         method: "POST",
         body: formData,

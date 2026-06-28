@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "https://bhuvikastudiobackend.onrender.com";
+let API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "https://bhuvikastudiobackend.onrender.com";
+if (API_URL.includes("bhuvika-api.onrender.com")) {
+  API_URL = "https://bhuvikastudiobackend.onrender.com";
+}
 
 export async function POST(request: NextRequest) {
   try {
