@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, CreditCard, Banknote, Truck, ArrowLeft, ArrowRight, LogIn, Shield, Plus, MapPin, Trash2, Edit2 } from "lucide-react";
+import { CheckCircle, CreditCard, Truck, ArrowLeft, ArrowRight, LogIn, Shield, Plus, MapPin, Trash2, Edit2 } from "lucide-react";
 import { useCart, AppliedCoupon } from "@/store/cart";
 import { useAuth } from "@/context/AuthContext";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -21,8 +21,6 @@ declare global {
 type ShippingSettings = {
   freeThreshold: number;
   defaultCharge: number;
-  codEnabled: boolean;
-  codCharge: number;
 };
 
 type SavedAddress = {
@@ -40,8 +38,6 @@ type SavedAddress = {
 const DEFAULT_SHIPPING: ShippingSettings = {
   freeThreshold: 2000,
   defaultCharge: 80,
-  codEnabled: true,
-  codCharge: 0,
 };
 
 export default function CheckoutPage() {
@@ -107,7 +103,7 @@ export default function CheckoutPage() {
   const delivery = total > shipping.freeThreshold ? 0 : shipping.defaultCharge;
   const discount = appliedCoupon?.discount || 0;
   const grandTotal = total + delivery - discount;
-  const [payment, setPayment] = useState<"UPI" | "COD">("UPI");
+  const payment = "UPI";
   const [placed, setPlaced] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
@@ -398,21 +394,8 @@ export default function CheckoutPage() {
       }
       const order = await res.json();
 
-      if (payment === "UPI") {
-        await openRazorpay(order.id || order._id, order.totalAmount);
-        return;
-      }
-
-      // COD — order placed directly
-      if (buttonRef.current) {
-        runTruckAnimation(buttonRef.current, () => {
-          setPlaced(true);
-          clear();
-        });
-      } else {
-        setPlaced(true);
-        clear();
-      }
+      // Online payment via Razorpay
+      await openRazorpay(order.id || order._id, order.totalAmount);
     } catch {
       setError("Network error. Please try again.");
     }
@@ -551,26 +534,18 @@ export default function CheckoutPage() {
 
             <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
               <h2 className="text-xl font-bold text-brand-950">Payment Method</h2>
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <button onClick={() => setPayment("UPI")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "UPI" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
-                  <CreditCard size={24} className={payment === "UPI" ? "text-brand-500" : "text-brand-400"} />
+              <div className="mt-4">
+                <div className="flex items-center gap-3 rounded-xl border-2 border-brand-500 bg-brand-50 p-4">
+                  <CreditCard size={24} className="text-brand-500" />
                   <div className="text-left"><p className="font-semibold text-brand-900">Pay Online</p><p className="text-xs text-brand-700">UPI, Cards, Wallets</p></div>
-                </button>
-                <button onClick={() => setPayment("COD")} className={`flex items-center gap-3 rounded-xl border-2 p-4 transition ${payment === "COD" ? "border-brand-500 bg-brand-50" : "border-brand-100 hover:border-brand-300"}`}>
-                  <Banknote size={24} className={payment === "COD" ? "text-brand-500" : "text-brand-400"} />
-                  <div className="text-left"><p className="font-semibold text-brand-900">Cash on Delivery</p><p className="text-xs text-brand-700">Pay when you receive</p></div>
-                </button>
+                </div>
               </div>
-              <AnimatePresence>
-                {payment === "UPI" && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-4 overflow-hidden rounded-xl bg-brand-50 p-4">
-                    <div className="flex items-center gap-2">
-                      <Shield size={16} className="text-green-600" />
-                      <p className="text-sm text-brand-800">Secure payment powered by <strong>Razorpay</strong>. Your card details are encrypted and secure.</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <div className="mt-4 rounded-xl bg-brand-50 p-4">
+                <div className="flex items-center gap-2">
+                  <Shield size={16} className="text-green-600" />
+                  <p className="text-sm text-brand-800">Secure payment powered by <strong>Razorpay</strong>. Your card details are encrypted and secure.</p>
+                </div>
+              </div>
             </motion.section>
           </div>
 
@@ -614,7 +589,7 @@ export default function CheckoutPage() {
               className="truck-button mt-6 w-full disabled:cursor-not-allowed disabled:opacity-50 mx-auto"
             >
               <span className="default">
-                {placing ? "Processing..." : payment === "COD" ? "Place Order" : "Pay Now"}
+                {placing ? "Processing..." : "Pay Now"}
               </span>
               <span className="success">
                 Order Placed

@@ -17,15 +17,11 @@ type AppliedCoupon = {
 type ShippingSettings = {
   freeThreshold: number;
   defaultCharge: number;
-  codEnabled: boolean;
-  codCharge: number;
 };
 
 const DEFAULT_SHIPPING: ShippingSettings = {
   freeThreshold: 2000,
   defaultCharge: 80,
-  codEnabled: true,
-  codCharge: 0,
 };
 
 export default function CartPage() {

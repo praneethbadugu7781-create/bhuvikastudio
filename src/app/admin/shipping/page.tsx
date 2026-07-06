@@ -6,8 +6,6 @@ import { Truck, Save, Plus, Trash2 } from "lucide-react";
 type ShippingSettings = {
   freeThreshold: number;
   defaultCharge: number;
-  codEnabled: boolean;
-  codCharge: number;
   zones: { name: string; charge: number; pincodes: string }[];
 };
 
@@ -15,8 +13,6 @@ export default function ShippingPage() {
   const [settings, setSettings] = useState<ShippingSettings>({
     freeThreshold: 2000,
     defaultCharge: 80,
-    codEnabled: true,
-    codCharge: 0,
     zones: [],
   });
   const [saving, setSaving] = useState(false);
@@ -96,27 +92,6 @@ export default function ShippingPage() {
                 className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500"
               />
             </div>
-
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox" checked={settings.codEnabled} id="cod"
-                onChange={e => setSettings(s => ({ ...s, codEnabled: e.target.checked }))}
-                className="h-5 w-5 rounded border-brand-300 text-brand-600"
-              />
-              <label htmlFor="cod" className="text-sm font-semibold text-brand-800">Enable Cash on Delivery</label>
-            </div>
-
-            {settings.codEnabled && (
-              <div>
-                <label className="text-sm font-semibold text-brand-800">COD Extra Charge (₹)</label>
-                <input
-                  type="number" value={settings.codCharge}
-                  onChange={e => setSettings(s => ({ ...s, codCharge: Number(e.target.value) }))}
-                  className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500"
-                />
-                <p className="mt-1 text-xs text-brand-500">Extra charge for COD orders (0 for no charge)</p>
-              </div>
-            )}
           </div>
         </motion.div>
 
