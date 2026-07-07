@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Edit2, Trash2, X, Save, ImageIcon, Upload, Loader2, Palette, Ruler } from "lucide-react";
 import { exportToCSV, exportToPDF } from "@/lib/export";
-import { createClient } from "@/lib/supabase-browser";
 
 type Variant = { sku: string; size: string; color: string; price: string; salePrice?: string; stockQuantity: number };
 type ColorOption = { colorName: string; colorCode: string; images: string[] };
@@ -100,31 +99,18 @@ export default function AdminProductsPage() {
 
     setUploading(true);
     try {
-      const supabase = createClient();
-      const urls: string[] = [];
-
+      const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-        const filePath = `products/${fileName}`;
-
-        const { data, error } = await supabase.storage
-          .from('bhuvika')
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-          });
-
-        if (error) throw error;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('bhuvika')
-          .getPublicUrl(filePath);
-
-        urls.push(publicUrl);
+        formData.append('files', files[i]);
       }
+      formData.append('folder', 'products');
 
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Upload failed');
+      }
+      const { urls } = await res.json();
       setImageUrls(prev => [...prev, ...urls]);
     } catch (err: any) {
       console.error(err);
@@ -140,30 +126,18 @@ export default function AdminProductsPage() {
 
     setUploading(true);
     try {
-      const supabase = createClient();
-      const urls: string[] = [];
-
+      const formData = new FormData();
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-        const filePath = `products/colors/${fileName}`;
-
-        const { data, error } = await supabase.storage
-          .from('bhuvika')
-          .upload(filePath, file, {
-            cacheControl: '3600',
-            upsert: false
-          });
-
-        if (error) throw error;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('bhuvika')
-          .getPublicUrl(filePath);
-
-        urls.push(publicUrl);
+        formData.append('files', files[i]);
       }
+      formData.append('folder', 'products/colors');
+
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Upload failed');
+      }
+      const { urls } = await res.json();
 
       const colorIdx = activeColorIdx;
       setColorOptions(prev => prev.map((c, i) => i === colorIdx ? { ...c, images: [...c.images, ...urls] } : c));

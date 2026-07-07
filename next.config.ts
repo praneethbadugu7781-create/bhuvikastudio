@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
       { protocol: "https", hostname: "kxceqlkfjvcssppplfly.supabase.co" },
+      { protocol: "https", hostname: "pub-9ea8f53d40124fda9e145365d1e24b1e.r2.dev" },
     ],
   },
   async rewrites() {
@@ -43,8 +44,8 @@ const nextConfig: NextConfig = {
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://sdk.cashfree.com https://checkout.razorpay.com https://cdn.razorpay.com https://api.razorpay.com https://www.googletagmanager.com https://www.google-analytics.com https://accounts.google.com https://apis.google.com",
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com",
               "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://kxceqlkfjvcssppplfly.supabase.co https://www.google-analytics.com https://lh3.googleusercontent.com",
-              "media-src 'self' data: blob: https://res.cloudinary.com https://kxceqlkfjvcssppplfly.supabase.co",
+              "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com https://kxceqlkfjvcssppplfly.supabase.co https://pub-9ea8f53d40124fda9e145365d1e24b1e.r2.dev https://www.google-analytics.com https://lh3.googleusercontent.com",
+              "media-src 'self' data: blob: https://res.cloudinary.com https://kxceqlkfjvcssppplfly.supabase.co https://pub-9ea8f53d40124fda9e145365d1e24b1e.r2.dev",
               "connect-src 'self' https://bhuvikastudiobackend.onrender.com https://kxceqlkfjvcssppplfly.supabase.co https://api.cashfree.com https://sandbox.cashfree.com https://api.razorpay.com https://lumberjack.razorpay.com https://www.google-analytics.com https://accounts.google.com",
               "frame-src 'self' https://api.cashfree.com https://sdk.cashfree.com https://api.razorpay.com https://accounts.google.com",
               "object-src 'none'",

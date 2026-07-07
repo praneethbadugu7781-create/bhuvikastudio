@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Video, Plus, X, Trash2, Edit2, Check, ExternalLink, Play, Eye } from "lucide-react";
-import { createClient } from "@/lib/supabase-browser";
 
 type Reel = {
   _id: string;
@@ -77,25 +76,17 @@ export default function ReelsPage() {
 
     setUploadingVideo(true);
     try {
-      const supabase = createClient();
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-      const filePath = `reels/videos/${fileName}`;
+      const formData = new FormData();
+      formData.append('files', file);
+      formData.append('folder', 'reels/videos');
 
-      const { data, error } = await supabase.storage
-        .from('bhuvika')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('bhuvika')
-        .getPublicUrl(filePath);
-
-      setForm((f) => ({ ...f, videoUrl: publicUrl }));
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Upload failed');
+      }
+      const { urls } = await res.json();
+      setForm((f) => ({ ...f, videoUrl: urls[0] }));
     } catch (err: any) {
       console.error(err);
       alert("Video upload failed: " + (err.message || err));
@@ -110,25 +101,17 @@ export default function ReelsPage() {
 
     setUploadingCover(true);
     try {
-      const supabase = createClient();
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-      const filePath = `reels/covers/${fileName}`;
+      const formData = new FormData();
+      formData.append('files', file);
+      formData.append('folder', 'reels/covers');
 
-      const { data, error } = await supabase.storage
-        .from('bhuvika')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('bhuvika')
-        .getPublicUrl(filePath);
-
-      setForm((f) => ({ ...f, coverImageUrl: publicUrl }));
+      const res = await fetch('/api/upload', { method: 'POST', body: formData });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Upload failed');
+      }
+      const { urls } = await res.json();
+      setForm((f) => ({ ...f, coverImageUrl: urls[0] }));
     } catch (err: any) {
       console.error(err);
       alert("Cover image upload failed: " + (err.message || err));
