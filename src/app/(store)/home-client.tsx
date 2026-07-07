@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { ArrowRight, Sparkles, Truck, ShieldCheck, Star, Play, Video, X } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
 import ProductCard from "@/components/ProductCard";
@@ -182,10 +183,12 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
                 transition={{ duration: 0.4, delay: i * 0.08 }}
               >
                 <Link href={`/shop?category=${encodeURIComponent(cat)}`} className="group relative block aspect-[3/4] overflow-hidden rounded-xl md:rounded-2xl bg-brand-50/50">
-                  <img
+                  <Image
                     src={categoryImages[cat]}
                     alt={cat}
-                    className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-110 p-4 md:p-6"
+                    fill
+                    sizes="(max-width: 640px) 50vw, 33vw"
+                    className="object-contain transition-transform duration-700 group-hover:scale-110 p-4 md:p-6"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   <div className="absolute bottom-0 left-0 p-3 md:p-4">
@@ -269,11 +272,13 @@ export default function HomeClient({ products, featured }: { products: CatalogIt
         <div className="mx-auto w-full max-w-6xl px-4 md:px-5">
           <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <AnimatedSection>
-              <div className="relative overflow-hidden rounded-3xl bg-brand-50 shadow-2xl">
-                <img 
+              <div className="relative overflow-hidden rounded-3xl bg-brand-50 shadow-2xl h-80 md:h-[400px]">
+                <Image 
                   src="/store-front.jpg" 
                   alt="Bhuvika Studio Store Front" 
-                  className="w-full h-auto object-contain rounded-3xl"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover rounded-3xl"
                 />
                 <div className="absolute inset-0 bg-brand-900/10 transition-opacity hover:opacity-0 rounded-3xl" />
               </div>

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, ArrowRight, Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useWishlist } from "@/store/wishlist";
 import { useCart } from "@/store/cart";
 import AnimatedSection from "@/components/AnimatedSection";
@@ -51,8 +52,8 @@ export default function WishlistPage() {
             className="group relative overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition-all hover:shadow-md"
           >
             <div className="relative h-64 overflow-hidden bg-brand-50">
-              <Link href={`/product/${item.slug}`}>
-                <img src={item.image} alt={item.name} className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110" />
+              <Link href={`/product/${item.slug}`} className="block h-full w-full relative">
+                <Image src={item.image} alt={item.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-contain transition-transform duration-500 group-hover:scale-110" />
               </Link>
               <button 
                 onClick={() => remove(item.slug)}

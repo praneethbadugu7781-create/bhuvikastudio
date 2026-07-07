@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Ticket, X, Check, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useCart } from "@/store/cart";
 import AnimatedSection from "@/components/AnimatedSection";
 
@@ -122,7 +123,9 @@ export default function CartPage() {
           <AnimatePresence>
             {items.map((item) => (
               <motion.article key={item.slug + item.selectedSize} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -100 }} className="flex gap-4 rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-                <img src={item.image} alt={item.name} className="h-28 w-24 rounded-xl object-cover" />
+                <div className="relative h-28 w-24 rounded-xl overflow-hidden bg-brand-50 shrink-0">
+                  <Image src={item.image} alt={item.name} fill sizes="100px" className="object-cover" />
+                </div>
                 <div className="flex flex-1 flex-col">
                   <div className="flex items-start justify-between">
                     <div>

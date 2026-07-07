@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ShoppingBag, Heart } from "lucide-react";
 import type { CatalogItem } from "@/lib/catalog";
+import Image from "next/image";
 import { useWishlist } from "@/store/wishlist";
 import { useCart } from "@/store/cart";
 import { flyToCart } from "@/lib/animation";
@@ -23,12 +24,15 @@ export default function ProductCard({ item, index = 0 }: { item: CatalogItem; in
       className="group relative overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
     >
       <div className="relative h-48 md:h-72 overflow-hidden bg-brand-50">
-        <Link href={`/product/${item.slug}`} className="block h-full w-full">
-          <img
+        <Link href={`/product/${item.slug}`} className="block h-full w-full relative">
+          <Image
             ref={imageRef}
             src={item.image}
             alt={item.name}
-            className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-110"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            priority={index < 4}
+            className="object-contain transition-transform duration-700 group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </Link>

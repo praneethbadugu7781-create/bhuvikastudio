@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { CheckCircle, CreditCard, Truck, ArrowLeft, ArrowRight, LogIn, Shield, Plus, MapPin, Trash2, Edit2 } from "lucide-react";
 import { useCart, AppliedCoupon } from "@/store/cart";
 import { useAuth } from "@/context/AuthContext";
@@ -555,7 +556,9 @@ export default function CheckoutPage() {
               <div className="mt-4 space-y-3">
                 {items.map((item) => (
                   <div key={item.slug + item.selectedSize} className="flex items-center gap-3">
-                    <img src={item.image} alt={item.name} className="h-12 w-12 rounded-lg object-cover" />
+                    <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-brand-50 shrink-0">
+                      <Image src={item.image} alt={item.name} fill sizes="48px" className="object-cover" />
+                    </div>
                     <div className="flex-1"><p className="text-sm font-semibold text-brand-900">{item.name}</p><p className="text-xs text-brand-700">x{item.qty} &bull; {item.selectedSize}</p></div>
                     <p className="text-sm font-bold text-brand-900">&#8377;{(item.price * item.qty).toLocaleString("en-IN")}</p>
                   </div>

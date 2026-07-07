@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Heart, ChevronLeft, Star, Truck, RotateCcw, Shield, Check, Tag, Lock, Gift, Ruler, X, Loader2 } from "lucide-react";
+import Image from "next/image";
 import type { CatalogItem } from "@/lib/catalog";
 import { useCart } from "@/store/cart";
 import { useWishlist } from "@/store/wishlist";
@@ -185,14 +186,17 @@ export default function ProductPageClient({ product, related }: { product: Catal
       <div className="mt-8 grid gap-10 md:grid-cols-2">
         <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
           {/* Main Image */}
-          <div className="relative group overflow-hidden rounded-3xl bg-brand-50 sm:rounded-[2rem]">
+          <div className="relative group overflow-hidden rounded-3xl bg-brand-50 sm:rounded-[2rem] h-[450px] sm:h-[600px]">
             {!imgLoaded && <div className="absolute inset-0 shimmer rounded-3xl" />}
-            <img
-              ref={imageRef}
+            <Image
+              ref={imageRef as any}
               src={currentImage}
               alt={product.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              priority
               onLoad={() => setImgLoaded(true)}
-              className="h-[450px] w-full object-contain transition-transform duration-700 hover:scale-105 sm:h-[600px] md:h-[600px]"
+              className="object-contain transition-transform duration-700 hover:scale-105"
             />
             
             {/* Navigation Arrows (Desktop Only) */}
@@ -242,7 +246,7 @@ export default function ProductPageClient({ product, related }: { product: Catal
                   onClick={() => { setCurrentImageIdx(idx); setImgLoaded(false); }}
                   className={`relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl border-2 transition sm:h-20 sm:w-20 ${currentImageIdx === idx ? "border-brand-500 ring-2 ring-brand-500/10" : "border-brand-100"}`}
                 >
-                  <img src={img} alt="" className="h-full w-full object-cover" />
+                  <Image src={img} alt="" fill sizes="80px" className="object-cover" />
                 </button>
               ))}
             </div>
