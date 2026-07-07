@@ -49,10 +49,15 @@ export default function CouponsPage() {
     setSaving(true);
     const method = editing ? "PUT" : "POST";
     const url = editing ? `/api/coupons/${editing}` : "/api/coupons";
+    const bodyData = {
+      ...form,
+      validUntil: form.validUntil ? form.validUntil : null,
+      usageLimit: form.usageLimit ? Number(form.usageLimit) : null,
+    };
     await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(bodyData),
     });
     await load();
     setShowForm(false);
@@ -71,7 +76,7 @@ export default function CouponsPage() {
     setForm({
       code: c.code, type: c.type, value: c.value, minCartValue: c.minCartValue,
       maxDiscount: c.maxDiscount, usageLimit: c.usageLimit,
-      validUntil: c.validUntil.split("T")[0], description: c.description, isActive: c.isActive,
+      validUntil: c.validUntil ? c.validUntil.split("T")[0] : "", description: c.description, isActive: c.isActive,
     });
     setEditing(c.id);
     setShowForm(true);
@@ -126,12 +131,14 @@ export default function CouponsPage() {
                 {c.description && <p className="mt-1 text-sm text-brand-600">{c.description}</p>}
               </div>
               <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                {c.minCartValue > 0 && <span className="rounded-full bg-brand-50 px-2 py-1 text-brand-700">Min ₹{c.minCartValue}</span>}
-                {c.maxDiscount && <span className="rounded-full bg-brand-50 px-2 py-1 text-brand-700">Max ₹{c.maxDiscount}</span>}
-                {c.usageLimit && <span className="rounded-full bg-brand-50 px-2 py-1 text-brand-700">{c.usedCount}/{c.usageLimit} used</span>}
+                {c.minCartValue > 0 && <span className="rounded-full bg-brand-50 px-2 py-1 text-brand-700 font-semibold">Min ₹{c.minCartValue}</span>}
+                {c.maxDiscount && <span className="rounded-full bg-brand-50 px-2 py-1 text-brand-700 font-semibold">Max ₹{c.maxDiscount}</span>}
+                <span className="rounded-full bg-brand-100 px-2 py-1 text-brand-800 font-semibold">
+                  {c.usedCount} / {c.usageLimit || "∞"} used
+                </span>
               </div>
-              <p className="mt-3 text-xs text-brand-500">
-                Valid until {new Date(c.validUntil).toLocaleDateString()}
+              <p className="mt-3 text-xs text-brand-500 font-medium">
+                {c.validUntil ? `Valid until ${new Date(c.validUntil).toLocaleDateString("en-IN")}` : "No expiration date"}
               </p>
             </motion.div>
           ))}
@@ -180,7 +187,11 @@ export default function CouponsPage() {
                     </div>
                   )}
                   <div>
-                    <label className="text-sm font-semibold text-brand-800">Valid Until</label>
+                    <label className="text-sm font-semibold text-brand-800">Usage Limit (Customers)</label>
+                    <input type="number" value={form.usageLimit || ""} onChange={e => setForm(f => ({ ...f, usageLimit: e.target.value ? Number(e.target.value) : null }))} placeholder="e.g. 30" className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-brand-800">Valid Until (optional)</label>
                     <input type="date" value={form.validUntil} onChange={e => setForm(f => ({ ...f, validUntil: e.target.value }))} className="mt-1 w-full rounded-xl border border-brand-200 px-4 py-3 outline-none focus:border-brand-500" />
                   </div>
                 </div>
@@ -192,7 +203,7 @@ export default function CouponsPage() {
                   <input type="checkbox" checked={form.isActive} id="active" onChange={e => setForm(f => ({ ...f, isActive: e.target.checked }))} className="h-5 w-5 rounded border-brand-300 text-brand-600" />
                   <label htmlFor="active" className="text-sm font-semibold text-brand-800">Active</label>
                 </div>
-                <button onClick={save} disabled={saving || !form.code || !form.validUntil} className="w-full rounded-full bg-brand-900 py-3 font-semibold text-white hover:bg-brand-950 disabled:opacity-50">
+                <button onClick={save} disabled={saving || !form.code} className="w-full rounded-full bg-brand-900 py-3 font-semibold text-white hover:bg-brand-950 disabled:opacity-50">
                   {saving ? "Saving..." : editing ? "Update Coupon" : "Create Coupon"}
                 </button>
               </div>
