@@ -18,7 +18,7 @@ type Product = {
 
 const emptyVariant: Variant = { sku: "", size: "", color: "", price: "", stockQuantity: 0 };
 const emptyColor: ColorOption = { colorName: "", colorCode: "#000000", images: [] };
-const cats = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Fusion Wear", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
+const cats = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);

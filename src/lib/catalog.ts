@@ -36,7 +36,6 @@ export const categories = [
   "Sarees",
   "Lehengas",
   "Indo Western",
-  "Fusion Wear",
   "Kids Wear",
   "Western Wear",
   "Co-ords Sets",

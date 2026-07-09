@@ -9,7 +9,6 @@ const categoryImages: Record<string, string> = {
   "Sarees": "/categories/sarees.png",
   "Lehengas": "/categories/lehengas.png",
   "Indo Western": "/categories/indo-western.png",
-  "Fusion Wear": "/categories/indo-western.png",
   "Kids Wear": "/categories/kids-wear.png",
   "Western Wear": "/categories/western-wear.png",
   "Co-ords Sets": "/categories/co-ords-sets.png",
@@ -22,7 +21,6 @@ const categoryDescriptions: Record<string, string> = {
   "Sarees": "Handloom elegance and designer drapes for every occasion.",
   "Lehengas": "Stunning bridal and festive lehengas that steal the show.",
   "Indo Western": "Where tradition meets trend. Indo-Western styles that define grace.",
-  "Fusion Wear": "Contemporary ethnic styles blending the best of East and West.",
   "Kids Wear": "Adorable party frocks and festive outfits for little stars.",
   "Western Wear": "Trendy dresses, tops, and midi styles for the modern woman.",
   "Co-ords Sets": "Matching sets that make styling effortless and chic.",
@@ -31,7 +29,7 @@ const categoryDescriptions: Record<string, string> = {
 };
 
 export default function CategoriesClient({ categoryCounts }: { categoryCounts: { name: string; count: number }[] }) {
-  const allCategories = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Fusion Wear", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
+  const allCategories = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-12">
       <AnimatedSection>

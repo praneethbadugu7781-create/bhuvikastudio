@@ -42,8 +42,8 @@ export function normalizeCategory(cat: string): string {
     "anarkali": "Anarkali",
     "gowns": "Gowns",
     "gown": "Gowns",
-    "fusion wear": "Fusion Wear",
-    "fusionwear": "Fusion Wear"
+    "fusion wear": "Indo Western",
+    "fusionwear": "Indo Western"
   };
   const key = cat.trim().toLowerCase();
   return mapping[key] || cat.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');

@@ -15,14 +15,13 @@ const categoryImages: Record<string, string> = {
   "Sarees": "/categories/sarees.png",
   "Lehengas": "/categories/lehengas.png",
   "Indo Western": "/categories/indo-western.png",
-  "Fusion Wear": "/categories/indo-western.png",
   "Kids Wear": "/categories/kids-wear.png",
   "Western Wear": "/categories/western-wear.png",
   "Co-ords Sets": "/categories/co-ords-sets.png",
   "Anarkali": "/categories/anarkali.png",
   "Gowns": "/categories/gowns.png",
 };
-const categories = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Fusion Wear", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
+const categories = ["Kurta Sets", "Sarees", "Lehengas", "Indo Western", "Kids Wear", "Western Wear", "Co-ords Sets", "Anarkali", "Gowns"];
 
 const testimonials = [
   { name: "Priya S.", rating: 5, text: "Absolutely loved the lehenga! The quality is amazing and it arrived quickly. Will definitely order again." },
