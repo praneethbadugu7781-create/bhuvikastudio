@@ -4,7 +4,7 @@ import type { CatalogItem, ColorOption, SizeChartEntry } from "./catalog";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 async function apiFetch(path: string) {
-  const res = await fetch(`${API_URL}${path}`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}${path}`, { next: { revalidate: 60 } });
   if (!res.ok) return null;
   return res.json();
 }
@@ -79,8 +79,7 @@ export async function getProducts(): Promise<CatalogItem[]> {
 }
 
 export async function getProductBySlug(slug: string) {
-  const products: ApiProduct[] = (await apiFetch("/api/products")) || [];
-  const p = products.find((prod) => prod.slug === slug);
+  const p: ApiProduct = await apiFetch(`/api/products/slug/${encodeURIComponent(slug)}`);
   if (!p) return null;
 
   const firstVariant = p.variants[0];
